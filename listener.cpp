@@ -29,7 +29,7 @@ void Listener::accept_incoming_connections() {
 	while (new_sock != -1) {
 		new_sock = accept(m_sock, NULL, NULL);
 		if (new_sock < 0) {
-			if (errno != EWOULDBLOCK) {
+			if (errno != EWOULDBLOCK) { //would block if it was non blocking and if we were not handling closing connections. A la place on aurra message erreur servi?
 				strerror(errno);
 				m_run = false; //see if okay
 			}
@@ -42,6 +42,57 @@ void Listener::accept_incoming_connections() {
 	}
 }
 
+/* Receive data on this connection until the 
+recv fails with EWOULDBLOCK.  If any other failure occurs, 
+we will close the connection.    */  
+void Listener::receive_data(int fd) {
+	int ret;
+	char buffer[4096]; //taille buffer??
+	
+	while (1)
+	{
+		ret = recv(fd, buffer, sizeof(buffer), 0);
+		std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
+		if (ret < 0) {
+			if (errno != EWOULDBLOCK) {
+				strerror(errno);
+				m_close = true;
+			}
+			return;
+		}
+
+		/*Check if connection was closed by client*/
+		if (ret == 0) {
+			//print something?
+			m_close = true;
+			return;
+		}
+
+		//else data was received
+		//send(fd, buffer, sizeof(buffer), 0);
+		std::string s = "hello";
+		ret = send(fd, s.c_str(), sizeof(s), 0);
+        std::cout << ret << std::endl;
+	}
+}
+
+/*If the m_close flag was turned on, we need
+to clean up this active connection.  This 
+clean up process includes removing the   
+descriptor from the master set and    
+determining the new maximum descriptor value 
+based on the bits that are still turned on in 
+the master set.  */
+void Listener::close_conn(int fd) {
+	if (m_close) {
+		close(fd);
+		FD_CLR(fd, &m_set);
+		if (fd == m_highsock) {
+			while (!(FD_ISSET(m_highsock, &m_set)))
+				m_highsock -= 1;
+		}
+	}
+}
 
 Listener::Listener() {
 	memset((char *) &m_address, 0, sizeof(m_address));
@@ -85,7 +136,7 @@ int Listener::init() {
 
 	// Bind the ip address and port to a socket
 	m_address.sin_family = AF_INET;
-    m_address.sin_port = m_port; //besoin htons ou atoport??
+    m_address.sin_port = htons(m_port);; //besoin htons ou atoport??
     m_address.sin_addr.s_addr = inet_addr("0.0.0.0"); //any address
  
     if (bind(m_sock, (struct sockaddr*) &m_address, sizeof(m_address)) < 0)
@@ -144,22 +195,32 @@ int Listener::run() {
 			if (FD_ISSET(i, &m_working_set)) {//if descriptor is ready, is in working_set
 				//Fd is already readable - we have one less to look for. So that we can eventually stop looking
 				sock_count -= 1;
-			}
-		}
 		
-		/*Check to see if the FD is the listening socket (m_sock). If it is,
-		Accept all incoming connections that are queued up on the listening socket before we
-        loop back and call select again.*/
-		if (i == m_sock) {
-			accept_incoming_connections();
-		}
-		else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
-			m_close = false;
-			receive_data(); //receive all incoming data on socket before looping back and calling select again
+				/*Check to see if the FD is the listening socket (m_sock). If it is,
+				Accept all incoming connections that are queued up on the listening socket before we
+				loop back and call select again.*/
+				if (i == m_sock) {
+					accept_incoming_connections();
+				}
+				else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
+					m_close = false;
+					receive_data(i); //receive all incoming data on socket before looping back and calling select again
+					close_conn(i);
+				}
+
+			}
 		}
 	
 	}
 
 	return 0;
+}
+
+void Listener::clean() {
+	for (int i=0; i <= m_highsock; ++i)
+   	{
+    	if (FD_ISSET(i, &m_set))
+        close(i);
+   }
 }
 

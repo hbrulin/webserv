@@ -8,6 +8,7 @@ int main (void) {
 	
 	server.init();
 	server.run();
+	server.clean();
 
 	return 0;
 }

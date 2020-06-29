@@ -15,11 +15,14 @@ class Listener {
 		Listener();
 		int init();
 		int run();
+		void clean();
 	
 	protected:
 		void set_non_blocking();
 		void build_fd_set();
 		void accept_incoming_connections();
+		void receive_data(int fd);
+		void close_conn(int fd);
 
 	private:
 		struct sockaddr_in m_address; // /* bind info structure */ need to have IP defined? see with config
