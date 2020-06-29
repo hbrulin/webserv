@@ -9,4 +9,6 @@ Nonblocking fds : https://medium.com/@copyconstruct/nonblocking-i-o-99948ad7c957
 -> That's why we use select() before read/recv or write/send.
 select() works by blocking until something happens on a file descriptor (aka a socket).
 
-Server with select() and non-blocking fds: https://www.lowtek.com/sockets/select.html
+Server with select() and non-blocking fds: 
+- https://www.lowtek.com/sockets/select.html
+- https://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/rzab6/xnonblock.htm 

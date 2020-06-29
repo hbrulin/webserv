@@ -18,15 +18,18 @@ class Listener {
 	
 	protected:
 		void set_non_blocking();
+		void build_fd_set();
+		void accept_incoming_connections();
 
 	private:
 		struct sockaddr_in m_address; // /* bind info structure */ need to have IP defined? see with config
 		int			m_port;
 		int			m_sock; /* The socket file descriptor for our "listening" socket */
-		int			*m_connect_list; /* Array of connected sockets so we know who we are talking to */ // A VOIR
-		fd_set		set; /* Socket file descriptors we want to wake up for, using select() */
-		int			m_highsock;
+		fd_set		m_set; /* Socket file descriptors we want to wake up for, using select() */
+		fd_set		m_working_set;
 		bool		m_run;
-
+		int			m_highsock;
+		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
+		bool		m_close;
 	/* 1 listening socket + other socket fds */
 };
