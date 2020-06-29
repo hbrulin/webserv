@@ -12,3 +12,6 @@ select() works by blocking until something happens on a file descriptor (aka a s
 Server with select() and non-blocking fds: 
 - https://www.lowtek.com/sockets/select.html
 - https://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/rzab6/xnonblock.htm 
+
+
+https://www.w3.org/Protocols/rfc2616/rfc2616.html

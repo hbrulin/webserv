@@ -47,6 +47,7 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */  
 void Listener::receive_data(int fd) {
 	int ret;
+	int len;
 	char buffer[4096]; //taille buffer??
 	
 	while (1)
@@ -58,21 +59,20 @@ void Listener::receive_data(int fd) {
 				strerror(errno);
 				m_close = true;
 			}
-			return;
+			break;
 		}
 
 		/*Check if connection was closed by client*/
 		if (ret == 0) {
 			//print something?
 			m_close = true;
-			return;
+			break;
 		}
 
 		//else data was received
-		//send(fd, buffer, sizeof(buffer), 0);
-		std::string s = "hello";
-		ret = send(fd, s.c_str(), sizeof(s), 0);
-        std::cout << ret << std::endl;
+		len = ret;
+		send(fd, buffer, len, 0);
+		
 	}
 }
 
