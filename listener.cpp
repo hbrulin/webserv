@@ -1,4 +1,5 @@
 #include "listener.hpp"
+#include "request.hpp"
 
 void Listener::set_non_blocking() {
 	//std::cout << m_sock << std::endl;
@@ -53,7 +54,7 @@ void Listener::receive_data(int fd) {
 	while (1)
 	{
 		ret = recv(fd, buffer, sizeof(buffer), 0);
-		std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
+		//std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
 		if (ret < 0) {
 			if (errno != EWOULDBLOCK) {
 				strerror(errno);
@@ -72,6 +73,12 @@ void Listener::receive_data(int fd) {
 		//else data was received
 		len = ret;
 		send(fd, buffer, len, 0);
+
+		//create REQUEST OBJECT THAT HAS HEADERS A PARSE FT AND A SEND FT
+		/*Request req(buffer, fd);
+		req.parse();
+		req.handle();
+		req.send_to_client();*/
 		
 	}
 }

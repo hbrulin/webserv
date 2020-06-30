@@ -1,3 +1,6 @@
+#ifndef LISTENER_HPP
+# define LISTENER_HPP
+
 #include <iostream>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -36,3 +39,5 @@ class Listener {
 		bool		m_close;
 	/* 1 listening socket + other socket fds */
 };
+
+#endif
