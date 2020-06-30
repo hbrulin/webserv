@@ -15,7 +15,6 @@ void Request::parse() {
 	{
 		m_content = parsed[1];
 
-		//This should really be if it _ends_ in a slash?
 		if (m_content == "/") //GET / HTTP/1.1
 		{
 			m_content = m_index;
