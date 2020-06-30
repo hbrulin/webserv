@@ -35,6 +35,8 @@ class Request : public Env {
 	//memset m_content et m_output
 	public:
 	Request(char *buffer, int sock) {
+		m_buffer = buffer;
+		m_client = sock;
 		m_not_found = "/404.html";
 		m_index = "/index.html";
 		m_errorCode = 404; //define other error codes
