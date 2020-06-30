@@ -1,5 +1,5 @@
-#include "listener.hpp"
 #include "env.hpp"
+#include "listener.hpp"
 
 int main (void) {
 	/*Your program should have a config file in argument or use a default path. -> IMPLEMENT + check for extra args */

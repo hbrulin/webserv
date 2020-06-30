@@ -1,6 +1,6 @@
 #include "listener.hpp"
-#include "request.hpp"
 
+class Env;
 
 Listener::Listener() {
 	memset((char *) &m_address, 0, sizeof(m_address));
@@ -204,14 +204,14 @@ void Listener::receive_data(int fd) {
 		}
 
 		//else data was received
-		len = ret;
-		send(fd, buffer, len, 0);
+		//len = ret;
+		//send(fd, buffer, len, 0);
 
 		
-		/*Request req(buffer, fd);
+		Request req(buffer, fd); //mettre direct dans le Listener
 		req.parse();
 		req.handle();
-		req.send_to_client();*/
+		req.send_to_client(); //-> ici outgoing request, à voir si on ne fait pas une autre classe
 		
 	}
 }

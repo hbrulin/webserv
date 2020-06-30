@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include "env.hpp"
+#include "request.hpp"
 
 class Listener : public Env {
 
@@ -39,6 +40,8 @@ class Listener : public Env {
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 	/* 1 listening socket + other socket fds */
+
+		//Mettre ici un objet request??
 };
 
 #endif
