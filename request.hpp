@@ -1,7 +1,11 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-class Request {
+#include "env.hpp"
+
+/*Faire deux classes : une pour reception, une pour envoi?*/
+
+class Request : public Env {
 
 	private:
 	Request();
