@@ -1,4 +1,6 @@
 #include "request.hpp"
+#include <iostream>
+
 
 void Request::parse() {
 	
@@ -18,6 +20,7 @@ void Request::parse() {
 		{
 			m_content = m_index;
 		}
+		//std::cout << m_content << std::endl;
 	}
 
 }
@@ -26,7 +29,7 @@ void Request::handle() {
 	//How do we determine the request isn’t for a document it can simply deliver, and create a CGI process?
 	
 	// Open the document in the local file system
-	std::ifstream f(".\\www" + m_content); //DEFINI PAR PATH, META_VARIABLE?
+	std::ifstream f("www" + m_content); //DEFINI PAR PATH, META_VARIABLE?
 
 	// Check if it opened and if it did, take content
 	if (f.good())
@@ -34,10 +37,17 @@ void Request::handle() {
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_content = str;
 		m_errorCode = 200;
+		f.close();
 	}
-	else
-		m_content = m_not_found; //error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
-	f.close();
+	else //DEFINIR COMMENT GERER ERREURS ICI
+	{
+		f.close();
+		std::ifstream f("www" + m_not_found);  
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_content = str;
+		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
+		f.close();
+	}
 
 	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
