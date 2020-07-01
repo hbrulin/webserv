@@ -26,6 +26,7 @@
 ** invalid numerical key like invalid listen port
 ** invalid ip
 ** if more than one server i need to check listen port and host port of each
+** invalid method name ???
 */
 
 class Data
