@@ -1,7 +1,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <list>
+#include <vector>
 
 struct Config
 {
@@ -20,7 +20,7 @@ struct Config
 	unsigned int _listen; // the listen port
 	std::string _host; // local host or something else
 
-	std::list<std::string> _accepted_method; // list of accepted method
+	std::vector<std::string> _accepted_method; // list of accepted method
 	bool _allow_directory_listing;
 	std::string _default_directory_answer_file; // ????
 

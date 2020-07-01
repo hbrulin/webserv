@@ -31,18 +31,9 @@ Data::Data(const char* file_name)
 		b = s.substr(s.find('{') + 1, s.find('}') - s.find('{'));
 		s = s.substr(s.find('}'));
 
-		/*
-		** try (create erver config)
-		** catch throw exception
-		*/
-			//ServerConfig a;
-			//a.setConfig(b);
-			_serverList.push_back(Config());
-			_configParser.setConfig(&_serverList.back(), b);
-		//std::cout << b << "||ENDOFB||" << std::endl;
+		_serverList.push_back(Config());
+		_configParser.setConfig(&_serverList.back(), b);
 	}
-
-	//std::cout << s << std::endl;
 }
 
 Data::Data(const Data& data)
@@ -80,5 +71,16 @@ void Data::operator = (const Data& data)
 
 int main(int ac, char **av)
 {
-	Data data(av[1]);
+	try
+	{
+		Data data(av[1]);
+	}
+	catch (std::logic_error& e)
+	{
+		std::cout << e.what() << std::endl;
+	}
+	catch (...)
+	{
+		std::cout << "Error while configuring, abort ...\n";
+	}
 }

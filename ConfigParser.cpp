@@ -41,8 +41,8 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		s = s.substr(i);
 		s = s.substr(s.find_first_of(ALPHACHAR));
 		value = s.substr(0, s.find(';'));
-		std::cout << "key: " << key << std::endl;
-		std::cout << "value: " << value << std::endl;
+	//	std::cout << "key: " << key << std::endl;
+	//	std::cout << "value: " << value << std::endl;
 		//map[s.substr(0, i)](s.substr(i, s.find(';')));
 		if (_map[key] == NULL)
 			throw (std::logic_error("Parsing error: Unknown option: " + key));
@@ -116,18 +116,24 @@ void ConfigParser::parse_host(std::string b)
 
 void ConfigParser::parse_method(std::string b)
 {
-	std::string s;
-	_config->_accepted_method.push_back("test");
-	/*while (b.size() > 1)
+	std::string s = "";
+	//_config->_accepted_method.push_back("test");
+	while (b.size() > 0)
 	{
-		s = b.substr(0, b.find(','));
-		_accepted_method.push_back(b);
-		if (b.find(','))
-			b = b.substr(b.find(',') + 1);
-		else
-			b = b.substr(b.)
-		std::cout << b << std::endl;
-	}*/
+		if (b.size() && isalpha(b[0]))
+		{
+			_config->_accepted_method.push_back("");
+			while (b.size() && isalpha(b[0]))
+			{
+				_config->_accepted_method.back() += b[0];
+				b = b.substr(1);
+			}
+		}
+		//if (s.size() > 0 && !isalpha(s[0]))
+		//{
+			while (b.size() && !isalpha(b[0]))
+				b = b.substr(1);
+	}
 }
 
 void ConfigParser::parse_allow_directory_listing(std::string b)
@@ -168,10 +174,15 @@ void ConfigParser::print_data(Config* config)
 {
 	if (!config)
 		config = _config;
-	std::cout << "server_name " << config->_server_name << " listen: " <<
-	_config->_listen << " host: " << config->_host << " root: " << config->_root << " errors: " << config->_errors
-	<< " client body stuff: " << config->_client_body_size << " accepted method: " << config->_accepted_method.front()
-	<< " Allow_uploaded: " << config->_allow_uploaded << " uploaded_files_root: " << config->_uploaded_files_root
-	<< " Allow_directory_listing: " << config->_allow_directory_listing <<
-	" default_directory_answer_file: " << config->_default_directory_answer_file << std::endl;
+	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
+	_config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
+	<< "\nclient body stuff: " << config->_client_body_size
+	<< "\nAllow_uploaded: " << config->_allow_uploaded << "\nuploaded_files_root: " << config->_uploaded_files_root
+	<< "\nAllow_directory_listing: " << config->_allow_directory_listing <<
+	"\ndefault_directory_answer_file: " << config->_default_directory_answer_file
+	<< "\nAccepted Methods:";
+	for (int i = 0; i < config->_accepted_method.size(); i++)
+		std::cout << " " << config->_accepted_method[i];
+	std::cout << std::endl;
+
 }

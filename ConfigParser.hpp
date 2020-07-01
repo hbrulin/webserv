@@ -20,7 +20,7 @@ class Config;
 class ConfigParser
 {
 	/*
-	** maybe a map of functions
+	** maybe do do a sum check to verificate if everythng is parse
 	*/
 	typedef void (ConfigParser::*Func)(std::string s);
    	//typedef std::map<std::string, FUNCPTR> FuncMap;
@@ -39,11 +39,7 @@ class ConfigParser
 	//Parse_method
 	void initiate_map();
 
-
-
 	void print_data(Config* config = NULL); // utilitary, for testing only
-
-	// getters:
 
 	private:
 
@@ -63,8 +59,6 @@ class ConfigParser
 	void parse_allow_uploaded(std::string);
 	void parse_uploaded_files_root(std::string);
 	void parse_server_name(std::string);
-
-
 
 };
 

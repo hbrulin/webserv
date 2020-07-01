@@ -19,6 +19,13 @@
 ** will basically read until find server {
 ** list.push(ServerConfig( [config file from server { to next } ]));
 **
+
+** Errors yet not handled or tested:
+** empty file
+** missing key
+** invalid numerical key like invalid listen port
+** invalid ip
+** if more than one server i need to check listen port and host port of each
 */
 
 class Data
