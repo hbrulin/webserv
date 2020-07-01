@@ -2,11 +2,12 @@
 #define DATA_HPP
 
 #include <string>
-#include <list>
+#include <vector>
 #include <iostream>
 #include <fstream>
 #include "env.hpp"
-#include "ServerConfig.hpp"
+#include "Config.hpp"
+#include "ConfigParser.hpp"
 
 #define DEFAULT_CONFIG_PATH "./config_file.conf"
 
@@ -30,19 +31,19 @@ class Data
 	Data(const char* file_name = NULL);
 	Data(const Data& data);
 	void operator = (const Data& data);
+	~Data();
 
 	// GETTERS
 	unsigned int getSize(); // return _serverList.size()
-	std::list<ServerConfig> getServerList(); // return _serverList
-	ServerConfig& operator [] (unsigned int); // getter for list[]
-
-
+	const std::vector<Config>& getServerList(); // return _serverList
+	const Config& operator [] (unsigned int); // getter for list[]
 
 
 	private:
 	Data();
 
-	std::list<ServerConfig> _serverList;
+	std::vector<Config> _serverList;
+	ConfigParser _configParser;
 	std::string _cgi_extension;
 	std::string _cgi_root;
 };
