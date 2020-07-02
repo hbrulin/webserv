@@ -13,7 +13,7 @@ void Request::parse() {
 	//NEED TO PARSE HEADERS TOO?
 
 	// If the GET request is valid, try and get the name
-	if (parsed.size() >= 3 && parsed[0] == "GET")
+	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST"))
 	{
 		m_content = parsed[1];
 
@@ -31,7 +31,13 @@ int Request::forking()
 	int pid, res, status;
 	int pp[2];
 	std::ostringstream oss;
-	char *env[] = {content_env, NULL};
+	char **env = ft_split(content_env, '&');
+	if (getcwd(curr_dir, 200) == NULL)
+		return (-1);
+	if ((dir_cgi = ft_strjoin(curr_dir, "/cgi-bin")) == NULL)
+		return (-1);
+	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
+		return (-1);
 	if (pipe(pp))
 		perror("pipe");
 	pid = fork();
@@ -42,7 +48,7 @@ int Request::forking()
 		dup2(m_client, 1);
    		//res = execve("usr/bin/php", argv, env);
 		//char *env[] = {(char *)m_content.c_str(), NULL};
-		res = execve("/Users/Othilie/webserver/webserv/cgi-bin/test.cgi", NULL, env);
+		res = execve(path, NULL, env);
 		if (res != 0)
 		{
 			m_output = "HTTP/1.1 200 OK\r\n"
@@ -88,9 +94,6 @@ void Request::handle() {
 	std::ifstream f("www" + m_content); //DEFINI PAR PATH, META_VARIABLE?
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
-		std::stringstream iss;
-		std::string s(m_buffer);
-		iss << m_buffer;
 		for (int i = 0; i < strlen(m_buffer); i++)
 		{
 			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
@@ -105,8 +108,6 @@ void Request::handle() {
 				break;
 			}
 		}
-		//std::string str((std::istreambuf_iterator<char>(iss), std::istreambuf_iterator<char>());
-		//m_content = ;
 		m_output = "";
 		forking();
 		f.close();

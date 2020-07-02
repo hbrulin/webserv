@@ -18,6 +18,9 @@ class Request : public Env {
 	char *m_buffer;
 	char *content_env; //env que l'on recup dans requete POST pour les cgi
 	int m_client;
+	char curr_dir[200];
+	char *dir_cgi;
+	char *path;
 	//HEADERS
 	//GET
 	//POST
