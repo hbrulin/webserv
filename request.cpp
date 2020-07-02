@@ -31,9 +31,7 @@ int Request::forking()
 	int pid, res, status;
 	int pp[2];
 	std::ostringstream oss;
-	// oss << '"' << (char *)m_content.c_str() << '"';
-	// std::cout << oss;
-	char *env[] = {(char *)"name=myname", (char *)oss.str().c_str(), NULL};
+	char *env[] = {content_env, NULL};
 	if (pipe(pp))
 		perror("pipe");
 	pid = fork();
@@ -90,9 +88,28 @@ void Request::handle() {
 	std::ifstream f("www" + m_content); //DEFINI PAR PATH, META_VARIABLE?
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
+		std::stringstream iss;
+		std::string s(m_buffer);
+		iss << m_buffer;
+		for (int i = 0; i < strlen(m_buffer); i++)
+		{
+			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
+			{
+				i = i + 2;
+				char *tmp= new char[strlen(m_buffer) - i];
+				for (int j = 0; j < strlen(m_buffer) - i; j++)
+				{
+					tmp[j] = m_buffer[i + j];
+				}
+				content_env = tmp;
+				break;
+			}
+		}
+		//std::string str((std::istreambuf_iterator<char>(iss), std::istreambuf_iterator<char>());
+		//m_content = ;
+		m_output = "";
 		forking();
 		f.close();
-		m_output = "";
 		return ;
 	}
 	// Check if it opened and if it did, take content

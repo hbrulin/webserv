@@ -16,6 +16,7 @@ class Request : public Env {
 	private:
 	Request();
 	char *m_buffer;
+	char *content_env; //env que l'on recup dans requete POST pour les cgi
 	int m_client;
 	//HEADERS
 	//GET
