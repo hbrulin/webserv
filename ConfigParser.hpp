@@ -10,6 +10,7 @@
 
 #define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
 #define END_INSTRUCTION_CHAR " \t\n\r;"
+#define NUMBER_OF_PARAMETERS 13
 
 /*
 ** this class should serve to parse a config struct listed in Data
@@ -21,6 +22,7 @@ class ConfigParser
 {
 	/*
 	** maybe do do a sum check to verificate if everythng is parse
+	** A voir pour le nombre de parametre a checker: ex: Allow_uploaded == 0 ...
 	*/
 	typedef void (ConfigParser::*Func)(std::string s);
    	//typedef std::map<std::string, FUNCPTR> FuncMap;

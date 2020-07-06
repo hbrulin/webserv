@@ -29,6 +29,7 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	std::string key;
 	std::string value;
 	int i;
+	int parsing_sum = 0;
 
 	_config = config;
 
@@ -51,6 +52,7 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		try
 		{
 			(this->*(_map[key]))(value);
+			parsing_sum++;
 		}
 		catch (...)
 		{
@@ -62,6 +64,8 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	}
 
 	print_data();
+	if (parsing_sum != NUMBER_OF_PARAMETERS)
+		throw (std::logic_error("One parameter is missing"));
 	return (true);
 }
 
