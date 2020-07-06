@@ -37,14 +37,17 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	while (s.size() > 0 && s != "}")
 	{
 		i = 0;
+		s.find_first_of(ALPHACHAR);
 		s = s.substr(s.find_first_of(ALPHACHAR));
+
 		i = s.find_first_of(END_INSTRUCTION_CHAR);
 		key = s.substr(0, i);
 		key.erase(std::remove_if(key.begin(), key.end(), ::isspace ), key.end());
 		s = s.substr(i);
 
 		value = s.substr(0, s.find(';'));
-		value.erase(std::remove_if(value.begin(), value.end(), ::isspace ), value.end());
+
+		//value.erase(std::remove_if(value.begin(), value.end(), ::isspace ), value.end());
 		//std::cout << "Key " << key << " Value: " << value << std::endl;
 		if (_map[key] == NULL)
 			throw (std::logic_error("Parsing error: Unknown option: " + key));
@@ -89,6 +92,7 @@ void ConfigParser::initiate_map()
 
 void ConfigParser::parse_root(std::string b)
 {
+	remove_whitespace(b);
 	_config->_root = b;
 	//std::cout << _root << std::endl;
 	//std::cout << "root here: " << _root << std::endl;
@@ -97,22 +101,26 @@ void ConfigParser::parse_root(std::string b)
 
 void ConfigParser::parse_errors(std::string b)
 {
+	remove_whitespace(b);
 	_config->_errors = b;
 }
 
 void ConfigParser::parse_client_body_size(std::string b)
 {
+	remove_whitespace(b);
 	_config->_client_body_size = stoi(b);
 }
 
 void ConfigParser::parse_listen(std::string b)
 {
+	remove_whitespace(b);
 	_config->_listen = stoi(b);
 }
 
 
 void ConfigParser::parse_host(std::string b)
 {
+	remove_whitespace(b);
 	_config->_host = b;
 }
 
@@ -120,7 +128,8 @@ void ConfigParser::parse_method(std::string b)
 {
 	std::string s = "";
 	//_config->_accepted_method.push_back("test");
-	while (b.size() > 0)
+	// A reparer un de ces quatre
+	/*while (b.size() > 0)
 	{
 		if (b.size() && isalpha(b[0]))
 		{
@@ -135,11 +144,25 @@ void ConfigParser::parse_method(std::string b)
 		//{
 			while (b.size() && !isalpha(b[0]))
 				b = b.substr(1);
+	}*/
+	while (b.size())
+	{
+		s = b.substr(
+		b.find_first_of(ALPHACHAR),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << s << std::endl;
+		remove_whitespace(s);
+		_config->_accepted_method.push_back(s);
+
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
 	}
 }
 
 void ConfigParser::parse_allow_directory_listing(std::string b)
 {
+	remove_whitespace(b);
 	if (b == "yes")
 		_config->_allow_directory_listing = true;
 	else if (b == "no")
@@ -150,11 +173,13 @@ void ConfigParser::parse_allow_directory_listing(std::string b)
 
 void ConfigParser::parse_default_directory_answer_file(std::string b)
 {
+	remove_whitespace(b);
 	_config->_default_directory_answer_file = b;
 }
 
 void ConfigParser::parse_allow_uploaded(std::string b)
 {
+	remove_whitespace(b);
 	if (b == "yes")
 		_config->_allow_uploaded = true;
 	else if (b == "no")
@@ -165,22 +190,31 @@ void ConfigParser::parse_allow_uploaded(std::string b)
 
 void ConfigParser::parse_uploaded_files_root(std::string b)
 {
+	remove_whitespace(b);
 	_config->_uploaded_files_root = b;
 }
 
 void ConfigParser::parse_server_name(std::string b)
 {
+	remove_whitespace(b);
 	_config->_server_name = b;
 }
 
 void ConfigParser::parse_cgi_root(std::string b)
 {
+	remove_whitespace(b);
 		_config->_cgi_root = b;
 }
 
 void ConfigParser::parse_cgi_type(std::string b)
 {
+	remove_whitespace(b);
 		_config->_cgi_type = b;
+}
+
+void ConfigParser::remove_whitespace(std::string& s)
+{
+	s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
 }
 
 void ConfigParser::print_data(Config* config)
@@ -200,5 +234,4 @@ void ConfigParser::print_data(Config* config)
 	std::cout << "\nCGI_ROOT: " << _config->_cgi_root << "\nCGI_TYPE: " << _config->_cgi_type;
 
 	std::cout << std::endl;
-
 }

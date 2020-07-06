@@ -10,6 +10,7 @@
 
 #define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
 #define END_INSTRUCTION_CHAR " \t\n\r;"
+#define WHITESPACE " \t\n\r"
 #define NUMBER_OF_PARAMETERS 13
 
 /*
@@ -63,6 +64,8 @@ class ConfigParser
 	void parse_server_name(std::string);
 	void parse_cgi_root(std::string);
 	void parse_cgi_type(std::string);
+
+	void remove_whitespace(std::string&);
 
 };
 

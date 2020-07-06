@@ -21,17 +21,28 @@ Data::Data(const char* file_name)
 	while (std::getline(file, b)) // first run that take off comments
 	{
 		s += b.substr(0, b.find('#'));
+	//	s += "\n"; // maybe needed to count lines
 	}
 
 	while (s.size() > 0 && (i = s.find_first_of("server", i)) != s.npos)
 	{
-		if (s[i + 6] != 32 && s[i + 6] != '{')
+		s = s.substr(i + 6);
+		s = s.substr(s.find_first_not_of(WHITESPACE));
+
+		if (s[0] != '{')
 			throw (std::logic_error("Parsing error: unknown token after server"));
-		s = s.substr(i);
+		if (s.find_first_of('}') == s.npos)
+			throw (std::logic_error("Parsing error: missing \'}\'"));
+
 		b = s.substr(s.find('{') + 1, s.find('}') - s.find('{'));
+		if (b.find_first_of(ALPHACHAR) == b.npos)
+			throw(std::logic_error("Parsing error: server content empty"));
+
 		s = s.substr(s.find('}'));
 
+
 		_serverList.push_back(Config());
+		std::cout << "\nhere: " << b << std::endl;
 		_configParser.setConfig(&_serverList.back(), b);
 	}
 }
