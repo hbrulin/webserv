@@ -37,12 +37,13 @@ Data::Data(const char* file_name)
 		b = s.substr(s.find('{') + 1, s.find('}') - s.find('{'));
 		if (b.find_first_of(ALPHACHAR) == b.npos)
 			throw(std::logic_error("Parsing error: server content empty"));
+		if (b.find_first_of(';') == b.npos)
+			throw(std::logic_error("Parsing error: Missing \';\' in config content"));
 
 		s = s.substr(s.find('}'));
 
 
 		_serverList.push_back(Config());
-		std::cout << "\nhere: " << b << std::endl;
 		_configParser.setConfig(&_serverList.back(), b);
 	}
 }

@@ -9,7 +9,7 @@
 #include "Config.hpp"
 
 #define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
-#define END_INSTRUCTION_CHAR " \t\n\r;"
+#define END_INSTRUCTION_CHAR " \t\n\r;}"
 #define WHITESPACE " \t\n\r"
 #define NUMBER_OF_PARAMETERS 13
 
