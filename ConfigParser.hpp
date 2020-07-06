@@ -9,7 +9,7 @@
 #include "Config.hpp"
 
 #define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
-
+#define END_INSTRUCTION_CHAR " \t\n\r;"
 
 /*
 ** this class should serve to parse a config struct listed in Data
@@ -59,6 +59,8 @@ class ConfigParser
 	void parse_allow_uploaded(std::string);
 	void parse_uploaded_files_root(std::string);
 	void parse_server_name(std::string);
+	void parse_cgi_root(std::string);
+	void parse_cgi_type(std::string);
 
 };
 

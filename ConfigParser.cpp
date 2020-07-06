@@ -32,22 +32,22 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 
 	_config = config;
 
+	//std::cout << s << std::endl;
 	while (s.size() > 0 && s != "}")
 	{
 		i = 0;
 		s = s.substr(s.find_first_of(ALPHACHAR));
-		i = s.find(" ");
+		i = s.find_first_of(END_INSTRUCTION_CHAR);
 		key = s.substr(0, i);
+		key.erase(std::remove_if(key.begin(), key.end(), ::isspace ), key.end());
 		s = s.substr(i);
-		s = s.substr(s.find_first_of(ALPHACHAR));
+
 		value = s.substr(0, s.find(';'));
-	//	std::cout << "key: " << key << std::endl;
-	//	std::cout << "value: " << value << std::endl;
-		//map[s.substr(0, i)](s.substr(i, s.find(';')));
+		value.erase(std::remove_if(value.begin(), value.end(), ::isspace ), value.end());
+		//std::cout << "Key " << key << " Value: " << value << std::endl;
 		if (_map[key] == NULL)
 			throw (std::logic_error("Parsing error: Unknown option: " + key));
-			//Func f = it->second;
-		//	(this->*it->second)(value);
+
 		try
 		{
 			(this->*(_map[key]))(value);
@@ -57,12 +57,8 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 			throw (std::logic_error("Parsing error: Unknown value: " + value + " for option: " + key));
 			return (false);
 		}
-			//*f(value);
-			//(this->(*(it->second)))(value);
-		//_root = "lol";
+
 		s = s.substr(s.find(';') + 1);
-		//std::cout << "s here: " << s << std::endl;
-		//s += s.find(';');
 	}
 
 	print_data();
@@ -83,6 +79,8 @@ void ConfigParser::initiate_map()
 	_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
 	_map["uploaded_files"] = &ConfigParser::parse_allow_uploaded;
 	_map["uploaded_files_root"] = &ConfigParser::parse_uploaded_files_root;
+	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
+	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 }
 
 void ConfigParser::parse_root(std::string b)
@@ -150,6 +148,7 @@ void ConfigParser::parse_default_directory_answer_file(std::string b)
 {
 	_config->_default_directory_answer_file = b;
 }
+
 void ConfigParser::parse_allow_uploaded(std::string b)
 {
 	if (b == "yes")
@@ -170,6 +169,16 @@ void ConfigParser::parse_server_name(std::string b)
 	_config->_server_name = b;
 }
 
+void ConfigParser::parse_cgi_root(std::string b)
+{
+		_config->_cgi_root = b;
+}
+
+void ConfigParser::parse_cgi_type(std::string b)
+{
+		_config->_cgi_type = b;
+}
+
 void ConfigParser::print_data(Config* config)
 {
 	if (!config)
@@ -183,6 +192,9 @@ void ConfigParser::print_data(Config* config)
 	<< "\nAccepted Methods:";
 	for (int i = 0; i < config->_accepted_method.size(); i++)
 		std::cout << " " << config->_accepted_method[i];
+
+	std::cout << "\nCGI_ROOT: " << _config->_cgi_root << "\nCGI_TYPE: " << _config->_cgi_type;
+
 	std::cout << std::endl;
 
 }

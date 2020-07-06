@@ -27,7 +27,7 @@ struct Config
 	bool		_allow_uploaded;
 	std::string	_uploaded_files_root;
 
-	std::string _cgi_extension;
+	std::string _cgi_type;
 	std::string _cgi_root;
 };
 
