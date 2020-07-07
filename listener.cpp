@@ -51,7 +51,8 @@ int Listener::init() {
 	// Bind the ip address and port to a socket
 	m_address.sin_family = AF_INET;
     m_address.sin_port = htons(m_port);; //IL FAUDRA FAIRE LA CONVERSION NOUS_MEMES
-    m_address.sin_addr.s_addr = inet_addr("0.0.0.0"); //any address
+    //m_address.sin_addr.s_addr = inet_addr("0.0.0.0"); //any address
+	m_address.sin_addr.s_addr = inet_addr(_conf.getConfigList()[0]._host.c_str());
  
     if (bind(m_sock, (struct sockaddr*) &m_address, sizeof(m_address)) < 0)
 	{
