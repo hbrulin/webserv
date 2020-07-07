@@ -11,19 +11,14 @@ int main (int ac, char **av) {
 		int i = 0;
 		std::vector<Listener> serverList(size);
 
-		//Voir pour multi-serveurs
 		while (i < size)
 		{
 			serverList[i] = Listener(data.getConfigList()[i]);
 			serverList[i].init();
 			//std::cout << "test" << i << std::endl;
-			pid = fork();
-			if (pid == 0)
-				serverList[i].run();
+			serverList[i].run();
 			i++;
 		}
-		//check here for returns of child processes
-		int ret = wait(&status);
 		//server.clean(); //jamais utilisé vu que ctrl-C?
 		//free
 	}
