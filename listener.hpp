@@ -27,7 +27,8 @@ class Listener {
 		void build_fd_set();
 		void accept_incoming_connections(int i);
 		void receive_data(int fd);
-		void close_conn(int fd, int i);
+		void close_conn(int fd);
+		int	look_for_sock(int j);
 
 	private:
 		/*META VAR*/
@@ -41,10 +42,10 @@ class Listener {
 		struct sockaddr_in *m_address; // /* bind info structure */ need to have IP defined? see with config
 		int			*m_port;
 		int			*m_sock; /* The socket file descriptor for our "listening" socket */
-		fd_set		*m_set; /* Socket file descriptors we want to wake up for, using select() */
-		fd_set		*m_working_set;
+		fd_set		m_set; /* Socket file descriptors we want to wake up for, using select() */
+		fd_set		m_working_set;
 		bool		m_run;
-		int			*m_highsock;
+		int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 	
