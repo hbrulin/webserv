@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Listener::Listener(Config conf) {
+Listener::Listener(Data conf) {
 	
 	_conf = conf;
 
@@ -27,7 +27,7 @@ int Listener::init() {
 				and handled appropriately. The connections will be 
 				removed when they time out within four minutes.*/
 	
-	m_port = _conf._listen;
+	m_port = _conf.getConfigList()[0]._listen;
 
 	/* Obtain a file descriptor for listening socket */
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);

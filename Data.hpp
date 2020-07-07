@@ -46,7 +46,7 @@ class Data
 
 
 	private:
-	Data();
+	//Data() {};
 
 	std::vector<Config> _configList;
 	ConfigParser _configParser;

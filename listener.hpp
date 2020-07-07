@@ -12,13 +12,12 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include "request.hpp"
-#include "Config.hpp"
+#include "Data.hpp"
 
 class Listener {
 
 	public:
-		Listener() {};
-		Listener(Config conf);
+		Listener(Data conf);
 		int init();
 		int run();
 		void clean();
@@ -32,7 +31,7 @@ class Listener {
 
 	private:
 		/*META VAR*/
-		Config _conf;
+		Data _conf;
 		std::string SERVER_PROTOCOL;
 		std::string SERVER_SOFTWARE;
 		std::string GATEWAY_INTERFACE;;
@@ -48,7 +47,7 @@ class Listener {
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 	
-		//Listener() {};
+		Listener() {};
 
 		//Mettre ici un objet request??
 };

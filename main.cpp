@@ -7,18 +7,10 @@ int main (int ac, char **av) {
 	try
 	{
 		Data data(av[1]);
-		int size = data.getSize();
-		int i = 0;
-		std::vector<Listener> serverList(size);
+		Listener server(data);
 
-		while (i < size)
-		{
-			serverList[i] = Listener(data.getConfigList()[i]);
-			serverList[i].init();
-			//std::cout << "test" << i << std::endl;
-			serverList[i].run();
-			i++;
-		}
+		server.init();
+		server.run();
 		//server.clean(); //jamais utilisé vu que ctrl-C?
 		//free
 	}
