@@ -1,8 +1,13 @@
 #include "listener.hpp"
 
-class Env;
+Listener::Listener(Config conf) {
+	
+	_conf = conf;
 
-Listener::Listener() {
+	SERVER_PROTOCOL = "HTTP/1.1";
+	SERVER_SOFTWARE = "webserv/1.1";
+	GATEWAY_INTERFACE = "CGI/1.1";
+	
 	memset((char *) &m_address, 0, sizeof(m_address));
 	m_port = 0;
 	m_sock = 0;
@@ -22,7 +27,7 @@ int Listener::init() {
 				and handled appropriately. The connections will be 
 				removed when they time out within four minutes.*/
 	
-	m_port = 8080; //change according to META_VARIABLES
+	m_port = _conf._listen;
 
 	/* Obtain a file descriptor for listening socket */
 	m_sock = socket(AF_INET, SOCK_STREAM, 0);

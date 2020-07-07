@@ -11,13 +11,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
-#include "env.hpp"
 #include "request.hpp"
+#include "Config.hpp"
 
-class Listener : public Env {
+class Listener {
 
 	public:
-		Listener();
+		Listener() {};
+		Listener(Config conf);
 		int init();
 		int run();
 		void clean();
@@ -30,6 +31,13 @@ class Listener : public Env {
 		void close_conn(int fd);
 
 	private:
+		/*META VAR*/
+		Config _conf;
+		std::string SERVER_PROTOCOL;
+		std::string SERVER_SOFTWARE;
+		std::string GATEWAY_INTERFACE;;
+
+		/*Other var*/
 		struct sockaddr_in m_address; // /* bind info structure */ need to have IP defined? see with config
 		int			m_port;
 		int			m_sock; /* The socket file descriptor for our "listening" socket */
@@ -39,7 +47,8 @@ class Listener : public Env {
 		int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
-	/* 1 listening socket + other socket fds */
+	
+		//Listener() {};
 
 		//Mettre ici un objet request??
 };

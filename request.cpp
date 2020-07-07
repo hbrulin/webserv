@@ -41,7 +41,7 @@ void Request::handle() {
 	else //DEFINIR COMMENT GERER ERREURS ICI
 	{
 		f.close();
-		std::ifstream f("www" + m_not_found);  
+		std::ifstream f("www" + m_not_found);  //META_VARIABLE
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_content = str;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
