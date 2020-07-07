@@ -66,10 +66,9 @@ int Listener::init() {
    	they will inherit that state from the listening socket.  */
 	//std::cout << _size << std::endl;
 	for (int i = 0; i < _size ; i++) {
-		std::cout << m_sock[i] << std::endl;
 		set_non_blocking(m_sock[i]);
 	}
-	
+
 	// Bind the ip address and port to a socket
 	for (int i = 0; i < _size ; i++) {
 		m_address[i].sin_family = AF_INET;
@@ -81,11 +80,14 @@ int Listener::init() {
 	for (int i = 0; i < _size ; i++) {
 		if (bind(m_sock[i], (struct sockaddr*) &m_address[i], sizeof(m_address[i])) < 0)
 		{
+			//std::cout << errno << std::endl;
 			strerror(errno);
+			//perror("msg");
 			close(m_sock[i]);
 			exit(EXIT_FAILURE); //VOIR SI ON EXIT SI UN SERVEUR SUR PLUSIEURS FAIL
+		}
 	}
-	}
+	//std::cout << "test" << std::endl;
 
 	/* This socket will be for listening */
 	/*marque la socket référencée par sockfd comme une socket passive, 
