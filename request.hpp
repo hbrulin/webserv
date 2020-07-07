@@ -1,7 +1,6 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-#include "env.hpp"
 #include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,7 +10,7 @@
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 
-class Request : public Env {
+class Request {
 
 	private:
 	Request();
@@ -46,7 +45,7 @@ class Request : public Env {
 	};
 	void parse();
 	void handle();
-	void send_to_client();
+	int send_to_client();
 	int forking();
 };
 

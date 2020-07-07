@@ -12,6 +12,12 @@ select() works by blocking until something happens on a file descriptor (aka a s
 Server with select() and non-blocking fds: 
 - https://www.lowtek.com/sockets/select.html
 - https://www.ibm.com/support/knowledgecenter/ssw_ibm_i_72/rzab6/xnonblock.htm 
+- https://github.com/codehoose/barebones-webserver
 
-
+HTTP 1.1
 https://www.w3.org/Protocols/rfc2616/rfc2616.html
+
+Install nginx : https://www.javatpoint.com/installing-nginx-on-mac
+
+CGI :
+http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm
