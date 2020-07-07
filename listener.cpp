@@ -20,6 +20,9 @@ Listener::Listener(std::vector<Config> conf, int size) {
 
 	for (int i = 0; i < size; i++)
 	{
+		memset((int *) &m_port[i], 0, sizeof(m_port));
+		memset((int *) &m_sock[i], 0, sizeof(m_sock));
+		memset((int *) &m_highsock[i], 0, sizeof(m_highsock));
 		memset((char *) &m_address[i], 0, sizeof(m_address));
 		memset((char *) &m_set[i], 0, sizeof(m_set));
 		memset((char *) &m_working_set[i], 0, sizeof(m_working_set));
@@ -45,9 +48,10 @@ int Listener::init() {
 		m_sock[i] = socket(AF_INET, SOCK_STREAM, 0);
 		if (m_sock[i] < 0) {
 			strerror(errno);
-			exit(EXIT_FAILURE); //VOIR SI ON EXIT SI UN SERVEUR SUR PLUSIEURS FAIL
+			exit(EXIT_FAILURE);
+		} //VOIR SI ON EXIT SI UN SERVEUR SUR PLUSIEURS FAIL
 	}
-
+	
 	/* Allow socket descriptor to be reuseable */
 	/* So that we can re-bind to sock without TIME_WAIT problems, without waiting 4 minutes */
 	/*Indique que les règles permettant la validation des adresses 
@@ -60,10 +64,12 @@ int Listener::init() {
 
 	/*All of the sockets for the incoming connections will also be nonblocking since 
    	they will inherit that state from the listening socket.  */
-	for (int i = 0; i < _size ; i++)
+	//std::cout << _size << std::endl;
+	for (int i = 0; i < _size ; i++) {
+		std::cout << m_sock[i] << std::endl;
 		set_non_blocking(m_sock[i]);
 	}
-
+	
 	// Bind the ip address and port to a socket
 	for (int i = 0; i < _size ; i++) {
 		m_address[i].sin_family = AF_INET;
@@ -71,7 +77,7 @@ int Listener::init() {
 		//m_address.sin_addr.s_addr = inet_addr("0.0.0.0"); //any address
 		m_address[i].sin_addr.s_addr = inet_addr(_conf[i]._host.c_str());
 	}
- 
+	
 	for (int i = 0; i < _size ; i++) {
 		if (bind(m_sock[i], (struct sockaddr*) &m_address[i], sizeof(m_address[i])) < 0)
 		{
@@ -165,6 +171,7 @@ int Listener::run() {
 void Listener::set_non_blocking(int sock) {
 	//std::cout << m_sock << std::endl;
 	if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
+		//std::cout << errno << std::endl;
 		strerror(errno);
 		exit(EXIT_FAILURE); //check if exit if only one fails
 	}

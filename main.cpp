@@ -7,7 +7,6 @@ int main (int ac, char **av) {
 		Data data(av[1]);
 		int size = data.getSize();
 		Listener server(data.getConfigList(), size);
-
 		server.init();
 		server.run();
 		//server.clean(); //jamais utilisé vu que ctrl-C?
