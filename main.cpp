@@ -2,12 +2,11 @@
 #include "listener.hpp"
 
 int main (int ac, char **av) {
-	int pid;
-	int status;
 	try
 	{
 		Data data(av[1]);
-		Listener server(data);
+		int size = data.getSize();
+		Listener server(data.getConfigList(), size);
 
 		server.init();
 		server.run();
