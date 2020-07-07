@@ -189,22 +189,20 @@ void Listener::receive_data(int fd) {
 	int len;
 	char buffer[4096]; //taille buffer??
 	
+	/*This error checking is compliant with correction - check for -1 and 0 */
 	while (1)
 	{
 		ret = recv(fd, buffer, sizeof(buffer), 0);
 		//std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
 		if (ret < 0) {
-			if (errno != EWOULDBLOCK) {
-				strerror(errno);
-				m_close = true;
-			}
+			m_close = true; //client will be removed if error
 			break;
 		}
 
 		/*Check if connection was closed by client*/
 		if (ret == 0) {
 			//print something?
-			m_close = true;
+			m_close = true; //client will be removed
 			break;
 		}
 
@@ -216,7 +214,12 @@ void Listener::receive_data(int fd) {
 		Request req(buffer, fd); //mettre direct dans le Listener
 		req.parse();
 		req.handle();
-		req.send_to_client(); //-> ici outgoing request, à voir si on ne fait pas une autre classe
+		//error checking to comply with correction : if error, client will be removed
+		if (req.send_to_client() == -1)
+		{
+			m_close = true;
+			break;
+		}
 		
 	}
 }

@@ -42,7 +42,7 @@ class Request {
 	};
 	void parse();
 	void handle();
-	void send_to_client();
+	int send_to_client();
 };
 
 

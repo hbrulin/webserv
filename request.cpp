@@ -61,6 +61,8 @@ void Request::handle() {
 }
 
 
-void Request::send_to_client() {
-	send(m_client, m_output.c_str(), m_output.size() + 1, 0);
+int Request::send_to_client() {
+	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
+		return - 1;
+	return 0;
 }
