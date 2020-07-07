@@ -2,9 +2,8 @@
 #include "listener.hpp"
 
 int main (int ac, char **av) {
-	std::string conf;
-
-	//parse config
+	int pid;
+	int status;
 	try
 	{
 		Data data(av[1]);
@@ -16,9 +15,15 @@ int main (int ac, char **av) {
 		{
 			serverList[i] = Listener(data.getConfigList()[i]);
 			serverList[i].init();
-			serverList[i].run();
+			std::cout << "test" << i << std::endl;
+			pid = fork();
+			if (pid == 0)
+				serverList[i].run();
 			i++;
 		}
+		int ret = wait(&status);
+		//server.clean(); //jamais utilisé vu que ctrl-C?
+		//free
 	}
 	catch (std::logic_error& e)
 	{
@@ -26,11 +31,11 @@ int main (int ac, char **av) {
 	}
 	catch (...)
 	{
-		std::cout << "Error while configuring, abort ...\n";
+		std::cout << "Error while configuring, abort ...\n"; //ou autres erreurs
 		return -1;
 	}
 
-	//server.clean(); //jamais utilisé vu que ctrl-C?
+	
 
 	return 0;
 }
