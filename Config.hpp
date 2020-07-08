@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sys/stat.h>
 
+#define LOCALHOST "127.0.0.1"
+
 struct Config
 {
 	//paths

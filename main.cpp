@@ -14,12 +14,12 @@ int main (int ac, char **av) {
 	}
 	catch (std::logic_error& e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		return -1;
 	}
 	catch (...)
 	{
-		std::cout << "Error while configuring, abort ...\n"; //ou autres erreurs
+		std::cerr << "Error while configuring, abort ...\n"; //ou autres erreurs
 		return -1;
 	}
 

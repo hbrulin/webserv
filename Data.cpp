@@ -2,6 +2,7 @@
 
 #define MAX_PORTS 65535
 
+
 const char* Data::_SUPPORTED_CGI[] = {"php", "other", NULL};
 const char* Data::_SUPPORTED_METHOD[] = {"get", "post", "head", "method3", "method4", NULL};
 
@@ -128,10 +129,10 @@ static void check_rooting_validity(Config& config)
 		}
 		catch (...)
 		{
-			throw (std::logic_error(error + "Host " + config._host + " is a invalid ip"));
+			throw (std::logic_error(error + "Host " + config._host + " is an invalid ip"));
 		}
 		if (byte < 0 || byte > 127 || (byte == 0 && config._host[j] != '0'))
-			throw (std::logic_error(error + "Host " + config._host + " is a invalid ip"));
+			throw (std::logic_error(error + "Host " + config._host + " is an invalid ip"));
 		j = config._host.find_first_of('.', j) + 1;
 	}
 }
@@ -195,7 +196,7 @@ void Data::check_validity()
 		}
 		catch (std::logic_error& e)
 		{
-			std::cout << e.what() << std::endl;
+			std::cerr << e.what() << std::endl;
 			exit(1);
 		}
 	}

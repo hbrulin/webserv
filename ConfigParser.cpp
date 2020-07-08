@@ -39,7 +39,7 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	while (s.size() > 0 && s != "}")
 	{
 		i = 0;
-		s.find_first_of(ALPHACHAR);
+//		s.find_first_of(ALPHACHAR);
 		s = s.substr(s.find_first_of(ALPHACHAR));
 
 		i = s.find_first_of(END_INSTRUCTION_CHAR);
@@ -123,6 +123,8 @@ void ConfigParser::parse_listen(std::string b)
 void ConfigParser::parse_host(std::string b)
 {
 	remove_whitespace(b);
+	if (b == "localhost")
+		b = LOCALHOST;
 	_config->_host = b;
 }
 
@@ -201,7 +203,16 @@ void ConfigParser::parse_cgi_type(std::string b)
 
 void ConfigParser::remove_whitespace(std::string& s)
 {
-	s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
+	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
+	std::string::iterator start = s.begin();
+	while (start != s.end() && ::isspace(*start))
+		start++;
+
+	std::string::iterator end = s.end();
+	do
+		end--;
+	while (std::distance(start, end) > 0 && std::isspace(*end));
+	s = std::string(start, end + 1);
 }
 
 void ConfigParser::print_data(Config* config)
