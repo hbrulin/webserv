@@ -239,7 +239,6 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
-	int len;
 	char buffer[4096]; //taille buffer??
 
 	/*This error checking is compliant with correction - check for -1 and 0 */

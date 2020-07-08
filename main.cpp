@@ -2,6 +2,7 @@
 #include "listener.hpp"
 
 int main (int ac, char **av) {
+	(void)ac;
 	try
 	{
 		Data data(av[1]);
