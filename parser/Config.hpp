@@ -22,7 +22,8 @@ struct Config
 	unsigned int _client_body_size;// --> don't know what it is
 
 	//routing
-	unsigned int _listen; // the listen port
+	unsigned int 				_listen; // the listen port
+	std::vector<unsigned int>	_ports;
 	std::string _host; // local host or something else
 
 	std::vector<std::string> _accepted_method; // list of accepted method

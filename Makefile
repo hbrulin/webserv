@@ -32,9 +32,13 @@ fclean: clean
 	@/bin/rm -f $(NAME)
 	@echo "Lib deleted"
 
-re : 
+re :
 	@make fclean
 	@make opti
+
+flagless:
+	clang++ $(SRCS)
+
 
 .PHONY: all, clean, fclean, re, opti
 

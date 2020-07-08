@@ -16,7 +16,7 @@
 ** this class should serve to parse a config struct listed in Data
 ** The architecture isn't definitive yet
 */
-class Config;
+struct Config;
 
 class ConfigParser
 {
@@ -41,7 +41,7 @@ class ConfigParser
 	//Parse_method
 	void initiate_map();
 
-	void print_data(Config* config = NULL); // utilitary, for testing only
+	void print_data(Config* config); // utilitary, for testing only
 
 	private:
 

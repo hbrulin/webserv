@@ -68,8 +68,8 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		s = s.substr(s.find(';') + 1);
 	}
 
-	if (parsing_sum != NUMBER_OF_PARAMETERS)
-		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler
+	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
+		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler*/
 	return (true);
 }
 
@@ -117,6 +117,8 @@ void ConfigParser::parse_listen(std::string b)
 {
 	remove_whitespace(b);
 	_config->_listen = stoi(b);
+	//std::cout << b << std::endl;
+	_config->_ports.push_back(stoi(b));
 }
 
 
@@ -217,17 +219,17 @@ void ConfigParser::remove_whitespace(std::string& s)
 
 void ConfigParser::print_data(Config* config)
 {
-	if (!config)
-		config = _config;
+//	if (!config)
+//		config = _config;
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
-	_config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
+	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
 	<< "\nclient body stuff: " << config->_client_body_size
 	<< "\nAllow_uploaded: " << config->_allow_uploaded << "\nuploaded_files_root: " << config->_uploaded_files_root
 	<< "\nAllow_directory_listing: " << config->_allow_directory_listing <<
 	"\ndefault_directory_answer_file: " << config->_default_directory_answer_file
 	<< "\nAccepted Methods:";
-	for (int i = 0; i < config->_accepted_method.size(); i++)
+	for (std::vector<std::string>::size_type i = 0; i < config->_accepted_method.size(); i++)
 		std::cout << " " << config->_accepted_method[i];
 
 	std::cout << "\nCGI_ROOT: " << _config->_cgi_root << "\nCGI_TYPE: " << _config->_cgi_type;

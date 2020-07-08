@@ -12,7 +12,7 @@ Data::Data(const char* file_name)
 	std::string b;
 	std::string s = "";
 
-	int			i = 0;
+	std::string::size_type	i = 0;
 
 	if (file_name == NULL)
 		path = DEFAULT_CONFIG_PATH;
@@ -51,9 +51,17 @@ Data::Data(const char* file_name)
 
 		_configList.push_back(Config());
 		_configParser.setConfig(&_configList.back(), b);
+		std::cout << _configList.back()._listen << std::endl;
 	}
 
+	check_multiple_ports();
 	check_validity();
+//	std::cout << _configList.back()._listen << std::endl;
+//	std::cout << _configList.front()._listen << std::endl;
+//	std::cout << _configList.size() << std::endl;
+	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);
+
 }
 
 Data::Data(const Data& data)
@@ -142,7 +150,7 @@ static void check_methods_validity(Config& config)
 	std::string error = "Error on server: " + config._server_name + ": ";
 	int j = 0;
 
-	for (int i = 0; i < config._accepted_method.size(); i++)
+	for (std::vector<std::string>::size_type i = 0; i < config._accepted_method.size(); i++)
 	{
 		j = 0;
 		while (1)
@@ -167,9 +175,9 @@ static void check_methods_validity(Config& config)
 
 static void check_server_doubles(std::vector<Config>& configList)
 {
-	for (int i = 0; i < configList.size() - 1; i++)
+	for (std::vector<Config>::size_type i = 0; i < configList.size() - 1; i++)
 	{
-		for (int j = i + 1; j < configList.size(); j++)
+		for (std::vector<Config>::size_type j = i + 1; j < configList.size(); j++)
 			if (configList[i]._listen == configList[j]._listen &&
 			configList[i]._host == configList[j]._host) // doublon
 				configList.erase(configList.begin() + j);
@@ -186,7 +194,7 @@ void Data::check_validity()
 	** ??? plus ???
 	*/
 	// Check path
-	for (int i = 0; i < _configList.size(); i++)
+	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
 	{
 		try
 		{
@@ -202,6 +210,26 @@ void Data::check_validity()
 	}
 	// check si il y a des doublons sur les servers
 	check_server_doubles(_configList);
-	for (int i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);
+//	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+//		_configParser.print_data(&_configList[i]);
+}
+
+void Data::check_multiple_ports()
+{
+	std::vector<Config>::size_type size = _configList.size();
+
+	for (std::vector<Config>::size_type i = 0; i < size; i++)
+	{
+		if (_configList[i]._ports.size() > 1)
+		{
+			std::vector<Config>::size_type j = 0;
+			while (j < _configList[i]._ports.size() - 1)
+			{
+				Config b(_configList[i]);
+				b._listen = _configList[i]._ports[j];
+				_configList.push_back(b);
+				j++;
+			}
+		}
+	}
 }

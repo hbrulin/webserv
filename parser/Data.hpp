@@ -59,6 +59,7 @@ class Data
 	std::string _cgi_root;
 
 	void check_validity();
+	void check_multiple_ports();
 };
 
 #endif
