@@ -19,12 +19,15 @@
 ** list.push(ServerConfig( [config file from server { to next } ]));
 **
 ** Errors yet not handled or tested:
-** empty file
-** missing key
-** invalid numerical key like invalid listen port
-** invalid ip
-** if more than one server i need to check listen port and host port of each
-** invalid method name ???
+** Supress a server if it have the same port as another
+**
+** Creer un parser de metadata
+*/
+
+/*
+** POUR LES METHODES ET LE TYPE DE CGI:
+** if faut renseigner les methodes ou le type de cgi dans Data.cpp dans les tableaux
+** de char* correspondant, et le terminer par NULL
 */
 
 class Data
@@ -44,6 +47,8 @@ class Data
 	const std::vector<Config>& getConfigList(); // return _serverList
 	const Config& operator [] (unsigned int); // getter for list[]
 
+	static const char* _SUPPORTED_CGI[];
+	static const char* _SUPPORTED_METHOD[];
 
 	private:
 	//Data() {};
@@ -52,6 +57,8 @@ class Data
 	ConfigParser _configParser;
 	std::string _cgi_extension;
 	std::string _cgi_root;
+
+	void check_validity();
 };
 
 #endif

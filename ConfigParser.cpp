@@ -1,5 +1,7 @@
 #include "ConfigParser.hpp"
 
+#include <algorithm>
+
 ConfigParser::ConfigParser()
 {
 	_config = NULL;
@@ -66,15 +68,18 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		s = s.substr(s.find(';') + 1);
 	}
 
-	print_data();
 	if (parsing_sum != NUMBER_OF_PARAMETERS)
-		throw (std::logic_error("One parameter is missing"));
+		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler
 	return (true);
 }
 
 void ConfigParser::initiate_map()
 {
 	//map["root"] = &ConfigParser::parse_root;
+	/*
+	** Si on doit ajouter un parametre, il faut rajouter une clé ici avec sa methode
+	** correspondente que l'on crée en dessous et rajouter un attribut a config.hpp
+	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["errors"] = &ConfigParser::parse_errors;
 	_map["client_body_size"] = &ConfigParser::parse_client_body_size;
@@ -94,9 +99,6 @@ void ConfigParser::parse_root(std::string b)
 {
 	remove_whitespace(b);
 	_config->_root = b;
-	//std::cout << _root << std::endl;
-	//std::cout << "root here: " << _root << std::endl;
-	//return (true);
 }
 
 void ConfigParser::parse_errors(std::string b)
@@ -127,24 +129,7 @@ void ConfigParser::parse_host(std::string b)
 void ConfigParser::parse_method(std::string b)
 {
 	std::string s = "";
-	//_config->_accepted_method.push_back("test");
-	// A reparer un de ces quatre
-	/*while (b.size() > 0)
-	{
-		if (b.size() && isalpha(b[0]))
-		{
-			_config->_accepted_method.push_back("");
-			while (b.size() && isalpha(b[0]))
-			{
-				_config->_accepted_method.back() += b[0];
-				b = b.substr(1);
-			}
-		}
-		//if (s.size() > 0 && !isalpha(s[0]))
-		//{
-			while (b.size() && !isalpha(b[0]))
-				b = b.substr(1);
-	}*/
+
 	while (b.size())
 	{
 		s = b.substr(
@@ -152,6 +137,7 @@ void ConfigParser::parse_method(std::string b)
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
 		//std::cout << s << std::endl;
 		remove_whitespace(s);
+		std::transform(s.begin(), s.end(),s.begin(), ::tolower); // convert to lower case
 		_config->_accepted_method.push_back(s);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)) == std::string::npos)
@@ -203,13 +189,14 @@ void ConfigParser::parse_server_name(std::string b)
 void ConfigParser::parse_cgi_root(std::string b)
 {
 	remove_whitespace(b);
-		_config->_cgi_root = b;
+	_config->_cgi_root = b;
 }
 
 void ConfigParser::parse_cgi_type(std::string b)
 {
 	remove_whitespace(b);
-		_config->_cgi_type = b;
+	std::transform(b.begin(), b.end(), b.begin(), ::tolower);
+	_config->_cgi_type = b;
 }
 
 void ConfigParser::remove_whitespace(std::string& s)
@@ -221,6 +208,7 @@ void ConfigParser::print_data(Config* config)
 {
 	if (!config)
 		config = _config;
+	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
 	_config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
 	<< "\nclient body stuff: " << config->_client_body_size

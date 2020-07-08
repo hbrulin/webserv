@@ -2,6 +2,9 @@
 #define CONFIG_HPP
 
 #include <vector>
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h>
 
 struct Config
 {
@@ -29,6 +32,7 @@ struct Config
 
 	std::string _cgi_type;
 	std::string _cgi_root;
+
 };
 
 #endif
