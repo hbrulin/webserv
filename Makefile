@@ -2,9 +2,9 @@ NAME = webserv
 
 CC = clang++
 
-SRCS = main.cpp ConfigParser.cpp Data.cpp listener.cpp request.cpp ft_utils.cpp
+SRCS = main.cpp parser/ConfigParser.cpp parser/Data.cpp listener/listener.cpp request/request.cpp request/ft_utils.cpp
 
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -g
 
 opti :
 	@make -j all

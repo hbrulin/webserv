@@ -7,8 +7,8 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
-#include "Config.hpp"
-#include "libft.h"
+#include "../parser/Config.hpp"
+#include "../request/libft.h"
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 

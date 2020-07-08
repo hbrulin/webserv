@@ -11,8 +11,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
-#include "request.hpp"
-#include "Config.hpp"
+#include "../request/request.hpp"
+#include "../parser/Config.hpp"
 
 class Listener {
 
