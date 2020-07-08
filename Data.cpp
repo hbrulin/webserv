@@ -86,6 +86,9 @@ int main(int ac, char **av)
 	try
 	{
 		Data data(av[1]);
+		std::cout << "here: " << data[0]._server_name << std::endl;
+		std::cout << "here: " << data[1]._server_name << std::endl;
+
 	}
 	catch (std::logic_error& e)
 	{
@@ -95,4 +98,5 @@ int main(int ac, char **av)
 	{
 		std::cout << "Error while configuring, abort ...\n";
 	}
+
 }
