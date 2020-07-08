@@ -6,6 +6,8 @@ Nonblocking fds : https://medium.com/@copyconstruct/nonblocking-i-o-99948ad7c957
 — a partial count: when the input or output operation can be partially completed
 — the entire result: when the I/O operation could be fully completed
 
+By setting a socket to non-blocking, you can effectively “poll” the socket for information. If you try to read from a non-blocking socket and there’s no data there, it’s not allowed to block—it will return -1 and errno will be set to EAGAIN or EWOULDBLOCK.
+
 -> That's why we use select() before read/recv or write/send.
 select() works by blocking until something happens on a file descriptor (aka a socket).
 
@@ -21,3 +23,5 @@ Install nginx : https://www.javatpoint.com/installing-nginx-on-mac
 
 CGI :
 http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm
+
+General guide : https://beej.us/guide/bgnet/html/
