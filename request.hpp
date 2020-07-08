@@ -7,6 +7,8 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include "Config.hpp"
+#include "libft.h"
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 
@@ -14,6 +16,7 @@ class Request {
 
 	private:
 	Request();
+	Config _conf;
 	char *m_buffer;
 	char *content_env; //env que l'on recup dans requete POST pour les cgi
 	int m_client;
@@ -36,11 +39,12 @@ class Request {
 
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int sock) {
+	Request(char *buffer, int fd, Config conf) {
+		_conf = conf;
 		m_buffer = buffer;
-		m_client = sock;
-		m_not_found = "/404.html";
-		m_index = "/index.html";
+		m_client = fd;
+		m_not_found = "404.html";
+		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
 	};
 	void parse();

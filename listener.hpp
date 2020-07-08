@@ -28,7 +28,7 @@ class Listener {
 		void accept_incoming_connections(int i);
 		void receive_data(int fd);
 		void close_conn(int fd);
-		int	look_for_sock(int j);
+		std::pair<int, int>	look_for_sock(int j);
 
 	private:
 		/*META VAR*/

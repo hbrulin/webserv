@@ -1,7 +1,6 @@
 #include "request.hpp"
 #include <iostream>
 #include <unistd.h>
-#include "libft.h"
 
 
 void Request::parse() {
@@ -91,7 +90,7 @@ void Request::handle() {
 	//How do we determine the request isn’t for a document it can simply deliver, and create a CGI process?
 	
 	// Open the document in the local file system
-	std::ifstream f("www" + m_content); //DEFINI PAR PATH, META_VARIABLE?
+	std::ifstream f(_conf._root + m_content); 
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
 		for (int i = 0; i < strlen(m_buffer); i++)
@@ -124,7 +123,7 @@ void Request::handle() {
 	else //DEFINIR COMMENT GERER ERREURS ICI
 	{
 		f.close();
-		std::ifstream f("www" + m_not_found);  
+		std::ifstream f(_conf._root + m_not_found);  
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_content = str;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple

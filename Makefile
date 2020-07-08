@@ -4,7 +4,7 @@ CC = clang++
 
 SRCS = main.cpp ConfigParser.cpp Data.cpp listener.cpp request.cpp ft_utils.cpp
 
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -g
 
 opti :
 	@make -j all

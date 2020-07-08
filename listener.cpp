@@ -114,7 +114,7 @@ int Listener::init() {
 /*A priori no need for timeout*/
 int Listener::run() {
 	int sock_count;
-	int ret;
+	std::pair<int, int> ret;
 
 	while (m_run) {
 		/* Copy the master fd_set over to the working fd_set.
@@ -151,9 +151,10 @@ int Listener::run() {
 					Accept all incoming connections that are queued up on the listening socket before we
 					loop back and call select again.*/
 					ret = look_for_sock(j);
-					if (ret) {
+					//std::cout << ret.first << ret.second << std::endl;
+					if (ret.first) {
 						//std::cout << "test" << std::endl;
-						accept_incoming_connections(ret);
+						accept_incoming_connections(ret.first);
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
 						m_close = false;
@@ -169,14 +170,14 @@ int Listener::run() {
 	return 0;
 }
 
-int	Listener::look_for_sock(int j)
+std::pair<int, int>	Listener::look_for_sock(int j)
 {
 	for (int i = 0; i < _size ; i++) {
 		//std::cout << m_sock[i] << std::endl;
 		if (j == m_sock[i])
-			return j;
+			return std::pair<int, int>(j, i);
 	}
-	return 0;
+	return std::pair<int, int>(0, 0);
 }
 
 /*void Listener::clean() {
@@ -262,8 +263,8 @@ void Listener::receive_data(int fd) {
 		//len = ret;
 		//send(fd, buffer, len, 0);
 
-
-		Request req(buffer, fd); //mettre direct dans le Listener
+		int i = look_for_sock(fd).second;
+		Request req(buffer, fd, _conf[i]); //mettre direct dans le Listener
 		req.parse();
 		req.handle();
 		//error checking to comply with correction : if error, client will be removed
