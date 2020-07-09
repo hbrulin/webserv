@@ -9,7 +9,7 @@
 
 #define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
 #define END_INSTRUCTION_CHAR " \t\n\r;}"
-#define WHITESPACE " \t\n\r"
+#define WHITESPACE " \t\n\r "
 #define NUMBER_OF_PARAMETERS 13
 
 /*
@@ -50,16 +50,16 @@ class ConfigParser
 	fmap _map;
 
 	void parse_root(std::string b);
-	void parse_client_body_size(std::string b);
+	void parse_body_size(std::string b);
 	void parse_errors(std::string b);
 	void parse_listen(std::string);
 	void parse_host(std::string);
 	void parse_method(std::string);
 	void parse_directory(std::string);
-	void parse_allow_directory_listing(std::string);
+	void parse_directory_listing(std::string);
 	void parse_default_directory_answer_file(std::string);
-	void parse_allow_uploaded(std::string);
-	void parse_uploaded_files_root(std::string);
+	void parse_send_files(std::string);
+	void parse_files_root(std::string);
 	void parse_server_name(std::string);
 	void parse_cgi_root(std::string);
 	void parse_cgi_type(std::string);

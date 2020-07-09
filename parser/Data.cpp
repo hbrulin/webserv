@@ -30,9 +30,13 @@ Data::Data(const char* file_name)
 	//	s += "\n"; // maybe needed to count lines
 	}
 
-	while (s.size() > 0 && (i = s.find_first_of("server", i)) != s.npos)
+	while (s.size() > 0 && (i = s.find_first_not_of(END_INSTRUCTION_CHAR, i)) != s.npos)
 	{
+		if (s.size() && s.substr(s.find_first_not_of(END_INSTRUCTION_CHAR, i), 6) != "server")
+			throw (std::logic_error("Parsing error: Unknown token: " + s.substr(0, 6)));
 		s = s.substr(i + 6);
+		if (s.find_first_not_of(WHITESPACE) == s.npos)
+			throw (std::logic_error("Parsing_error: Missing token \'{\' after server"));
 		s = s.substr(s.find_first_not_of(WHITESPACE));
 
 		if (s[0] != '{')
@@ -51,7 +55,6 @@ Data::Data(const char* file_name)
 
 		_configList.push_back(Config());
 		_configParser.setConfig(&_configList.back(), b);
-		std::cout << _configList.back()._listen << std::endl;
 	}
 
 	check_multiple_ports();
@@ -114,10 +117,10 @@ static void check_path_validity(Config& config)
 		throw (std::logic_error(error + config._errors + " is invalid"));
 	if (!path_exists(config._cgi_root))
 		throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	if (config._allow_directory_listing && !path_exists(config._default_directory_answer_file))
+	if (config._directory_listing && !path_exists(config._default_directory_answer_file))
 		throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
-	if (config._allow_uploaded && !path_exists(config._uploaded_files_root))
-		throw (std::logic_error(error + config._uploaded_files_root + " is invalid"));
+	if (config._send_files && !path_exists(config._files_root))
+		throw (std::logic_error(error + config._files_root + " is invalid"));
 }
 
 static void check_rooting_validity(Config& config)
@@ -150,14 +153,14 @@ static void check_methods_validity(Config& config)
 	std::string error = "Error on server: " + config._server_name + ": ";
 	int j = 0;
 
-	for (std::vector<std::string>::size_type i = 0; i < config._accepted_method.size(); i++)
+	for (std::vector<std::string>::size_type i = 0; i < config._methods.size(); i++)
 	{
 		j = 0;
 		while (1)
 		{
 			if (Data::_SUPPORTED_METHOD[j] == NULL)
-				throw(std::logic_error(error + "Unsupported Method: " + config._accepted_method[i]));
-			if (config._accepted_method[i] == Data::_SUPPORTED_METHOD[j])
+				throw(std::logic_error(error + "Unsupported Method: " + config._methods[i]));
+			if (config._methods[i] == Data::_SUPPORTED_METHOD[j])
 				break ;
 			j++;
 		}

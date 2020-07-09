@@ -39,10 +39,12 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	while (s.size() > 0 && s != "}")
 	{
 		i = 0;
-//		s.find_first_of(ALPHACHAR);
-		s = s.substr(s.find_first_of(ALPHACHAR));
-
+		if (s.find_first_not_of(END_INSTRUCTION_CHAR) == s.npos)
+			break ;
+		s = s.substr(s.find_first_not_of(END_INSTRUCTION_CHAR));
 		i = s.find_first_of(END_INSTRUCTION_CHAR);
+		if (i == s.npos)
+			break ;
 		key = s.substr(0, i);
 		remove_whitespace(key);
 		s = s.substr(i);
@@ -82,15 +84,15 @@ void ConfigParser::initiate_map()
 	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["errors"] = &ConfigParser::parse_errors;
-	_map["client_body_size"] = &ConfigParser::parse_client_body_size;
+	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
 	_map["host"] = &ConfigParser::parse_host;
-	_map["method"] = &ConfigParser::parse_method;
-	_map["directory_listing"] = &ConfigParser::parse_allow_directory_listing;
+	_map["methods"] = &ConfigParser::parse_method;
+	_map["directory_listing"] = &ConfigParser::parse_directory_listing;
 	_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
-	_map["uploaded_files"] = &ConfigParser::parse_allow_uploaded;
-	_map["uploaded_files_root"] = &ConfigParser::parse_uploaded_files_root;
+	_map["send_files"] = &ConfigParser::parse_send_files;
+	_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 }
@@ -107,10 +109,10 @@ void ConfigParser::parse_errors(std::string b)
 	_config->_errors = b;
 }
 
-void ConfigParser::parse_client_body_size(std::string b)
+void ConfigParser::parse_body_size(std::string b)
 {
 	remove_whitespace(b);
-	_config->_client_body_size = stoi(b);
+	_config->_body_size = stoi(b);
 }
 
 void ConfigParser::parse_listen(std::string b)
@@ -142,7 +144,7 @@ void ConfigParser::parse_method(std::string b)
 		//std::cout << s << std::endl;
 		remove_whitespace(s);
 		std::transform(s.begin(), s.end(),s.begin(), ::tolower); // convert to lower case
-		_config->_accepted_method.push_back(s);
+		_config->_methods.push_back(s);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)) == std::string::npos)
 			break;
@@ -150,13 +152,13 @@ void ConfigParser::parse_method(std::string b)
 	}
 }
 
-void ConfigParser::parse_allow_directory_listing(std::string b)
+void ConfigParser::parse_directory_listing(std::string b)
 {
 	remove_whitespace(b);
 	if (b == "yes")
-		_config->_allow_directory_listing = true;
+		_config->_directory_listing = true;
 	else if (b == "no")
-		_config->_allow_directory_listing = false;
+		_config->_directory_listing = false;
 	else
 		throw(std::logic_error("Allow_directory_listing: Must be yes or no"));
 }
@@ -167,21 +169,21 @@ void ConfigParser::parse_default_directory_answer_file(std::string b)
 	_config->_default_directory_answer_file = b;
 }
 
-void ConfigParser::parse_allow_uploaded(std::string b)
+void ConfigParser::parse_send_files(std::string b)
 {
 	remove_whitespace(b);
 	if (b == "yes")
-		_config->_allow_uploaded = true;
+		_config->_send_files = true;
 	else if (b == "no")
-		_config->_allow_uploaded = false;
+		_config->_send_files = false;
 	else
 		throw(std::logic_error("Allow_uploaded: Must be yes or no"));
 }
 
-void ConfigParser::parse_uploaded_files_root(std::string b)
+void ConfigParser::parse_files_root(std::string b)
 {
 	remove_whitespace(b);
-	_config->_uploaded_files_root = b;
+	_config->_files_root = b;
 }
 
 void ConfigParser::parse_server_name(std::string b)
@@ -224,13 +226,13 @@ void ConfigParser::print_data(Config* config)
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
 	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
-	<< "\nclient body stuff: " << config->_client_body_size
-	<< "\nAllow_uploaded: " << config->_allow_uploaded << "\nuploaded_files_root: " << config->_uploaded_files_root
-	<< "\nAllow_directory_listing: " << config->_allow_directory_listing <<
+	<< "\nclient body stuff: " << config->_body_size
+	<< "\nAllow_uploaded: " << config->_send_files << "\nuploaded_files_root: " << config->_files_root
+	<< "\nAllow_directory_listing: " << config->_directory_listing <<
 	"\ndefault_directory_answer_file: " << config->_default_directory_answer_file
 	<< "\nAccepted Methods:";
-	for (std::vector<std::string>::size_type i = 0; i < config->_accepted_method.size(); i++)
-		std::cout << " " << config->_accepted_method[i];
+	for (std::vector<std::string>::size_type i = 0; i < config->_methods.size(); i++)
+		std::cout << " " << config->_methods[i];
 
 	std::cout << "\nCGI_ROOT: " << _config->_cgi_root << "\nCGI_TYPE: " << _config->_cgi_type;
 
