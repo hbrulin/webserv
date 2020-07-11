@@ -9,6 +9,8 @@
 #include <vector>
 #include "../parser/Config.hpp"
 #include "../request/libft.h"
+#include "../headers/head_req.hpp"
+#include "../headers/head_resp.hpp"
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 
@@ -17,6 +19,8 @@ class Request {
 	private:
 	Request();
 	Config _conf;
+	Head_req _head_req;
+	Head_resp _head_resp;
 	char *m_buffer;
 	char *content_env; //env que l'on recup dans requete POST pour les cgi
 	int m_client;

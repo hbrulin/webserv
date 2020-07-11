@@ -33,7 +33,9 @@ int Request::forking()
 	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
-	if ((dir_cgi = ft_strjoin(curr_dir, "/cgi-bin")) == NULL)
+	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
+		return (-1);
+	if ((dir_cgi = ft_strjoin(dir_cgi, _conf._cgi_root.c_str())) == NULL)
 		return (-1);
 	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
 		return (-1);

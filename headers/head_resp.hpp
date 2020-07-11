@@ -1,14 +1,14 @@
-#ifndef HEADER_HPP
-#define HEADER_HPP
+#ifndef HEAD_RESP_HPP
+#define HEAD_RESP_HPP
 
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/time.h>
 
-class Header
+class Head_resp
 {
     public:
-    Header() : LOCATION("default"), DATE("default"), LAST_MODIFIED("default"), HOST("127.0.0.1"), SERVER("webserver") {}
+    Head_resp() : LOCATION("default"), DATE("default"), LAST_MODIFIED("default"), SERVER("webserver") {}
     // response
     std::string ALLOW; // kind of request method allowed
     std::string CONTENT_LANGUAGE;
@@ -21,18 +21,11 @@ class Header
     std::string SERVER; //OK
     std::string TRANSFER_ENCODING;
     std::string WWW_AUTHENTICATE;
-    //request 
-    //to check if ok ??? How to implement
-    std::string ACCEPT_CHARSET;
-    std::string ACCEPT_LANGUAGE;
-    std::string AUTHORIZATION;
-    std::string HOST; //OK + Add PORT according to config_file
-    std::string REFERER; // How to get that > Link ???
-    std::string USER_AGENT; // OS, version, application
     //Both
 	std::string DATE; // HH:MM:SS GMT
     std::string getLastModified(const char *path);
     std::string getDate();
+    std::string getBuffer();
     struct stat st;
 };
 
