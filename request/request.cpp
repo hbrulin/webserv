@@ -136,9 +136,7 @@ void Request::handle() {
 	std::ostringstream oss;
 	oss << "HTTP/1.1 " << m_errorCode << " OK\r\n";
 	oss << "Cache-Control: no-cache, private\r\n";
-	oss << "Content-Type: text/html\r\n";
-	oss << "Content-Length: " << m_content.size() << "\r\n";
-	oss << "\r\n";
+	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path);
 	oss << m_content;
 
 	m_output = oss.str();
