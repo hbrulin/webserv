@@ -28,16 +28,29 @@ std::string Head_resp::getDate()
         return DATE;
 }
 
-std::string Head_resp::getBuffer(int code, int length, const char *fichier)
+std::string Head_resp::getBuffer(int code, int length, const char *fichier, std::vector<std::string> methods)
 {
     std::ostringstream oss;
+	oss << "HTTP/1.1 " << code;
+	if (code == 200)
+		oss << " OK\r\n";
+	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
+	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
     oss << "Content-Length: " << length << "\r\n";
+	oss << "Content-Location: " << fichier << "\r\n";
     oss << "Date: " << this->getDate() << "\r\n";
     oss << "Server: " << SERVER << "\r\n";
-    oss << "Last Modified: " << this->getLastModified(fichier) << "\r\n";
+    oss << "Last-Modified: " << this->getLastModified(fichier) << "\r\n";
     if (code == 503) // Not available
         oss << "Retry-after: " << RETRY_AFTER << "\r\n";
+	if (code == 405)
+	{
+		oss << "Allow: ";
+		for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++)
+			oss << *it << ", ";
+		oss << "\r\n" << std::endl;
+	}
     oss << "\r\n";
     return oss.str();
 }

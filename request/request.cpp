@@ -93,6 +93,7 @@ void Request::handle() {
 	
 	// Open the document in the local file system
 	std::ifstream f(_conf._root + m_content); 
+	std::string path = "www/" + m_content;
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
 		for (int i = 0; i < strlen(m_buffer); i++)
@@ -131,12 +132,9 @@ void Request::handle() {
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
-
 	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
-	oss << "HTTP/1.1 " << m_errorCode << " OK\r\n";
-	oss << "Cache-Control: no-cache, private\r\n";
-	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path);
+	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path.c_str(), _conf._methods);
 	oss << m_content;
 
 	m_output = oss.str();
