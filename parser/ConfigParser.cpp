@@ -43,7 +43,7 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 			break ;
 		s = s.substr(s.find_first_not_of(END_INSTRUCTION_CHAR));
 		i = s.find_first_of(END_INSTRUCTION_CHAR);
-		if (i == s.npos)
+		if (i == (int)s.npos)
 			break ;
 		key = s.substr(0, i);
 		remove_whitespace(key);

@@ -64,6 +64,7 @@ int Request::forking()
 {
 	int pid, res, status;
 	int pp[2];
+	res = 0;
 	std::ostringstream oss;
 	//_env = getEnv();
 	char **env = ft_split(content_env, '&');
@@ -134,13 +135,13 @@ void Request::handle() {
 	std::string path = "www/" + m_content;
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
-		for (int i = 0; i < strlen(m_buffer); i++)
+		for (int i = 0; i < (int)strlen(m_buffer); i++)
 		{
 			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
 			{
 				i = i + 2;
 				char *tmp= new char[strlen(m_buffer) - i];
-				for (int j = 0; j < strlen(m_buffer) - i; j++)
+				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
 				{
 					tmp[j] = m_buffer[i + j];
 				}

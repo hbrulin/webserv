@@ -6,7 +6,7 @@ std::string Head_req::getStringtoParse(char *m_buffer, std::string toParse)
 	std::string s(m_buffer);
     std::string referer;
 	n = s.find(toParse);
-	if (n != std::string::npos)
+	if (n != (int)std::string::npos)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
@@ -23,7 +23,7 @@ std::string Head_req::getReferer(char *m_buffer)
 	std::string s(m_buffer);
     std::string referer;
 	n = s.find("Referer: ");
-	if (n != std::string::npos)
+	if (n != (int)std::string::npos)
 	{
         n = n + std::string("Referer: ").size();
 		int i = n;
@@ -39,7 +39,7 @@ std::string Head_req::getUserAgent(char *m_buffer)
 	std::string s(m_buffer);
     std::string referer;
 	n = s.find("User-Agent: ");
-	if (n != std::string::npos)
+	if (n != (int)std::string::npos)
 	{
         n = n + std::string("User-Agents: ").size();
 		int i = n;
@@ -55,7 +55,7 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
 	std::string s(m_buffer);
     std::string referer;
 	n = s.find("Accept-Langage: ");
-	if (n != std::string::npos)
+	if (n != (int)std::string::npos)
 	{
         n = n + std::string("Accept-Langage: ").size();
 		int i = n;
