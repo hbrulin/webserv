@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include "../libft/libft.h"
 
 class Head_req
 {
@@ -24,11 +25,19 @@ class Head_req
     std::string REFERER; // How to get that > Link ???
     std::string USER_AGENT; // OS, version, application
 	std::string DATE; // HH:MM:SS GMT
+    //META
+    std::string REQUEST_METHOD;
+    // std::string SERVER_PORT;
+    // std::string SERVER_NAME;
+    // std::string SERVER_SOFTWARE;
+    //functions
     std::string getDate();
     std::string getReferer(char *string);
     std::string getUserAgent(char *string);
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
+    std::string getMetatoParse(char *m_buffer, std::string toParse, char *sep);
+    // char *get_meta();
     struct stat st;
 };
 

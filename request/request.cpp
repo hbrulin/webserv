@@ -2,21 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 
-char *Request::getEnv()
-{
-	char *str;
-	char *req_meth, *ctn_len;
-	req_meth = ft_strjoin("&REQUEST_METHOD=",_request_method.c_str());
-	ctn_len = ft_strjoin("&CONTENT_LENGTH=", ft_itoa(m_content.size()));
-	//serv_name = ft_strjoin("SERVER_NAME=", _server_name.c_str());
-	str= ft_strjoin(req_meth, ctn_len);
-	//str = ft_strjoin(str, m_env.c_str());
-	//str = ft_strjoin(str, ctn_len);
-	std::cout << str << std::endl;
-	//free(req_meth);
-	//free(serv_name);
-	return str;
-}
+
 
 int Request::isAcceptable()
 {
@@ -43,7 +29,11 @@ void Request::parse() {
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST"))
 	{
 		m_content = parsed[1];
-		_request_method = parsed[0];
+		_head_req.REQUEST_METHOD = parsed[0];
+		//_head_req.QUERYSTRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" ");
+		//_head_req.SERVER_NAME = _head_req.getMetatoParse(m_content, "://", ":/");
+		//_head_req.SERVER_PORT = _head_req.getMetatoParse(m_content, ":", "?/);
+		//_head_req.SERVER_PORT = _head_req.getMetatoParse(m_content, "", "://");
 		if (m_content == "/") //GET / HTTP/1.1
 		{
 			m_content = m_index;
@@ -66,7 +56,6 @@ int Request::forking()
 	int pp[2];
 	res = 0;
 	std::ostringstream oss;
-	//_env = getEnv();
 	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
@@ -168,6 +157,7 @@ void Request::handle() {
 		}
 		else 
 		{
+			std::cout << "lulu" << std::endl;
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_content = str;
 			m_errorCode = 200;
@@ -176,6 +166,7 @@ void Request::handle() {
 	}
 	else //DEFINIR COMMENT GERER ERREURS ICI
 	{
+		std::cout << "lolo" << std::endl;
 		f.close();
 		std::ifstream f(_conf._root + m_not_found);  
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -183,6 +174,7 @@ void Request::handle() {
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
+	std::cout << "lolo" << std::endl;
 	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
 	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path.c_str(), _conf._methods);

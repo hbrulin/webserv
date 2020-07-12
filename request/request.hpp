@@ -26,7 +26,6 @@ class Request
 	//meta_var _meta_var;
 	char *m_buffer;
 	char *content_env; //env que l'on recup dans requete POST pour les cgi
-	//std::string m_env;
 	int m_client;
 	char curr_dir[200];
 	char *dir_cgi;
@@ -35,7 +34,6 @@ class Request
 	//POST
 	//FILES
 	//META_DATA
-	std::string _request_method;
 	//std::string _server_name;
 
 	/*default outputs - à intégrer dans structures ci-dessus?? 
@@ -47,10 +45,10 @@ class Request
 	int m_errorCode;
 	//output
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
-
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf){
+	Request(char *buffer, int fd, Config conf) 
+	{
 		_conf = conf;
 		m_buffer = buffer;
 		m_client = fd;
@@ -58,14 +56,12 @@ class Request
 		m_not_acceptable = "406.html";
 		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
-		//m_env = "SERVER_PROTOCOL=HTTP&SERVER_SOFTAWARE=webserv&";
 	};
 	void parse();
 	void handle();
 	int send_to_client();
 	int forking();
 	int isAcceptable();
-	char *getEnv();
 };
 
 

@@ -9,7 +9,7 @@ class meta_var
     public:
     std::string REQUEST_METHOD;
     std::string SERV_PROTOCOL;
-    meta_var(); 
+    // meta_var(); 
     // std::string SERVER_NAME;
     // std::string SERVER_SOFTWARE;
     // std::string SERVER_PORT;
