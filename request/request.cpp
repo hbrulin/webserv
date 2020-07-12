@@ -22,7 +22,14 @@ void Request::parse() {
 		}
 		//std::cout << m_content << std::endl;
 	}
-
+	// HEADERS
+	_head_req.REFERER = _head_req.getReferer(m_buffer);
+	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer); 
+	if (_head_req.getStringtoParse(m_buffer, "Accept-Language: ") != "")
+		_head_req.ACCEPT_LANGUAGE = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Language: ").c_str(), ',');
+	if (_head_req.getStringtoParse(m_buffer, "Accept-Charset: ") != "")
+		_head_req.ACCEPT_CHARSET = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
+	_head_req.DATE = _head_req.getStringtoParse(m_buffer, "Date: ");
 }
 
 int Request::forking()

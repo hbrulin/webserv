@@ -17,7 +17,7 @@
 class Request {
 
 	private:
-	Request();
+	Request(): _head_req() {};
 	Config _conf;
 	Head_req _head_req;
 	Head_resp _head_resp;

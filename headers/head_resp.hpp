@@ -12,6 +12,7 @@ class Head_resp
     public:
     Head_resp() : LOCATION("default"), DATE("default"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"), CONTENT_LANGUAGE("da") {}
     // response
+    private:
     std::string CONTENT_LANGUAGE;
     std::string CONTENT_LENGTH; //OK
     std::string CONTENT_LOCATION;
@@ -24,6 +25,7 @@ class Head_resp
     std::string TRANSFER_ENCODING;
     std::string WWW_AUTHENTICATE;
 	std::string DATE; // HH:MM:SS GMT //OK
+    public:
     std::string getLastModified(const char *path);
     std::string getDate();
     std::string getBuffer(int code, int length, const char *path, std::vector<std::string> methods);
