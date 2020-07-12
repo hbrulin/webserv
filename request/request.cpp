@@ -2,6 +2,34 @@
 #include <iostream>
 #include <unistd.h>
 
+char *Request::getEnv()
+{
+	char *str;
+	char *req_meth, *ctn_len;
+	req_meth = ft_strjoin("&REQUEST_METHOD=",_request_method.c_str());
+	ctn_len = ft_strjoin("&CONTENT_LENGTH=", ft_itoa(m_content.size()));
+	//serv_name = ft_strjoin("SERVER_NAME=", _server_name.c_str());
+	str= ft_strjoin(req_meth, ctn_len);
+	//str = ft_strjoin(str, m_env.c_str());
+	//str = ft_strjoin(str, ctn_len);
+	std::cout << str << std::endl;
+	//free(req_meth);
+	//free(serv_name);
+	return str;
+}
+
+int Request::isAcceptable()
+{
+	//Check Langage
+	int i = 0;
+	while (_head_req.ACCEPT_LANGUAGE[i] != NULL)
+	{
+		if (strstr(_head_req.ACCEPT_LANGUAGE[i], _head_resp.CONTENT_LANGUAGE.c_str()) != NULL)
+			return 1;
+		i++;
+	}
+	return 0;
+}
 
 void Request::parse() {
 	
@@ -15,7 +43,7 @@ void Request::parse() {
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST"))
 	{
 		m_content = parsed[1];
-
+		_request_method = parsed[0];
 		if (m_content == "/") //GET / HTTP/1.1
 		{
 			m_content = m_index;
@@ -37,6 +65,7 @@ int Request::forking()
 	int pid, res, status;
 	int pp[2];
 	std::ostringstream oss;
+	//_env = getEnv();
 	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
@@ -98,6 +127,8 @@ int Request::forking()
 void Request::handle() {
 	//How do we determine the request isn’t for a document it can simply deliver, and create a CGI process?
 	
+	//IF NOT ACCEPTABLE
+
 	// Open the document in the local file system
 	std::ifstream f(_conf._root + m_content); 
 	std::string path = "www/" + m_content;
@@ -125,10 +156,22 @@ void Request::handle() {
 	// Check if it opened and if it did, take content
 	if (f.good())
 	{
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_content = str;
-		m_errorCode = 200;
-		f.close();
+		if (!isAcceptable())
+		{
+			f.close();
+			std::ifstream f(_conf._root + m_not_acceptable); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_content = str;
+			m_errorCode = 406;
+			f.close();
+		}
+		else 
+		{
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_content = str;
+			m_errorCode = 200;
+			f.close();
+		}
 	}
 	else //DEFINIR COMMENT GERER ERREURS ICI
 	{

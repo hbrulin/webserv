@@ -10,9 +10,8 @@
 class Head_resp
 {
     public:
-    Head_resp() : LOCATION("default"), DATE("default"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"), CONTENT_LANGUAGE("da") {}
+    Head_resp() : LOCATION("default"), DATE("default"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"), CONTENT_LANGUAGE("fr") {}
     // response
-    private:
     std::string CONTENT_LANGUAGE;
     std::string CONTENT_LENGTH; //OK
     std::string CONTENT_LOCATION;
