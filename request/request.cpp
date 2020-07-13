@@ -31,6 +31,8 @@ void Request::parse() {
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
 		_head_req.SERVER_PROTOCOL = parsed[2];
+		_head_req.AUTH_TYPE = _head_req.getStringtoParse(m_buffer, "Authorization: ");
+		_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
 		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" #");
 		_head_req.getScriptName((char *)m_content.c_str());
 		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_content.c_str(), "://", ":/?#");
@@ -43,7 +45,6 @@ void Request::parse() {
 		//std::cout << m_content << std::endl;
 	}
 	// HEADERS
-	_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
 	_head_req.REFERER = _head_req.getReferer(m_buffer);
 	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer); 
 	if (_head_req.getStringtoParse(m_buffer, "Accept-Language: ") != "")
@@ -128,7 +129,6 @@ void Request::handle() {
 	std::string path = "www/" + m_content;
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
-		std::cout << m_buffer << std::endl;
 		for (int i = 0; i < (int)strlen(m_buffer); i++)
 		{
 			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
@@ -163,7 +163,6 @@ void Request::handle() {
 		}
 		else 
 		{
-			std::cout << "lulu" << std::endl;
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_content = str;
 			m_errorCode = 200;

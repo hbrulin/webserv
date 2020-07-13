@@ -3,8 +3,8 @@
 std::string Head_req::get_meta(Config _Config)
 {
 	std::string str;
-	str.append("&AUTH_TYPE="); //if nothing > ?
-	str.append("lala");
+	str.append("&AUTH_TYPE=");
+	str.append(AUTH_TYPE);
 	str.append("&CONTENT_LENGTH=");
 	str.append(CONTENT_LENGTH);
 	str.append("&CONTENT_TYPE=");
@@ -38,9 +38,6 @@ std::string Head_req::get_meta(Config _Config)
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
 	str.append("webserv");
-	// char *req_meth = ft_strjoin((const char*)"&REQUEST_METHOD=", REQUEST_METHOD.c_str());
-	// char *serv_sft = ft_strjoin("&SERVER_SOFTWARE=", SERVER_SOFTWARE.c_str());
-	// str = ft_strjoin(req_meth, serv_sft);
 	std::cout << str.c_str() << std::endl;
 	return str;
 }
@@ -105,7 +102,7 @@ std::string Head_req::getStringtoParse(char *m_buffer, std::string toParse)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
-		while (m_buffer[i] != '\n') { i++;}
+		while (m_buffer[i] != '\n' && m_buffer[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
         return referer;
 	}

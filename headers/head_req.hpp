@@ -27,6 +27,7 @@ class Head_req
     std::string USER_AGENT; // OS, version, application
 	std::string DATE; // HH:MM:SS GMT
     //META
+    std::string AUTH_TYPE;
     std::string CONTENT_TYPE;
     std::string CONTENT_LENGTH;
     std::string REQUEST_METHOD;
