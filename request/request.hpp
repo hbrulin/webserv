@@ -47,7 +47,7 @@ class Request
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf) 
+	Request(char *buffer, int fd, Config conf, int port) 
 	{
 		_conf = conf;
 		m_buffer = buffer;
@@ -56,6 +56,7 @@ class Request
 		m_not_acceptable = "406.html";
 		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
+		_head_req.SERVER_PORT = std::to_string(port);
 	};
 	void parse();
 	void handle();

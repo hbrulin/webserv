@@ -31,12 +31,15 @@ void Request::parse() {
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
 		_head_req.SERVER_PROTOCOL = parsed[2];
-		_head_req.AUTH_TYPE = _head_req.getStringtoParse(m_buffer, "Authorization: ");
+		char **tab = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
+		if (tab != NULL && tab[0] != NULL)
+				_head_req.AUTH_TYPE = tab[0];
 		_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
 		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" #");
 		_head_req.getScriptName((char *)m_content.c_str());
 		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_content.c_str(), "://", ":/?#");
-		_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#");
+		if (_head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "")
+			_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "";
 		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_content, "", "://");
 		if (m_content == "/") //GET / HTTP/1.1
 		{
@@ -60,8 +63,6 @@ int Request::forking()
 	int pp[2];
 	res = 0;
 	std::ostringstream oss;
-	std::string s_env = _head_req.get_meta(_conf);
-	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
 	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
@@ -70,6 +71,10 @@ int Request::forking()
 		return (-1);
 	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
 		return (-1);
+	_head_req.PATH_TRANSLATED = path;
+	std::string s_env = _head_req.get_meta(_conf, content_env);
+	std::cout << s_env << std::endl;
+	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
 	pid = fork();

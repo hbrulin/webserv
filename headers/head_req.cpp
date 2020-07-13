@@ -1,8 +1,8 @@
 #include "head_req.hpp"
 
-std::string Head_req::get_meta(Config _Config)
+std::string Head_req::get_meta(Config _Config, char *content_env)
 {
-	std::string str;
+	str.append(content_env);
 	str.append("&AUTH_TYPE=");
 	str.append(AUTH_TYPE);
 	str.append("&CONTENT_LENGTH=");
@@ -14,6 +14,7 @@ std::string Head_req::get_meta(Config _Config)
 	str.append("&PATH_INFO=");
 	str.append(PATH_INFO);
 	str.append("&PATH_TRANSLATED=");
+	str.append(PATH_TRANSLATED);
 	str.append("&QUERY_STRING="); // if nothing ?
 	str.append(QUERY_STRING);
 	str.append("&REMOTE_ADDR=");
@@ -29,7 +30,7 @@ std::string Head_req::get_meta(Config _Config)
 		str.append(SCRIPT_NAME);
 	str.append("&SERVER_NAME="); // to take
 	if (SERVER_NAME == "")
-		SERVER_NAME = _Config._server_name;
+		SERVER_NAME =  _Config._server_name; // changer par localhost
 	else
 		str.append(SERVER_NAME);
 	str.append("&SERVER_PORT="); // to take
@@ -38,7 +39,6 @@ std::string Head_req::get_meta(Config _Config)
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
 	str.append("webserv");
-	std::cout << str.c_str() << std::endl;
 	return str;
 }
 

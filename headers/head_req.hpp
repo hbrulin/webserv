@@ -27,6 +27,7 @@ class Head_req
     std::string USER_AGENT; // OS, version, application
 	std::string DATE; // HH:MM:SS GMT
     //META
+    std::string str;
     std::string AUTH_TYPE;
     std::string CONTENT_TYPE;
     std::string CONTENT_LENGTH;
@@ -35,6 +36,7 @@ class Head_req
     std::string SERVER_PROTOCOL;
     std::string SCRIPT_NAME;
     std::string PATH_INFO;
+    std::string PATH_TRANSLATED;
     std::string REQUEST_URI;
     std::string SERVER_PORT;
     std::string SERVER_NAME;
@@ -46,8 +48,8 @@ class Head_req
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
     std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
-    std::string get_meta(Config _Config);
-    void getScriptName(char *m_buffer);
+    std::string get_meta(Config _Config, char *content_env);
+    void        getScriptName(char *m_buffer);
     struct stat st;
 };
 

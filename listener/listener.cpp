@@ -263,7 +263,7 @@ void Listener::receive_data(int fd) {
 		//send(fd, buffer, len, 0);
 
 		int i = look_for_sock(fd).second;
-		Request req(buffer, fd, _conf[i]); //mettre direct dans le Listener
+		Request req(buffer, fd, _conf[i], *m_port); //mettre direct dans le Listener
 		req.parse();
 		req.handle();
 		//error checking to comply with correction : if error, client will be removed
