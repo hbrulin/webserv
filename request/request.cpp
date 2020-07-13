@@ -31,11 +31,10 @@ void Request::parse() {
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
 		_head_req.SERVER_PROTOCOL = parsed[2];
-		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" ");
-		std::cout << "query string" << _head_req.QUERY_STRING << std::endl;
-		_head_req.SCRIPT_NAME = _head_req.getScriptName((char *)m_content.c_str());
-		//_head_req.SERVER_NAME = _head_req.getMetatoParse(m_content, "://", ":/");
-		//_head_req.SERVER_PORT = _head_req.getMetatoParse(m_content, ":", "?/);
+		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" #");
+		_head_req.getScriptName((char *)m_content.c_str());
+		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_content.c_str(), "://", ":/?#");
+		_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#");
 		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_content, "", "://");
 		if (m_content == "/") //GET / HTTP/1.1
 		{
@@ -60,7 +59,7 @@ int Request::forking()
 	int pp[2];
 	res = 0;
 	std::ostringstream oss;
-	std::string s_env = _head_req.get_meta();
+	std::string s_env = _head_req.get_meta(_conf);
 	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);

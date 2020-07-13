@@ -1,6 +1,6 @@
 #include "head_req.hpp"
 
-std::string Head_req::get_meta()
+std::string Head_req::get_meta(Config _Config)
 {
 	std::string str;
 	str.append("&AUTH_TYPE="); //if nothing > ?
@@ -11,7 +11,8 @@ std::string Head_req::get_meta()
 	str.append(CONTENT_TYPE);
 	str.append("&GATEWAY_INTERFACE=");
 	str.append("CGI/1.1");
-	str.append("&PATH_INFO="); // -----------
+	str.append("&PATH_INFO=");
+	str.append(PATH_INFO);
 	str.append("&PATH_TRANSLATED=");
 	str.append("&QUERY_STRING="); // if nothing ?
 	str.append(QUERY_STRING);
@@ -27,7 +28,12 @@ std::string Head_req::get_meta()
 	else
 		str.append(SCRIPT_NAME);
 	str.append("&SERVER_NAME="); // to take
+	if (SERVER_NAME == "")
+		SERVER_NAME = _Config._server_name;
+	else
+		str.append(SERVER_NAME);
 	str.append("&SERVER_PORT="); // to take
+	str.append(SERVER_PORT);
 	str.append("&SERVER_PROTOCOL=");
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
@@ -39,20 +45,34 @@ std::string Head_req::get_meta()
 	return str;
 }
 
-std::string Head_req::getScriptName(char *m_buffer)
+void Head_req::getScriptName(char *m_buffer) // remplacer par cgi extension
 {
-	int i = ft_strlen(m_buffer);
-	std::string s;
-	while(i > 0 && m_buffer[i - 1] != '/') {i--;}
-	s.append(&m_buffer[i]); 
-	return s;
+	std::string s(m_buffer), str_q, str_p;
+	//REQUEST_URI
+	REQUEST_URI = s;
+	int len, i = 0;
+	//SCRIPT_NAME
+	int n = s.find(".cgi");
+	if (n != (int)std::string::npos)
+	{
+		n = n + 4;
+		len = n;
+		i = n;
+		while(n > 0 && m_buffer[n - 1] != '/') {n--;}
+		SCRIPT_NAME = str_q.append(&m_buffer[n], len - n); 
+	}
+	len = n;
+	//PATH_INFO
+	while (m_buffer[len] != '\0' && m_buffer[len] != '?') {len++;}
+	if (m_buffer[len] != '\0') {PATH_INFO = str_p.append(&m_buffer[i], len - i);}
 }
 
-std::string Head_req::getMetatoParse(char *m_buffer, std::string toParse, char *Sep)
+std::string Head_req::getMetatoParse(char *m_buffer, std::string toParse, std::string Sep)
 {
     int n;
 	std::string s(m_buffer);
     std::string referer;
+	const char *c_sep = Sep.c_str();
 	n = s.find(toParse);
 	if (n != (int)std::string::npos)
 	{
@@ -61,11 +81,11 @@ std::string Head_req::getMetatoParse(char *m_buffer, std::string toParse, char *
 		while (m_buffer[i] != '\0') 
 		{ 
 			int j = 0;
-			while(m_buffer[i] != Sep[j] && Sep[j] != '\0')
+			while(m_buffer[i] != c_sep[j] && c_sep[j] != '\0')
 			{
 				j++;
 			}
-			if (j != (int)ft_strlen(Sep))
+			if (j != (int)ft_strlen(c_sep))
 				break;
 			i++;
 		}

@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "../libft/libft.h"
+#include "../parser/Config.hpp"
 
 class Head_req
 {
@@ -32,8 +33,10 @@ class Head_req
     std::string QUERY_STRING;
     std::string SERVER_PROTOCOL;
     std::string SCRIPT_NAME;
-    // std::string SERVER_PORT;
-    // std::string SERVER_NAME;
+    std::string PATH_INFO;
+    std::string REQUEST_URI;
+    std::string SERVER_PORT;
+    std::string SERVER_NAME;
     // std::string SERVER_SOFTWARE;
     //functions
     std::string getDate();
@@ -41,9 +44,9 @@ class Head_req
     std::string getUserAgent(char *string);
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
-    std::string getMetatoParse(char *m_buffer, std::string toParse, char *sep);
-    std::string get_meta();
-    std::string getScriptName(char *m_buffer);
+    std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
+    std::string get_meta(Config _Config);
+    void getScriptName(char *m_buffer);
     struct stat st;
 };
 
