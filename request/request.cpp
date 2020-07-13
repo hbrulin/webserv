@@ -30,10 +30,13 @@ void Request::parse() {
 	{
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
-		//_head_req.QUERYSTRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" ");
+		_head_req.SERVER_PROTOCOL = parsed[2];
+		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" ");
+		std::cout << "query string" << _head_req.QUERY_STRING << std::endl;
+		_head_req.SCRIPT_NAME = _head_req.getScriptName((char *)m_content.c_str());
 		//_head_req.SERVER_NAME = _head_req.getMetatoParse(m_content, "://", ":/");
 		//_head_req.SERVER_PORT = _head_req.getMetatoParse(m_content, ":", "?/);
-		//_head_req.SERVER_PORT = _head_req.getMetatoParse(m_content, "", "://");
+		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_content, "", "://");
 		if (m_content == "/") //GET / HTTP/1.1
 		{
 			m_content = m_index;
@@ -41,6 +44,7 @@ void Request::parse() {
 		//std::cout << m_content << std::endl;
 	}
 	// HEADERS
+	_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
 	_head_req.REFERER = _head_req.getReferer(m_buffer);
 	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer); 
 	if (_head_req.getStringtoParse(m_buffer, "Accept-Language: ") != "")
@@ -56,6 +60,7 @@ int Request::forking()
 	int pp[2];
 	res = 0;
 	std::ostringstream oss;
+	std::string s_env = _head_req.get_meta();
 	char **env = ft_split(content_env, '&');
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
@@ -124,6 +129,7 @@ void Request::handle() {
 	std::string path = "www/" + m_content;
 	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
 	{
+		std::cout << m_buffer << std::endl;
 		for (int i = 0; i < (int)strlen(m_buffer); i++)
 		{
 			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
@@ -135,6 +141,7 @@ void Request::handle() {
 					tmp[j] = m_buffer[i + j];
 				}
 				content_env = tmp;
+				_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
 				break;
 			}
 		}
@@ -166,7 +173,6 @@ void Request::handle() {
 	}
 	else //DEFINIR COMMENT GERER ERREURS ICI
 	{
-		std::cout << "lolo" << std::endl;
 		f.close();
 		std::ifstream f(_conf._root + m_not_found);  
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -174,7 +180,6 @@ void Request::handle() {
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
-	std::cout << "lolo" << std::endl;
 	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
 	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path.c_str(), _conf._methods);

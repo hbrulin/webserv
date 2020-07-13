@@ -10,10 +10,10 @@ class Head_req
 {
     public:
     Head_req() : AUTHORIZATION("default"), HOST("127.0.0.1") {
-        char str[3] = "da";
-        ACCEPT_LANGUAGE[0] = str;
-        char accp_char_def[2] = "*";
-        ACCEPT_CHARSET[0] = accp_char_def; 
+        // char str[3] = "da";
+        // ACCEPT_LANGUAGE[0] = str;
+        // char accp_char_def[2] = "*";
+        // ACCEPT_CHARSET[0] = accp_char_def; 
     }
     // response
     //request 
@@ -26,7 +26,12 @@ class Head_req
     std::string USER_AGENT; // OS, version, application
 	std::string DATE; // HH:MM:SS GMT
     //META
+    std::string CONTENT_TYPE;
+    std::string CONTENT_LENGTH;
     std::string REQUEST_METHOD;
+    std::string QUERY_STRING;
+    std::string SERVER_PROTOCOL;
+    std::string SCRIPT_NAME;
     // std::string SERVER_PORT;
     // std::string SERVER_NAME;
     // std::string SERVER_SOFTWARE;
@@ -37,7 +42,8 @@ class Head_req
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
     std::string getMetatoParse(char *m_buffer, std::string toParse, char *sep);
-    // char *get_meta();
+    std::string get_meta();
+    std::string getScriptName(char *m_buffer);
     struct stat st;
 };
 
