@@ -187,4 +187,51 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (str);
 }
 
+char	*ft_strtrim(char const *s1, char const *set)
+{
+	int		j;
+	int		k;
+	char	*str;
+	int		i;
 
+	i = 0;
+	k = 0;
+	if (!s1)
+		return (NULL);
+	while (ft_strchr(set, s1[i]) != NULL && s1[i] != '\0')
+		i++;
+	j = ft_strlen(s1);
+	while (ft_strchr(set, s1[j - 1]) != NULL && j > i)
+		j--;
+	if (!(str = (char *)malloc(j - i + 1)))
+		return (NULL);
+	while (i < j && s1[i])
+	{
+		str[k] = s1[i];
+		i++;
+		k++;
+	}
+	str[k] = '\0';
+	return (str);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	size_t i;
+
+	i = 0;
+	while (i <= ft_strlen(s))
+	{
+		if (s[i] == (char)c)
+			return ((char *)s + i);
+		i++;
+	}
+	return (NULL);
+}
+
+int	ft_isprint(int c)
+{
+	if (c >= 32 && c <= 126)
+		return (1);
+	return (0);
+}

@@ -1,8 +1,10 @@
 #include "head_req.hpp"
 
-std::string Head_req::get_meta(Config _Config, char *content_env)
+std::string Head_req::get_meta(Config _Config)
 {
-	str.append(content_env);
+	memset(&str, sizeof(str), 0);
+	// content_env = ft_strtrim(content_env, "'/t''/0'");
+	// str.append(content_env);
 	str.append("&AUTH_TYPE=");
 	str.append(AUTH_TYPE);
 	str.append("&CONTENT_LENGTH=");
@@ -38,7 +40,7 @@ std::string Head_req::get_meta(Config _Config, char *content_env)
 	str.append("&SERVER_PROTOCOL=");
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
-	str.append("webserv");
+	str.append("webserv"); // A modif ?
 	return str;
 }
 

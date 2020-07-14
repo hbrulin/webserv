@@ -8,7 +8,7 @@ std::string Head_resp::getLastModified(const char *path) {
 		char time[200];
 		struct tm *tm =  localtime(&st.st_mtime);	
 		if (strftime(time, sizeof(time), "%Y-%m-%d %H:%M", tm) != 0)
-			LAST_MODIFIED = std::string(time) + "GMT";	
+			LAST_MODIFIED = std::string(time) + " GMT";	
 	}
     return LAST_MODIFIED;
 }
@@ -28,7 +28,18 @@ std::string Head_resp::getDate()
         return DATE;
 }
 
-std::string Head_resp::getBuffer(int code, int length, const char *fichier, std::vector<std::string> methods)
+std::string Head_resp::getContentLength(const char *path)
+{
+	CONTENT_LENGTH = "";
+		if (lstat((const char *)path, &st) == 0)
+	{
+		size_t length = (size_t)st.st_size;
+		CONTENT_LENGTH = std::to_string(length);	
+	}
+    return CONTENT_LENGTH;
+}
+
+std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods)
 {
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
@@ -37,7 +48,7 @@ std::string Head_resp::getBuffer(int code, int length, const char *fichier, std:
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
-    oss << "Content-Length: " << length << "\r\n";
+    oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
     oss << "Date: " << this->getDate() << "\r\n";
     oss << "Server: " << SERVER << "\r\n";

@@ -40,6 +40,7 @@ class Head_req
     std::string REQUEST_URI;
     std::string SERVER_PORT;
     std::string SERVER_NAME;
+    char **TRANSFER_ENCODING;
     // std::string SERVER_SOFTWARE;
     //functions
     std::string getDate();
@@ -48,7 +49,7 @@ class Head_req
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
     std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
-    std::string get_meta(Config _Config, char *content_env);
+    std::string get_meta(Config _Config);
     void        getScriptName(char *m_buffer);
     struct stat st;
 };

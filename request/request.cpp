@@ -26,7 +26,11 @@ void Request::parse() {
 	//NEED TO PARSE HEADERS TOO?
 
 	// If the GET request is valid, try and get the name
-	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST"))
+	if (!(parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "TRACE" || parsed[0] == "PATCH" || parsed[0] == "DELETE" || parsed[0] == "OPTION" || parsed[0] == "CONNECT" || parsed[0] == "PUT"))
+	{
+		m_errorCode = 400;
+	}
+	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD"))
 	{
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
@@ -54,6 +58,8 @@ void Request::parse() {
 		_head_req.ACCEPT_LANGUAGE = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Language: ").c_str(), ',');
 	if (_head_req.getStringtoParse(m_buffer, "Accept-Charset: ") != "")
 		_head_req.ACCEPT_CHARSET = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
+	if (_head_req.getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
+		_head_req.TRANSFER_ENCODING = ft_split(_head_req.getStringtoParse(m_buffer, "Transfer-Encoding: ").c_str(), ',');
 	_head_req.DATE = _head_req.getStringtoParse(m_buffer, "Date: ");
 }
 
@@ -72,7 +78,8 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
-	std::string s_env = _head_req.get_meta(_conf, content_env);
+	std::string _headers = _head_req.get_meta(_conf);
+	std::string s_env = _headers.append(content_env);
 	std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
@@ -83,12 +90,11 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-   		//res = execve("usr/bin/php", argv, env);
-		//char *env[] = {(char *)m_content.c_str(), NULL};
+		std::cout << _head_resp.getBuffer(200, path, _conf._methods);
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
-			m_output = "HTTP/1.1 200 OK\r\n"
+			m_output = "HTTP/1.1 400 Bad Request\r\n"
         	"Content-length: 97\r\n"
         	"Content-Type: text/html\r\n\r\n"
         	"<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
@@ -136,14 +142,19 @@ void Request::handle() {
 	{
 		for (int i = 0; i < (int)strlen(m_buffer); i++)
 		{
-			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n')
+			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
 			{
 				i = i + 2;
 				char *tmp= new char[strlen(m_buffer) - i];
+				memset(tmp, sizeof(tmp), 0);
 				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
 				{
-					tmp[j] = m_buffer[i + j];
+					if (ft_isprint(m_buffer[i + j]))
+						tmp[j] = m_buffer[i + j];
+					else
+						break;	
 				}
+				memset(content_env, sizeof(content_env), 0);
 				content_env = tmp;
 				_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
 				break;
@@ -157,7 +168,16 @@ void Request::handle() {
 	// Check if it opened and if it did, take content
 	if (f.good())
 	{
-		if (!isAcceptable())
+		if (m_errorCode == 400)
+		{
+			f.close();
+			std::ifstream f(_conf._root + m_bad_request); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_content = str;
+			m_errorCode = 400;
+			f.close();
+		}
+		else if (!isAcceptable())
 		{
 			f.close();
 			std::ifstream f(_conf._root + m_not_acceptable); 
@@ -185,9 +205,9 @@ void Request::handle() {
 	}
 	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
-	oss << _head_resp.getBuffer(m_errorCode, m_content.size(), path.c_str(), _conf._methods);
-	oss << m_content;
-
+	oss << _head_resp.getBuffer(m_errorCode, path.c_str(), _conf._methods);
+	if (_head_req.REQUEST_METHOD != "HEAD")
+		oss << m_content;
 	m_output = oss.str();
 }
 

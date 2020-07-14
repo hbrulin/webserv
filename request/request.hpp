@@ -41,6 +41,7 @@ class Request
 	std::string m_content;
 	std::string m_not_found;
 	std::string m_not_acceptable;
+	std::string m_bad_request;
 	std::string m_index;
 	int m_errorCode;
 	//output
@@ -50,10 +51,12 @@ class Request
 	Request(char *buffer, int fd, Config conf, int port) 
 	{
 		_conf = conf;
+		memset(m_buffer, sizeof(m_buffer), 0);
 		m_buffer = buffer;
 		m_client = fd;
 		m_not_found = "404.html";
 		m_not_acceptable = "406.html";
+		m_bad_request = "400.html";
 		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
