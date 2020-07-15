@@ -25,3 +25,11 @@ CGI :
 http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm
 
 General guide : https://beej.us/guide/bgnet/html/
+
+Setup www-auth : https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04 
+
+Tester use : 
+sh testeur/test.sh
+telnet localhost 8080
+telnet localhost 8080 < monfichier
+sudo nginx -s stop

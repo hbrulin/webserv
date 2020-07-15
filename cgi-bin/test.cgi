@@ -4,9 +4,15 @@ $_name = getenv('name');
 $address = getenv('address');
 ?>
 
+<!DOCTYPE html>
 <html>
-<title>Thank You Page</title>
-<h1>Thank you for filling out my form!</h1>
-Thank you, <?php echo $_name; ?>, for filling out my form!
-An e-mail will be sent to <?php echo $address; ?>
+	<head>
+		<title>Thank you page</title>
+		<link rel="stylesheet" href="index.css">
+	</head>
+	<body>
+	<h1>Thank you for filling out my form!</h1>
+	Thank you, <?php echo $_name; ?>, for filling out my form!
+	An e-mail will be sent to <?php echo $address; ?>
+	</body>
 </html>
