@@ -45,11 +45,17 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "HTTP/1.1 " << code;
 	if (code == 200)
 		oss << " OK\r\n";
+	else if (code == 401)
+		oss << " Unauthorized\r\n";
+	else if (code == 404)
+		oss << " Not Found\r\n";
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
     oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
+	if (WWW_AUTHENTICATE != NULL)
+		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";
     oss << "Date: " << this->getDate() << "\r\n";
     oss << "Server: " << SERVER << "\r\n";
     oss << "Last-Modified: " << this->getLastModified(fichier) << "\r\n";

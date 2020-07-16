@@ -30,6 +30,7 @@ class Request
 	char curr_dir[200];
 	char *dir_cgi;
 	char *path;
+	//int index_auth;
 	//GET
 	//POST
 	//FILES
@@ -39,9 +40,11 @@ class Request
 	/*default outputs - à intégrer dans structures ci-dessus?? 
 	config selon file .config pour index?*/
 	std::string m_content;
+	std::string m_header;
 	std::string m_not_found;
 	std::string m_not_acceptable;
 	std::string m_bad_request;
+	std::string m_unauthorized;
 	std::string m_index;
 	int m_errorCode;
 	//output
@@ -57,6 +60,7 @@ class Request
 		m_not_found = "404.html";
 		m_not_acceptable = "406.html";
 		m_bad_request = "400.html";
+		m_unauthorized = "401.html";
 		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
@@ -66,6 +70,8 @@ class Request
 	int send_to_client();
 	int forking();
 	int isAcceptable();
+	int isAuthorized(std::string str);
+	void split_resp(char *buffer);
 };
 
 

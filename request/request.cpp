@@ -3,11 +3,69 @@
 #include <unistd.h>
 
 
+void Request::split_resp(char *buffer)
+{
+	std::string s(buffer);
+	int i = 0;
+	//SCRIPT_NAME
+	int n = s.find("'\n'");
+	if (n != (int)std::string::npos)
+	{
+		m_header.append(buffer, n); 
+		n = n + 3;
+		i = n;
+		m_content.append(&buffer[n], strlen(buffer) - n); 
+	}
+	else
+	{
+		std::cout << "no header" << std::endl;
+		m_content.append(buffer, strlen(buffer));
+	}
+	std::cout << m_content << std::endl;
+}
+
+int Request::isAuthorized(std::string str)
+{
+	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
+	if (_head_resp.WWW_AUTHENTICATE != NULL && _head_resp.WWW_AUTHENTICATE[0] != NULL)
+	{
+		std::cout << "buffer: " << m_buffer << std::endl;
+		if (_head_req.getStringtoParse(m_buffer, "Authorization: ") != "")
+			_head_req.AUTHORIZATION = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
+		else
+		{
+			_head_req.AUTHORIZATION = NULL;
+		}
+		if (_head_req.AUTHORIZATION == NULL)
+		{
+			m_errorCode = 401;
+			return 0;
+		}
+		if (strcmp((const char *)_head_req.AUTHORIZATION[0], (const char *)_head_resp.WWW_AUTHENTICATE[0]))
+		{
+			std::cout << "here" << std::endl;
+				m_errorCode = 401;
+				return 0;
+		}
+		else if (_head_req.AUTHORIZATION != NULL && _head_req.AUTHORIZATION[1] != NULL)
+		{
+			std::cout << "lala" << std::endl;
+			if (strncmp(_head_req.AUTHORIZATION[1],"dXNlcjpwYXNzd29yZA==", 11))
+			{
+				return 0;
+			}
+		}
+	}
+	_head_resp.WWW_AUTHENTICATE = NULL;
+	return 1;
+}
 
 int Request::isAcceptable()
 {
 	//Check Langage
 	int i = 0;
+	if (_head_req.ACCEPT_LANGUAGE == NULL) {}
+	{ return 1;}
 	while (_head_req.ACCEPT_LANGUAGE[i] != NULL)
 	{
 		if (strstr(_head_req.ACCEPT_LANGUAGE[i], _head_resp.CONTENT_LANGUAGE.c_str()) != NULL)
@@ -169,13 +227,27 @@ void Request::handle() {
 	// Check if it opened and if it did, take content
 	if (f.good())
 	{
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		split_resp((char *)str.c_str());
+		m_header = m_content;
 		if (m_errorCode == 400)
 		{
 			f.close();
 			std::ifstream f(_conf._root + m_bad_request); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			path = "www/" + m_bad_request;
 			m_content = str;
-			m_errorCode = 400;
+			//m_errorCode = 400;
+			f.close();
+		}
+		else if (!isAuthorized(m_header))
+		{
+			f.close();
+			std::ifstream f(_conf._root + m_unauthorized); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			path = "www/" + m_unauthorized;
+			m_content = str;
+			m_errorCode = 401;
 			f.close();
 		}
 		else if (!isAcceptable())
@@ -183,14 +255,15 @@ void Request::handle() {
 			f.close();
 			std::ifstream f(_conf._root + m_not_acceptable); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			path = "www/" + m_not_acceptable;
 			m_content = str;
 			m_errorCode = 406;
 			f.close();
 		}
 		else 
 		{
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_content = str;
+			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			//m_content = str;
 			m_errorCode = 200;
 			f.close();
 		}

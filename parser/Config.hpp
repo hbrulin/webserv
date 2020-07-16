@@ -38,6 +38,9 @@ struct Config
 	std::string _cgi_type;
 	std::string _cgi_root;
 
+	char	**_auth_path;
+	char	**_auth_realm;
+
 };
 
 #endif

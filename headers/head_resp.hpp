@@ -22,7 +22,7 @@ class Head_resp
     // SI 503
     std::string RETRY_AFTER; // 2 lignes date + delay-second
     std::string TRANSFER_ENCODING;
-    std::string WWW_AUTHENTICATE;
+    char **WWW_AUTHENTICATE;
 	std::string DATE; // HH:MM:SS GMT //OK
     public:
     std::string getLastModified(const char *path);
