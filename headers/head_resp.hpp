@@ -12,6 +12,7 @@ class Head_resp
     public:
     Head_resp() : CONTENT_LANGUAGE("fr"), LOCATION("default"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"),  DATE("default") {}
     // response
+    std::string ALLOW;
     std::string CONTENT_LANGUAGE;
     std::string CONTENT_LENGTH; //OK
     std::string CONTENT_LOCATION;

@@ -18,62 +18,11 @@ void Request::split_resp(char *buffer)
 	}
 	else
 	{
-		std::cout << "no header" << std::endl;
 		m_content.append(buffer, strlen(buffer));
 	}
-	std::cout << m_content << std::endl;
 }
 
-int Request::isAuthorized(std::string str)
-{
-	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
-	if (_head_resp.WWW_AUTHENTICATE != NULL && _head_resp.WWW_AUTHENTICATE[0] != NULL)
-	{
-		std::cout << "buffer: " << m_buffer << std::endl;
-		if (_head_req.getStringtoParse(m_buffer, "Authorization: ") != "")
-			_head_req.AUTHORIZATION = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
-		else
-		{
-			_head_req.AUTHORIZATION = NULL;
-		}
-		if (_head_req.AUTHORIZATION == NULL)
-		{
-			m_errorCode = 401;
-			return 0;
-		}
-		if (strcmp((const char *)_head_req.AUTHORIZATION[0], (const char *)_head_resp.WWW_AUTHENTICATE[0]))
-		{
-			std::cout << "here" << std::endl;
-				m_errorCode = 401;
-				return 0;
-		}
-		else if (_head_req.AUTHORIZATION != NULL && _head_req.AUTHORIZATION[1] != NULL)
-		{
-			std::cout << "lala" << std::endl;
-			if (strncmp(_head_req.AUTHORIZATION[1],"dXNlcjpwYXNzd29yZA==", 11))
-			{
-				return 0;
-			}
-		}
-	}
-	_head_resp.WWW_AUTHENTICATE = NULL;
-	return 1;
-}
 
-int Request::isAcceptable()
-{
-	//Check Langage
-	int i = 0;
-	if (_head_req.ACCEPT_LANGUAGE == NULL) {}
-	{ return 1;}
-	while (_head_req.ACCEPT_LANGUAGE[i] != NULL)
-	{
-		if (strstr(_head_req.ACCEPT_LANGUAGE[i], _head_resp.CONTENT_LANGUAGE.c_str()) != NULL)
-			return 1;
-		i++;
-	}
-	return 0;
-}
 
 void Request::parse() {
 	
@@ -197,7 +146,7 @@ void Request::handle() {
 	// Open the document in the local file system
 	std::ifstream f(_conf._root + m_content); 
 	std::string path = "www/" + m_content;
-	if (strstr(m_buffer, "POST") != NULL) // .cgi != NULL
+	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
 	{
 		for (int i = 0; i < (int)strlen(m_buffer); i++)
 		{
@@ -238,6 +187,27 @@ void Request::handle() {
 			path = "www/" + m_bad_request;
 			m_content = str;
 			//m_errorCode = 400;
+			f.close();
+		}
+		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
+		{
+			f.close();
+			std::ifstream f(_conf._root + m_not_supported); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			path = "www/" + m_not_supported;
+			m_content = str;
+			m_errorCode = 505;
+			f.close();
+		}
+		else if (!isAllowed(path))
+		{
+			std::cout << "lala" << std::endl;
+			f.close();
+			std::ifstream f(_conf._root + m_not_allowed); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			path = "www/" + m_not_allowed;
+			m_content = str;
+			m_errorCode = 405;
 			f.close();
 		}
 		else if (!isAuthorized(m_header))
@@ -283,7 +253,6 @@ void Request::handle() {
 	if (_head_req.REQUEST_METHOD != "HEAD")
 		oss << m_content;
 	m_output = oss.str();
-	//std::cout << m_output << std::endl;
 }
 
 

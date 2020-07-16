@@ -1,0 +1,2 @@
+GET /auth.html HTTP/2
+Authorization: Basic dXNlcjpwYXNzd29yZA==

@@ -63,9 +63,10 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
         oss << "Retry-after: " << RETRY_AFTER << "\r\n";
 	if (code == 405)
 	{
-		oss << "Allow: ";
-		for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++)
-			oss << *it << ", ";
+		oss << "Allow: " << ALLOW << std::endl;
+		oss << "Server methods: ";
+		 for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++)
+		 	oss << *it << ", ";
 		oss << "\r\n" << std::endl;
 	}
     oss << "\r\n";
