@@ -210,6 +210,7 @@ void Request::handle() {
 	if (_head_req.REQUEST_METHOD != "HEAD")
 		oss << m_content;
 	m_output = oss.str();
+	//std::cout << m_output << std::endl;
 }
 
 

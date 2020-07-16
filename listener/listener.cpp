@@ -265,6 +265,7 @@ void Listener::receive_data(int fd) {
 
 		int i = look_for_sock(fd).second;
 		Request req(buffer, fd, _conf[i], *m_port); //mettre direct dans le Listener
+		//std::cout << buffer << std::endl;
 		req.parse();
 		req.handle();
 		//error checking to comply with correction : if error, client will be removed
