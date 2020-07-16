@@ -78,6 +78,7 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
+	std::cout << "path: " << path << std::endl;
 	std::string _headers = _head_req.get_meta(_conf);
 	std::string s_env = _headers.append(content_env);
 	std::cout << s_env << std::endl;

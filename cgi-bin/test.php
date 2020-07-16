@@ -2,6 +2,7 @@
 <?php
 $_name = getenv('name');
 $address = getenv('address');
+$address = getenv('CONTENT_TYPE');
 ?>
 
 <html>
