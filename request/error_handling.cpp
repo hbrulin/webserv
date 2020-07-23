@@ -33,7 +33,7 @@ int Request::isAuthorized(std::string str)
 	return 1;
 }
 
-int Request::isAcceptable()
+/*int Request::isAcceptable()
 {
 	//Check Langage
 	int i = 0;
@@ -46,12 +46,12 @@ int Request::isAcceptable()
 		i++;
 	}
 	return 0;
-}
+}*/
 
 int Request::isAllowed(std::string path)
 {
     std::cout << "here" << path << std::endl;
-    if ((_head_req.REQUEST_METHOD == "POST" || _head_req.REQUEST_METHOD == "DELETE") && path.find("www/") != std::string::npos)
+    if ((_head_req.REQUEST_METHOD == "POST" || _head_req.REQUEST_METHOD == "DELETE") && path.find(_conf._root) != std::string::npos)
     {
         _head_resp.ALLOW = "GET";
         return 0;

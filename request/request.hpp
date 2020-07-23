@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include "../parser/Config.hpp"
 #include "../request/libft.h"
@@ -48,6 +49,7 @@ class Request
 	std::string m_unauthorized;
 	std::string m_not_supported;
 	std::string m_index;
+	std::string m_path;
 	int m_errorCode;
 	//output
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
@@ -56,7 +58,7 @@ class Request
 	Request(char *buffer, int fd, Config conf, int port) 
 	{
 		_conf = conf;
-		memset(m_buffer, sizeof(m_buffer), 0);
+		memset((char *) &m_buffer, 0, sizeof(m_buffer));
 		m_buffer = buffer;
 		m_client = fd;
 		m_not_found = "404.html";
@@ -68,12 +70,13 @@ class Request
 		m_index = "index.html";
 		m_errorCode = 404; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
+
 	};
 	void parse();
 	void handle();
 	int send_to_client();
 	int forking();
-	int isAcceptable();
+	//int isAcceptable();
 	int isAuthorized(std::string str);
 	void split_resp(char *buffer);
 	int isAllowed(std::string path);

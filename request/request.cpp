@@ -30,8 +30,6 @@ void Request::parse() {
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 
-	//NEED TO PARSE HEADERS TOO?
-
 	// If the GET request is valid, try and get the name
 	if (!(parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "TRACE" || parsed[0] == "PATCH" || parsed[0] == "DELETE" || parsed[0] == "OPTION" || parsed[0] == "CONNECT" || parsed[0] == "PUT"))
 	{
@@ -61,8 +59,18 @@ void Request::parse() {
 	// HEADERS
 	_head_req.REFERER = _head_req.getReferer(m_buffer);
 	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer); 
-	if (_head_req.getStringtoParse(m_buffer, "Accept-Language: ") != "")
-		_head_req.ACCEPT_LANGUAGE = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Language: ").c_str(), ',');
+	//parsing languages into vector
+	std::string lg = _head_req.getStringtoParse(m_buffer, "Accept-Language: ");
+	if (lg != "")
+	{
+		std::stringstream s(lg);
+		std::string segment;
+		while(std::getline(s, segment, ','))
+		{
+			_head_req.ACCEPT_LANGUAGE.push_back(segment);
+		}
+	}
+	//rest of parsing
 	if (_head_req.getStringtoParse(m_buffer, "Accept-Charset: ") != "")
 		_head_req.ACCEPT_CHARSET = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
 	if (_head_req.getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
@@ -139,13 +147,24 @@ int Request::forking()
 }
 
 void Request::handle() {
-	//How do we determine the request isn’t for a document it can simply deliver, and create a CGI process?
+
+	m_path = _head_req.contentNego(_conf._root, m_content);
 	
-	//IF NOT ACCEPTABLE
+	//language check, erreur par défaut pour l'instant
+	if (m_path == "not_acceptable")
+	{
+			std::ifstream f(_conf._root + m_not_acceptable); 
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_path = _conf._root + m_not_acceptable;
+			m_content = str;
+			m_errorCode = 406;
+			return;
+	}
 
 	// Open the document in the local file system
-	std::ifstream f(_conf._root + m_content); 
-	std::string path = "www/" + m_content;
+	std::ifstream f(m_path); 
+
+	//std::string path = _conf._root + m_content;
 	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
 	{
 		for (int i = 0; i < (int)strlen(m_buffer); i++)
@@ -154,7 +173,7 @@ void Request::handle() {
 			{
 				i = i + 2;
 				char *tmp= new char[strlen(m_buffer) - i];
-				memset(tmp, sizeof(tmp), 0);
+				memset((char *) &tmp, 0, sizeof(tmp));
 				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
 				{
 					if (ft_isprint(m_buffer[i + j]))
@@ -162,7 +181,7 @@ void Request::handle() {
 					else
 						break;	
 				}
-				memset(content_env, sizeof(content_env), 0);
+				memset((char *) content_env, 0, sizeof(content_env));
 				content_env = tmp;
 				_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
 				break;
@@ -173,6 +192,7 @@ void Request::handle() {
 		f.close();
 		return ;
 	}
+	
 	// Check if it opened and if it did, take content
 	if (f.good())
 	{
@@ -184,7 +204,7 @@ void Request::handle() {
 			f.close();
 			std::ifstream f(_conf._root + m_bad_request); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			path = "www/" + m_bad_request;
+			m_path = _conf._root + m_bad_request;
 			m_content = str;
 			//m_errorCode = 400;
 			f.close();
@@ -194,18 +214,18 @@ void Request::handle() {
 			f.close();
 			std::ifstream f(_conf._root + m_not_supported); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			path = "www/" + m_not_supported;
+			m_path = _conf._root + m_not_supported;
 			m_content = str;
 			m_errorCode = 505;
 			f.close();
 		}
 		else if (!isAllowed(path))
 		{
-			std::cout << "lala" << std::endl;
+			//std::cout << "lala" << std::endl;
 			f.close();
 			std::ifstream f(_conf._root + m_not_allowed); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			path = "www/" + m_not_allowed;
+			m_path = _conf._root + m_not_allowed;
 			m_content = str;
 			m_errorCode = 405;
 			f.close();
@@ -215,19 +235,9 @@ void Request::handle() {
 			f.close();
 			std::ifstream f(_conf._root + m_unauthorized); 
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			path = "www/" + m_unauthorized;
+			m_path = _conf._root + m_unauthorized;
 			m_content = str;
 			m_errorCode = 401;
-			f.close();
-		}
-		else if (!isAcceptable())
-		{
-			f.close();
-			std::ifstream f(_conf._root + m_not_acceptable); 
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			path = "www/" + m_not_acceptable;
-			m_content = str;
-			m_errorCode = 406;
 			f.close();
 		}
 		else 
@@ -238,7 +248,7 @@ void Request::handle() {
 			f.close();
 		}
 	}
-	else //DEFINIR COMMENT GERER ERREURS ICI
+	else 
 	{
 		f.close();
 		std::ifstream f(_conf._root + m_not_found);  
@@ -247,16 +257,17 @@ void Request::handle() {
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
-	// Write the document back to the client, with HEADERS - define how to deal with them
-	std::ostringstream oss;
-	oss << _head_resp.getBuffer(m_errorCode, path.c_str(), _conf._methods);
-	if (_head_req.REQUEST_METHOD != "HEAD")
-		oss << m_content;
-	m_output = oss.str();
 }
 
 
 int Request::send_to_client() {
+	// Write the document back to the client, with HEADERS - define how to deal with them
+	std::ostringstream oss;
+	oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
+	if (_head_req.REQUEST_METHOD != "HEAD")
+		oss << m_content;
+	m_output = oss.str();
+
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;

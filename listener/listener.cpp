@@ -240,13 +240,13 @@ we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
 	char buffer[4096]; //taille buffer??
-	memset(buffer, sizeof(buffer), 0);
+	memset((char *) &buffer, 0, sizeof(buffer));
 	/*This error checking is compliant with correction - check for -1 and 0 */
 	while (1)
 	{
-		memset(buffer, sizeof(buffer), 0);
+		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
-		//std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
+		std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
 			break;

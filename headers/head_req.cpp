@@ -2,7 +2,7 @@
 
 std::string Head_req::get_meta(Config _Config)
 {
-	memset(&str, sizeof(str), 0);
+	memset((char *) &str, 0, sizeof(str));
 	// content_env = ft_strtrim(content_env, "'/t''/0'");
 	// str.append(content_env);
 	str.append("&AUTH_TYPE=");
@@ -157,4 +157,27 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
 		referer = s.substr(n, i - n);
 	}
     return referer;
+}
+
+std::string Head_req::contentNego(std::string root, std::string content) {
+	size_t i = 0;
+	std::string res = "not_acceptable";
+	for (std::vector<std::string>::iterator it = ACCEPT_LANGUAGE.begin(); it!=ACCEPT_LANGUAGE.end(); ++it) {
+		std::string tmp = *it;
+		if ((i = tmp.find(';')) != std::string::npos)
+		{
+			tmp = tmp.substr(0, i);
+		}
+		//std::cout << tmp << std::endl;
+    	std::ifstream f(root + tmp + "/" + content);
+		//std::cout << root + tmp + content << std::endl;
+
+		if (f.good()) {
+			res = root + tmp + "/" + content;
+			f.close();
+			break;
+		}
+		f.close();
+	}
+	return res;
 }
