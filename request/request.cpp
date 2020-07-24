@@ -219,7 +219,7 @@ void Request::handle() {
 			m_errorCode = 505;
 			f.close();
 		}
-		else if (!isAllowed(path))
+		else if (!isAllowed(m_path))
 		{
 			//std::cout << "lala" << std::endl;
 			f.close();
@@ -261,7 +261,6 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	// Write the document back to the client, with HEADERS - define how to deal with them
 	std::ostringstream oss;
 	oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD")
