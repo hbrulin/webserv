@@ -30,6 +30,6 @@ Setup www-auth : https://www.digitalocean.com/community/tutorials/how-to-set-up-
 
 Tester use : 
 sh testeur/test.sh
-telnet localhost 8080
-telnet localhost 8080 < monfichier
+telnet localhost 80
+netcastlocalhost 80 < monfichier
 sudo nginx -s stop
