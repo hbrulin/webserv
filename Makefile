@@ -39,6 +39,8 @@ re :
 flagless:
 	clang++ $(SRCS)
 
+sani:
+	clang++ -fsanitize=address -g3 -o $(NAME) $(SRCS)
 
 .PHONY: all, clean, fclean, re, opti
 

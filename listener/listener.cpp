@@ -23,10 +23,10 @@ Listener::Listener(std::vector<Config> conf, int size) {
 
 	for (int i = 0; i < size; i++)
 	{
-		memset((int *) &m_port[i], 0, sizeof(m_port));
-		memset((int *) &m_sock[i], 0, sizeof(m_sock));
+		memset((int *) &m_port[i], 0, sizeof(m_port[i]));
+		memset((int *) &m_sock[i], 0, sizeof(m_sock[i]));
 		//memset((int *) &m_highsock[i], 0, sizeof(m_highsock));
-		memset((char *) &m_address[i], 0, sizeof(m_address));
+		memset((char *) &m_address[i], 0, sizeof(m_address[i]));
 		//memset((char *) &m_set[i], 0, sizeof(m_set));
 		//memset((char *) &m_working_set[i], 0, sizeof(m_working_set));
 	}
@@ -246,7 +246,7 @@ void Listener::receive_data(int fd) {
 	{
 		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
-		std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
+	//	std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
 			break;

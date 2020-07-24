@@ -62,8 +62,8 @@ Data::Data(const char* file_name)
 //	std::cout << _configList.back()._listen << std::endl;
 //	std::cout << _configList.front()._listen << std::endl;
 //	std::cout << _configList.size() << std::endl;
-	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);
+/*	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);*/
 
 }
 

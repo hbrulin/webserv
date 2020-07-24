@@ -11,10 +11,10 @@ void Request::split_resp(char *buffer)
 	int n = s.find("'\n'");
 	if (n != (int)std::string::npos)
 	{
-		m_header.append(buffer, n); 
+		m_header.append(buffer, n);
 		n = n + 3;
 		i = n;
-		m_content.append(&buffer[n], strlen(buffer) - n); 
+		m_content.append(&buffer[n], strlen(buffer) - n);
 	}
 	else
 	{
@@ -25,7 +25,7 @@ void Request::split_resp(char *buffer)
 
 
 void Request::parse() {
-	
+
 	/*parse word by word*/
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
@@ -58,7 +58,7 @@ void Request::parse() {
 	}
 	// HEADERS
 	_head_req.REFERER = _head_req.getReferer(m_buffer);
-	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer); 
+	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer);
 	//parsing languages into vector
 	std::string lg = _head_req.getStringtoParse(m_buffer, "Accept-Language: ");
 	if (lg != "")
@@ -139,7 +139,7 @@ int Request::forking()
 				boucle = 0;
 		}
 	}
-	else 
+	else
 	{
 		perror("fork");
 	}
@@ -149,11 +149,11 @@ int Request::forking()
 void Request::handle() {
 
 	m_path = _head_req.contentNego(_conf._root, m_content);
-	
+
 	//language check, erreur par défaut pour l'instant
 	if (m_path == "not_acceptable")
 	{
-			std::ifstream f(_conf._root + m_not_acceptable); 
+			std::ifstream f(_conf._root + m_not_acceptable);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_acceptable;
 			m_content = str;
@@ -162,7 +162,7 @@ void Request::handle() {
 	}
 
 	// Open the document in the local file system
-	std::ifstream f(m_path); 
+	std::ifstream f(m_path);
 
 	//std::string path = _conf._root + m_content;
 	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
@@ -179,7 +179,7 @@ void Request::handle() {
 					if (ft_isprint(m_buffer[i + j]))
 						tmp[j] = m_buffer[i + j];
 					else
-						break;	
+						break;
 				}
 				memset((char *) content_env, 0, sizeof(content_env));
 				content_env = tmp;
@@ -192,7 +192,7 @@ void Request::handle() {
 		f.close();
 		return ;
 	}
-	
+
 	// Check if it opened and if it did, take content
 	if (f.good())
 	{
@@ -202,7 +202,7 @@ void Request::handle() {
 		if (m_errorCode == 400)
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_bad_request); 
+			std::ifstream f(_conf._root + m_bad_request);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_bad_request;
 			m_content = str;
@@ -212,18 +212,18 @@ void Request::handle() {
 		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_not_supported); 
+			std::ifstream f(_conf._root + m_not_supported);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_supported;
 			m_content = str;
 			m_errorCode = 505;
 			f.close();
 		}
-		else if (!isAllowed(path))
+		else if (!isAllowed(m_path))
 		{
-			//std::cout << "lala" << std::endl;
+			std::cout << "lala" << std::endl;
 			f.close();
-			std::ifstream f(_conf._root + m_not_allowed); 
+			std::ifstream f(_conf._root + m_not_allowed);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_allowed;
 			m_content = str;
@@ -233,14 +233,14 @@ void Request::handle() {
 		else if (!isAuthorized(m_header))
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_unauthorized); 
+			std::ifstream f(_conf._root + m_unauthorized);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_unauthorized;
 			m_content = str;
 			m_errorCode = 401;
 			f.close();
 		}
-		else 
+		else
 		{
 			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			//m_content = str;
@@ -248,10 +248,10 @@ void Request::handle() {
 			f.close();
 		}
 	}
-	else 
+	else
 	{
 		f.close();
-		std::ifstream f(_conf._root + m_not_found);  
+		std::ifstream f(_conf._root + m_not_found);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_content = str;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
