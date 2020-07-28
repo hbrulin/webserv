@@ -95,11 +95,8 @@ int Request::forking()
 	_head_req.PATH_TRANSLATED = path;
 	std::cout << "path: " << path << std::endl;
 	std::string _headers = _head_req.get_meta(_conf);
-	std::string s_env = _headers;
-	std::cout << s_env << std::endl;
 	//if (content_env != NULL)
-	//	std::string s_env = _headers.append(content_env);
-	std::cout << "la" << std::endl;
+	std::string s_env = content_env.append(_headers);
 	std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
@@ -156,29 +153,42 @@ void Request::handle() {
 	{
 		std::cout << "buffer" << m_buffer << std::endl;
 		std::cout << "buffer len" << strlen(m_buffer) << std::endl;
-		for (int i = 0; i < (int)strlen(m_buffer); i++)
+
+    	int n;
+		std::string s(m_buffer);
+    	//std::string referer;
+		n = s.find("\r\n\r");
+		if (n != (int)std::string::npos)
 		{
-			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
-			{
-				i = i + 2;
-				char *tmp= new char[strlen(m_buffer) - i];
-				memset((char *) &tmp, 0, sizeof(tmp));
-				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
-				{
-					if (ft_isprint(m_buffer[i + j]))
-						tmp[j] = m_buffer[i + j];
-					else
-						break;
-				}
-				//memset((char *) content_env, 0, sizeof(content_env));
-				if (tmp != NULL)
-				{
-					content_env = tmp;
-					_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
-				}
-				break;
-			}
+        	n = n + std::string("\r\n\r\n").size();
+			std::cout << "size" << s.size() << std::endl;
+			std::cout << "n" << n << std::endl;
+			content_env = s.substr(n, s.size() - n);
+			std::cout << "content env" << content_env << std::endl;
+			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 		}
+		// for (int i = 0; i < (int)strlen(m_buffer); i++)
+		// {
+		// 	if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
+		// 	{
+		// 		i = i + 2;
+		// 		char *tmp= new char[strlen(m_buffer) - i];
+		// 		memset((char *) &tmp, 0, sizeof(tmp));
+		// 		for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
+		// 		{
+		// 			if (ft_isprint(m_buffer[i + j]))
+		// 				tmp[j] = m_buffer[i + j];
+		// 			else
+		// 				break;
+		// 		}
+		// 		//memset((char *) content_env, 0, sizeof(content_env));
+		// 		if (tmp != NULL)
+		// 		{
+		// 			content_env = tmp;
+		// 			_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
+		// 		}
+		// 		break;
+		// 	}
 		m_output = "";
 		std::cout << "before forking" << std::endl;
 		forking();
@@ -202,33 +212,33 @@ void Request::handle() {
 	std::ifstream f(m_path);
 
 	//std::string path = _conf._root + m_content;
-	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
-	{
-		for (int i = 0; i < (int)strlen(m_buffer); i++)
-		{
-			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
-			{
-				i = i + 2;
-				char *tmp= new char[strlen(m_buffer) - i];
-				memset((char *) &tmp, 0, sizeof(tmp));
-				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
-				{
-					if (ft_isprint(m_buffer[i + j]))
-						tmp[j] = m_buffer[i + j];
-					else
-						break;
-				}
-				memset((char *) content_env, 0, sizeof(content_env));
-				content_env = tmp;
-				_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
-				break;
-			}
-		}
-		m_output = "";
-		forking();
-		f.close();
-		return ;
-	}
+	// if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
+	// {
+	// 	for (int i = 0; i < (int)strlen(m_buffer); i++)
+	// 	{
+	// 		if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
+	// 		{
+	// 			i = i + 2;
+	// 			char *tmp= new char[strlen(m_buffer) - i];
+	// 			memset((char *) &tmp, 0, sizeof(tmp));
+	// 			for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
+	// 			{
+	// 				if (ft_isprint(m_buffer[i + j]))
+	// 					tmp[j] = m_buffer[i + j];
+	// 				else
+	// 					break;
+	// 			}
+	// 			memset((char *) content_env, 0, sizeof(content_env));
+	// 			content_env = tmp;
+	// 			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
+	// 			break;
+	// 		}
+	// 	}
+	// 	m_output = "";
+	// 	forking();
+	// 	f.close();
+	// 	return ;
+	// }
 
 	// Check if it opened and if it did, take content
 	if (f.good())
