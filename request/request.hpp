@@ -75,6 +75,9 @@ class Request
 	void parse();
 	void handle();
 	int send_to_client();
+	void post();
+	void get();
+	void put();
 	int forking();
 	//int isAcceptable();
 	int isAuthorized(std::string str);
