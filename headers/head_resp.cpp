@@ -53,6 +53,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
     oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
+	//oss << "Transfer-Encoding: deflate\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
 	if (WWW_AUTHENTICATE != NULL)
 		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";

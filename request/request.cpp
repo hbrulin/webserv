@@ -95,7 +95,11 @@ int Request::forking()
 	_head_req.PATH_TRANSLATED = path;
 	std::cout << "path: " << path << std::endl;
 	std::string _headers = _head_req.get_meta(_conf);
-	std::string s_env = _headers.append(content_env);
+	std::string s_env = _headers;
+	std::cout << s_env << std::endl;
+	//if (content_env != NULL)
+	//	std::string s_env = _headers.append(content_env);
+	std::cout << "la" << std::endl;
 	std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
@@ -148,6 +152,39 @@ int Request::forking()
 
 void Request::handle() {
 
+	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
+	{
+		std::cout << "buffer" << m_buffer << std::endl;
+		std::cout << "buffer len" << strlen(m_buffer) << std::endl;
+		for (int i = 0; i < (int)strlen(m_buffer); i++)
+		{
+			if (m_buffer[i] == '\r' && m_buffer[i - 1] == '\n' && m_buffer[i - 2] == '\r')
+			{
+				i = i + 2;
+				char *tmp= new char[strlen(m_buffer) - i];
+				memset((char *) &tmp, 0, sizeof(tmp));
+				for (int j = 0; j < (int)strlen(m_buffer) - i; j++)
+				{
+					if (ft_isprint(m_buffer[i + j]))
+						tmp[j] = m_buffer[i + j];
+					else
+						break;
+				}
+				//memset((char *) content_env, 0, sizeof(content_env));
+				if (tmp != NULL)
+				{
+					content_env = tmp;
+					_head_req.CONTENT_LENGTH = std::to_string(ft_strlen(content_env));
+				}
+				break;
+			}
+		}
+		m_output = "";
+		std::cout << "before forking" << std::endl;
+		forking();
+		//f.close();
+		return ;
+	}
 	m_path = _head_req.contentNego(_conf._root, m_content);
 
 	//language check, erreur par défaut pour l'instant
