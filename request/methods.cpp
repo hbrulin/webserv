@@ -91,12 +91,19 @@ void Request::post() {
 void Request::put() {
 	
 	m_path = _conf._root + m_content;
-		//std::cout << m_path << std::endl;
-	std::ofstream f(m_path);
+	std::ifstream f(m_path);
 	if (f.good())
-		f << "message" << std::endl;
+		m_errorCode = 200;
+	else
+		m_errorCode = 201; //created
+
+	f.close();
+	std::ofstream ff(m_path);
+	if (ff.good())
+		ff << "message" << std::endl;
 	else
 		std::cout << "error" << std::endl;
+	ff.close();
 }
 
 void Request::get() {

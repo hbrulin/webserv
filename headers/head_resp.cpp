@@ -45,6 +45,8 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "HTTP/1.1 " << code;
 	if (code == 200)
 		oss << " OK\r\n";
+	else if (code == 201)
+		oss << " Created\r\n";
 	else if (code == 401)
 		oss << " Unauthorized\r\n";
 	else if (code == 404)
@@ -55,8 +57,8 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
     oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
-	if (WWW_AUTHENTICATE != NULL)
-		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";
+	/*if (WWW_AUTHENTICATE != NULL)
+		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";*/
     oss << "Date: " << this->getDate() << "\r\n";
     oss << "Server: " << SERVER << "\r\n";
     oss << "Last-Modified: " << this->getLastModified(fichier) << "\r\n";
