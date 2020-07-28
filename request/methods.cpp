@@ -113,7 +113,6 @@ void Request::get() {
 	{
 		m_path = _conf._root + m_content;
 	}
-
 	//language check, erreur par défaut pour l'instant
 	if (m_path == "not_acceptable")
 	{
