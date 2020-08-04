@@ -63,6 +63,8 @@ class ConfigParser
 	void parse_server_name(std::string);
 	void parse_cgi_root(std::string);
 	void parse_cgi_type(std::string);
+	
+	void parse_location(std::string);
 
 	void remove_whitespace(std::string&);
 

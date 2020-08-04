@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sys/stat.h>
 
+//#include "Location.hpp"
+
 #define LOCALHOST "127.0.0.1"
 #define DEFAULT_ERROR_PAGES "www/"
 
@@ -29,7 +31,7 @@ struct Config
 	std::string _host; // local host or something else
 
 	std::vector<std::string> _methods; // list of accepted method
-	bool _directory_listing;
+	bool 		_directory_listing;
 	std::string _default_directory_answer_file; // ????
 
 	bool		_send_files;
@@ -37,6 +39,13 @@ struct Config
 
 	std::string _cgi_type;
 	std::string _cgi_root;
+
+//	Location _cgi;
+
+//	std::vector<Location> _locations;
+
+
+
 
 	char	**_auth_path;
 	char	**_auth_realm;

@@ -6,6 +6,23 @@
 const char* Data::_SUPPORTED_CGI[] = {"php", "other", NULL};
 const char* Data::_SUPPORTED_METHOD[] = {"get", "post", "head", "method3", "method4", NULL};
 
+static bool block_is_closed(std::string s)
+{
+	int closed = 0;
+
+	for (unsigned long i = 0; i < s.size(); i++)
+	{
+		if (s[i] == '{')
+			closed += 1;
+		else if (s[i] == '}')
+			closed -= 1;
+	}
+	if (!closed)
+		return (1);
+	else
+		return (0);
+}
+
 Data::Data(const char* file_name)
 {
 	std::string path;
@@ -30,6 +47,9 @@ Data::Data(const char* file_name)
 	//	s += "\n"; // maybe needed to count lines
 	}
 
+	if (!block_is_closed(s)) // mettre un check si close
+		throw (std::logic_error("Parsing error: missing \'}\'"));
+
 	while (s.size() > 0 && (i = s.find_first_not_of(END_INSTRUCTION_CHAR, i)) != s.npos)
 	{
 		if (s.size() && s.substr(s.find_first_not_of(END_INSTRUCTION_CHAR, i), 6) != "server")
@@ -41,20 +61,18 @@ Data::Data(const char* file_name)
 
 		if (s[0] != '{')
 			throw (std::logic_error("Parsing error: unknown token after server"));
-		if (s.find_first_of('}') == s.npos)
-			throw (std::logic_error("Parsing error: missing \'}\'"));
 
-		b = s.substr(s.find('{') + 1, s.find('}') - s.find('{'));
-		if (b.find_first_of(ALPHACHAR) == b.npos)
+		s = s.substr(s.find('{') + 1);
+		if (s.find_first_of(ALPHACHAR) == s.npos)
 			throw(std::logic_error("Parsing error: server content empty"));
-		if (b.find_first_of(';') == b.npos)
+		if (s.find_first_of(';') == s.npos)
 			throw(std::logic_error("Parsing error: Missing \';\' in config content"));
 
-		s = s.substr(s.find('}'));
+		//s = s.substr(s.find('}'));
 
 
 		_configList.push_back(Config());
-		_configParser.setConfig(&_configList.back(), b);
+		_configParser.setConfig(&_configList.back(), s);
 	}
 
 	check_multiple_ports();
@@ -62,10 +80,12 @@ Data::Data(const char* file_name)
 //	std::cout << _configList.back()._listen << std::endl;
 //	std::cout << _configList.front()._listen << std::endl;
 //	std::cout << _configList.size() << std::endl;
-/*	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);*/
+	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);
 
 }
+
+
 
 Data::Data(const Data& data)
 {
@@ -175,7 +195,7 @@ static void check_methods_validity(Config& config)
 		j++;
 	}
 }
-
+/*
 static void check_server_doubles(std::vector<Config>& configList)
 {
 	for (std::vector<Config>::size_type i = 0; i < configList.size() - 1; i++)
@@ -186,7 +206,7 @@ static void check_server_doubles(std::vector<Config>& configList)
 				configList.erase(configList.begin() + j);
 	}
 }
-
+*/
 void Data::check_validity()
 {
 	/*
@@ -212,7 +232,7 @@ void Data::check_validity()
 		}
 	}
 	// check si il y a des doublons sur les servers
-	check_server_doubles(_configList);
+//	check_server_doubles(_configList);
 //	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
 //		_configParser.print_data(&_configList[i]);
 }
