@@ -25,7 +25,7 @@ void ConfigParser::operator = (const ConfigParser& configParser)
 	initiate_map();
 }
 
-bool ConfigParser::setConfig(Config* config, std::string s)
+bool ConfigParser::setConfig(Config* config, std::string& s)
 {
 	//something like this
 	std::string key;
