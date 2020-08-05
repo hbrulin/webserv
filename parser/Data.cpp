@@ -4,7 +4,7 @@
 
 
 const char* Data::_SUPPORTED_CGI[] = {"php", "other", NULL};
-const char* Data::_SUPPORTED_METHOD[] = {"get", "post", "head", "method3", "method4", NULL};
+const char* Data::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
 Data::Data(const char* file_name)
 {
@@ -62,8 +62,8 @@ Data::Data(const char* file_name)
 //	std::cout << _configList.back()._listen << std::endl;
 //	std::cout << _configList.front()._listen << std::endl;
 //	std::cout << _configList.size() << std::endl;
-/*	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);*/
+	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);
 
 }
 

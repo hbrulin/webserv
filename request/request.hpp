@@ -16,7 +16,7 @@
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 
-class Request 
+class Request
 {
 	private:
 	Request(){};
@@ -38,7 +38,7 @@ class Request
 	//META_DATA
 	//std::string _server_name;
 
-	/*default outputs - à intégrer dans structures ci-dessus?? 
+	/*default outputs - à intégrer dans structures ci-dessus??
 	config selon file .config pour index?*/
 	std::string m_content;
 	std::string m_header;
@@ -55,7 +55,7 @@ class Request
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf, int port) 
+	Request(char *buffer, int fd, Config conf, int port)
 	{
 		_conf = conf;
 		memset((char *) &m_buffer, 0, sizeof(m_buffer));
@@ -78,11 +78,13 @@ class Request
 	void post();
 	void get();
 	void put();
+	void delete_m();
 	int forking();
 	//int isAcceptable();
 	int isAuthorized(std::string str);
 	void split_resp(char *buffer);
 	int isAllowed(std::string path);
+	bool check_if_method_is_allowed(std::string);
 };
 
 

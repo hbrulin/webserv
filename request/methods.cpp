@@ -89,7 +89,7 @@ void Request::post() {
 }
 
 void Request::put() {
-	
+
 	m_path = _conf._root + m_content;
 	std::ifstream f(m_path);
 	if (f.good())
@@ -104,6 +104,37 @@ void Request::put() {
 	else
 		std::cout << "error" << std::endl;
 	ff.close();
+}
+
+void Request::patch()
+{
+	//open file and check existance
+	//check_content
+	std::string content = m_content.substr(m_content.find('{'), m_content.find('}'));
+	while ()
+}
+
+void Request::delete_m()
+{
+	/* a tester sur nginx pour voir les erreurs et tout*/
+	m_path = _conf._root + m_content;
+	if (std::remove(m_path.c_str()) != 0) // ou unlink + rmdir
+		m_errorCode = 201; // ???
+	/*
+	DELETE /echo/delete/json HTTP/1.1
+	Authorization: Bearer mt0dgHmLJMVQhvjpNXDyA83vA_PxH23Y
+	Accept: application/json
+	Content-Type: application/json
+	Content-Length: 19
+	Host: reqbin.com
+	*/
+	/*
+	HTTP/1.1 200 OK
+	Content-Length: 19
+	Content-Type: application/json
+
+	{"success":"true"}
+	*/
 }
 
 void Request::get() {
@@ -144,7 +175,7 @@ void Request::get() {
 			//m_errorCode = 400;
 			f.close();
 		}
-		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
+		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1" && m_errorCode != 405)
 		{
 			f.close();
 			std::ifstream f(_conf._root + m_not_supported);
@@ -154,9 +185,8 @@ void Request::get() {
 			m_errorCode = 505;
 			f.close();
 		}
-		else if (!isAllowed(m_path))
+		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
-			std::cout << "lala" << std::endl;
 			f.close();
 			std::ifstream f(_conf._root + m_not_allowed);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());

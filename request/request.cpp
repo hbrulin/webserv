@@ -35,7 +35,12 @@ void Request::parse() {
 	{
 		m_errorCode = 400;
 	}
-	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT"))
+	if (!(check_if_method_is_allowed(parsed[0])))
+	{
+		std::cout << "ici\n";
+		m_errorCode = 405; // error for method not allowed
+	}
+	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
 	{
 		m_content = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
@@ -79,7 +84,6 @@ void Request::parse() {
 }
 
 void Request::handle() {
-
 	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
 	{
 		post();
@@ -89,11 +93,16 @@ void Request::handle() {
 		put();
 		return;
 	}
+	else if (strstr(m_buffer, "DELETE") != NULL)
+	{
+		delete_m();
+		return ;
+	}
 	else
 	{
 		get();
 	}
-	
+
 }
 
 
@@ -107,4 +116,14 @@ int Request::send_to_client() {
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;
+}
+
+bool Request::check_if_method_is_allowed(std::string method)
+{
+	for (std::vector<std::string>::size_type i = 0; i < _conf._methods.size(); i++)
+	{
+		if (_conf._methods[i] == method)
+			return (true);
+	}
+	return (false);
 }
