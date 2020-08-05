@@ -99,7 +99,7 @@ void Request::handle() {
 		return ;
 	}
 	else
-	{
+	{	//also works for HEAD, change is in sendToClient()
 		get();
 	}
 

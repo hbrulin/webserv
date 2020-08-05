@@ -72,10 +72,12 @@ int Listener::init() {
 		set_non_blocking(m_sock[i]);
 	}
 
+	int swapped;
 	// Bind the ip address and port to a socket
 	for (int i = 0; i < _size ; i++) {
 		m_address[i].sin_family = AF_INET;
-		m_address[i].sin_port = htons(m_port[i]);; //IL FAUDRA FAIRE LA CONVERSION NOUS_MEMES
+		swapped = (m_port[i]>>8) | (m_port[i]<<8);
+		m_address[i].sin_port = swapped; //replaces htons()
 		//m_address.sin_addr.s_addr = inet_addr("0.0.0.0"); //any address
 		m_address[i].sin_addr.s_addr = inet_addr(_conf[i]._host.c_str());
 	}

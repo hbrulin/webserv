@@ -161,6 +161,8 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
 
 std::string Head_req::contentNego(std::string root, std::string content) {
 	size_t i = 0;
+	if (ACCEPT_LANGUAGE.empty())
+		return root + "fr/" + content;
 	std::string res = "not_acceptable";
 	for (std::vector<std::string>::iterator it = ACCEPT_LANGUAGE.begin(); it!=ACCEPT_LANGUAGE.end(); ++it) {
 		std::string tmp = *it;
