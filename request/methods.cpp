@@ -106,13 +106,13 @@ void Request::put() {
 	ff.close();
 }
 
-void Request::patch()
+/*void Request::patch()
 {
 	//open file and check existance
 	//check_content
 	std::string content = m_content.substr(m_content.find('{'), m_content.find('}'));
 	while ()
-}
+}*/
 
 void Request::delete_m()
 {
