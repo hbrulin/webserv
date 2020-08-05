@@ -35,7 +35,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 
 	_config = config;
 	//std::cout << s << std::endl;
-	while (s.size() > 0 && s != "}")
+	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;
 		if (s.find_first_not_of(END_INSTRUCTION_CHAR) == s.npos)
@@ -61,10 +61,13 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		try
 		{
 			(this->*(_map[key]))(value);
+			//std::cout << "1\n";
 			parsing_sum++;
 		}
-		catch (...)
+		catch (std::logic_error& e)
 		{
+			if (key == "location")
+				std::cout << e.what() << std::endl;
 			throw (std::logic_error("Parsing error: Unknown value: '" + value + "' for option: " + key));
 			return (false);
 		}
@@ -251,10 +254,14 @@ void ConfigParser::parse_cgi_type(std::string b)
 
 void ConfigParser::parse_location(std::string b)
 {
-/*	Location loc(b);
-	locations.push_back(loc);*/
-	b = "void";
-	std::cout << "Location de ses morts\n";
+	Location loc;
+	loc.parse(b);
+	loc.print();
+	_config->_locations.push_back(loc);
+	//b = "void";
+	// Parse mode if or not
+	// parse
+
 }
 
 void ConfigParser::remove_whitespace(std::string& s)

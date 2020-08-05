@@ -2,7 +2,7 @@ NAME = webserv
 
 CC = clang++
 
-SRCS = main.cpp parser/ConfigParser.cpp parser/Data.cpp listener/listener.cpp request/request.cpp request/error_handling.cpp request/ft_utils.cpp request/methods.cpp parser/Config.cpp headers/head_resp.cpp headers/head_req.cpp headers/meta_var.cpp
+SRCS = main.cpp parser/ConfigParser.cpp parser/Data.cpp listener/listener.cpp request/request.cpp request/error_handling.cpp request/ft_utils.cpp request/methods.cpp parser/Config.cpp headers/head_resp.cpp headers/head_req.cpp headers/meta_var.cpp parser/Location.cpp
 BUILD_DIR = obj
 CFLAGS = -Wall -Wextra -Werror -MMD -g
 

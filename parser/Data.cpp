@@ -63,7 +63,7 @@ Data::Data(const char* file_name)
 			throw (std::logic_error("Parsing error: unknown token after server"));
 
 		s = s.substr(s.find('{') + 1);
-		std::cout << s << std::endl;
+		//std::cout << s << std::endl;
 		if (s.find_first_of(ALPHACHAR) == s.npos)
 			throw(std::logic_error("Parsing error: server content empty"));
 		if (s.find_first_of(';') == s.npos)

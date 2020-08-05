@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sys/stat.h>
 
-//#include "Location.hpp"
+#include "Location.hpp"
 
 #define LOCALHOST "127.0.0.1"
 #define DEFAULT_ERROR_PAGES "www/"
@@ -42,7 +42,7 @@ struct Config
 
 //	Location _cgi;
 
-//	std::vector<Location> _locations;
+	std::vector<Location> _locations;
 
 
 
