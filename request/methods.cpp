@@ -129,8 +129,13 @@ void Request::delete_m()
 {
 	/* a tester sur nginx pour voir les erreurs et tout*/
 	m_path = _conf._root + m_content;
-	if (std::remove(m_path.c_str()) != 0) // ou unlink + rmdir
-		m_errorCode = 201; // ???
+	std::ifstream f(m_path);
+	if (f.good())
+		m_errorCode = 200;
+	else
+		m_errorCode = 204; //created
+	f.close();
+	unlink(m_path.c_str());
 	/*
 	DELETE /echo/delete/json HTTP/1.1
 	Authorization: Bearer mt0dgHmLJMVQhvjpNXDyA83vA_PxH23Y
