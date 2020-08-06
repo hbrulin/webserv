@@ -168,7 +168,7 @@ void		Head_req::getBody(char *m_buffer) {
 	{
         n = n + std::string("\n\n").size();
 		i = n;
-		while (m_buffer[i] != '\r') { i++;}
+		while (m_buffer[i] != EOF) { i++;}
 		BODY = s.substr(n, i - n);
 	}
 	//std::cout << n << ' ' << i << std::endl;
