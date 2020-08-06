@@ -47,10 +47,14 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 		oss << " OK\r\n";
 	else if (code == 201)
 		oss << " Created\r\n";
+	else if (code == 400)
+		oss << " Bad Request\r\n";
 	else if (code == 401)
 		oss << " Unauthorized\r\n";
 	else if (code == 404)
 		oss << " Not Found\r\n";
+	else if (code == 413)
+		oss << " Request Entity Too Large\r\n";
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";

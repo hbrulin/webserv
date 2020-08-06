@@ -21,7 +21,7 @@ struct Config
 	std::string _server_name;
 	std::string _root; //-> root path of the server like www/
 	std::string _errors; // ->root of default errors directory
-	unsigned int _body_size;// --> don't know what it is
+	int _body_size;// --> don't know what it is
 
 	//routing
 	unsigned int 				_listen; // the listen port

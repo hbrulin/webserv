@@ -90,17 +90,28 @@ void Request::post() {
 
 void Request::put() {
 	
+	if (_head_req.CONTENT_LENGTH.empty() || _head_req.TRANSFER_ENCODING == NULL)
+	{
+		m_errorCode = 400;
+		return;
+	}
+	else if (stoi(_head_req.CONTENT_LENGTH) > _conf._body_size)
+	{
+		m_errorCode = 413;
+		return;
+	}
 	m_path = _conf._root + m_content;
 	std::ifstream f(m_path);
 	if (f.good())
 		m_errorCode = 200;
 	else
 		m_errorCode = 201; //created
-
 	f.close();
+
+	int n = stoi(_head_req.CONTENT_LENGTH);
 	std::ofstream ff(m_path);
 	if (ff.good())
-		ff << "message" << std::endl;
+		ff << _head_req.BODY.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
 	else
 		std::cout << "error" << std::endl;
 	ff.close();

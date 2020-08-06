@@ -44,6 +44,7 @@ void Request::parse() {
 		if (tab != NULL && tab[0] != NULL)
 				_head_req.AUTH_TYPE = tab[0];
 		_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
+		_head_req.CONTENT_LENGTH = _head_req.getStringtoParse(m_buffer, "Content-Length: ");
 		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" #");
 		_head_req.getScriptName((char *)m_content.c_str());
 		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_content.c_str(), "://", ":/?#");
@@ -54,7 +55,8 @@ void Request::parse() {
 		{
 			m_content = m_index;
 		}
-		//std::cout << m_content << std::endl;
+		_head_req.getBody(m_buffer);
+		//std::cout << _head_req.BODY << std::endl;
 	}
 	// HEADERS
 	_head_req.REFERER = _head_req.getReferer(m_buffer);
