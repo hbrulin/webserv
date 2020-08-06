@@ -1,1 +1,1 @@
-DELETE /test HHTP/1.1
+DELETE /test HTTP/1.1

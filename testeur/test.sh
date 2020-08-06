@@ -1,7 +1,7 @@
 #!/bin/bash
 brew install nginx
 cp /usr/local/etc/nginx/nginx.conf /usr/local/etc/nginx/nginx_backup.conf
-cp test.conf /usr/local/etc/nginx/nginx.conf
+cp testeur.conf /usr/local/etc/nginx/nginx.conf
 sudo mkdir -p /var/www/html/
 sudo cp -R ../www/* /var/www/html/ #changer le port pour les liens!!
 sudo mkdir -p /var/www/cgi-bin
