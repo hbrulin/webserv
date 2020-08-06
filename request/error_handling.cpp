@@ -50,7 +50,6 @@ int Request::isAuthorized(std::string str)
 
 int Request::isAllowed(std::string path)
 {
-    //std::cout << "here" << path << std::endl;
     if ((_head_req.REQUEST_METHOD == "POST" || _head_req.REQUEST_METHOD == "DELETE") && path.find(_conf._root) != std::string::npos)
     {
         _head_resp.ALLOW = "GET";
