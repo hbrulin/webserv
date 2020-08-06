@@ -111,7 +111,7 @@ void Request::put() {
 	int n = stoi(_head_req.CONTENT_LENGTH);
 	std::ofstream ff(m_path);
 	if (ff.good())
-		ff << _head_req.BODY.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
+		ff << m_body.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
 	else
 		std::cout << "error" << std::endl;
 	ff.close();

@@ -41,6 +41,7 @@ class Request
 	/*default outputs - à intégrer dans structures ci-dessus??
 	config selon file .config pour index?*/
 	std::string m_content;
+	std::string m_body;
 	std::string m_header;
 	std::string m_not_found;
 	std::string m_not_acceptable;
@@ -73,6 +74,7 @@ class Request
 
 	};
 	void parse();
+	void getBody(char *m_buffer);
 	void handle();
 	int send_to_client();
 	void post();
@@ -85,6 +87,7 @@ class Request
 	void split_resp(char *buffer);
 	int isAllowed(std::string path);
 	bool check_if_method_is_allowed(std::string);
+	
 };
 
 

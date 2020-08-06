@@ -22,7 +22,20 @@ void Request::split_resp(char *buffer)
 	}
 }
 
-
+void		Request::getBody(char *m_buffer) {
+	int n;
+	int i = 0;
+	std::string s(m_buffer);
+	n = s.find("\n\n");
+	if (n != (int)std::string::npos)
+	{
+        n = n + std::string("\n\n").size();
+		i = n;
+		while (m_buffer[i] != EOF) { i++;}
+		m_body = s.substr(n, i - n);
+	}
+	//std::cout << n << ' ' << i << std::endl;
+}
 
 void Request::parse() {
 
@@ -60,7 +73,7 @@ void Request::parse() {
 		{
 			m_content = m_index;
 		}
-		_head_req.getBody(m_buffer);
+		getBody(m_buffer);
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	// HEADERS

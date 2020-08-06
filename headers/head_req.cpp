@@ -159,21 +159,6 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
     return referer;
 }
 
-void		Head_req::getBody(char *m_buffer) {
-	int n;
-	int i = 0;
-	std::string s(m_buffer);
-	n = s.find("\n\n");
-	if (n != (int)std::string::npos)
-	{
-        n = n + std::string("\n\n").size();
-		i = n;
-		while (m_buffer[i] != EOF) { i++;}
-		BODY = s.substr(n, i - n);
-	}
-	//std::cout << n << ' ' << i << std::endl;
-}
-
 std::string Head_req::contentNego(std::string root, std::string content) {
 	size_t i = 0;
 	if (ACCEPT_LANGUAGE.empty())
