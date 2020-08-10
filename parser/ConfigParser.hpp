@@ -32,7 +32,7 @@ class ConfigParser
 	public:
 	ConfigParser() ; // initialise with default
 
-	bool setConfig(Config* config, std::string s); // real constructor
+	bool setConfig(Config* config, std::string& s); // real constructor
 
 	ConfigParser(const ConfigParser& configParser);
 	void operator = (const ConfigParser& configParser);
@@ -63,6 +63,8 @@ class ConfigParser
 	void parse_server_name(std::string);
 	void parse_cgi_root(std::string);
 	void parse_cgi_type(std::string);
+
+	void parse_location(std::string);
 
 	void remove_whitespace(std::string&);
 

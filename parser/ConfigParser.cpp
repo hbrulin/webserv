@@ -25,7 +25,7 @@ void ConfigParser::operator = (const ConfigParser& configParser)
 	initiate_map();
 }
 
-bool ConfigParser::setConfig(Config* config, std::string s)
+bool ConfigParser::setConfig(Config* config, std::string& s)
 {
 	//something like this
 	std::string key;
@@ -34,9 +34,8 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 	int parsing_sum = 0;
 
 	_config = config;
-
 	//std::cout << s << std::endl;
-	while (s.size() > 0 && s != "}")
+	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;
 		if (s.find_first_not_of(END_INSTRUCTION_CHAR) == s.npos)
@@ -49,7 +48,10 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		remove_whitespace(key);
 		s = s.substr(i);
 
-		value = s.substr(0, s.find(';'));
+		if (key != "location")
+			value = s.substr(0, s.find(';'));
+		else
+			value = s.substr(0, s.find('}'));
 
 		//value.erase(std::remove_if(value.begin(), value.end(), ::isspace ), value.end());
 		//std::cout << "Key " << key << " Value: " << value << std::endl;
@@ -59,15 +61,20 @@ bool ConfigParser::setConfig(Config* config, std::string s)
 		try
 		{
 			(this->*(_map[key]))(value);
+			//std::cout << "1\n";
 			parsing_sum++;
 		}
-		catch (...)
+		catch (std::logic_error& e)
 		{
-			throw (std::logic_error("Parsing error: Unknown value: " + value + " for option: " + key));
+			if (key == "location")
+				std::cout << e.what() << std::endl;
+			throw (std::logic_error("Parsing error: Unknown value: '" + value + "' for option: " + key));
 			return (false);
 		}
-
-		s = s.substr(s.find(';') + 1);
+		if (key != "location")
+			s = s.substr(s.find(';') + 1);
+		else
+			s = s.substr(s.find('}') + 1);
 	}
 
 	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
@@ -87,7 +94,7 @@ void ConfigParser::initiate_map()
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
-	_map["host"] = &ConfigParser::parse_host;
+	//_map["host"] = &ConfigParser::parse_host;
 	_map["methods"] = &ConfigParser::parse_method;
 	_map["directory_listing"] = &ConfigParser::parse_directory_listing;
 	_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
@@ -95,6 +102,7 @@ void ConfigParser::initiate_map()
 	_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
+	_map["location"] = &ConfigParser::parse_location;
 }
 
 void ConfigParser::parse_root(std::string b)
@@ -118,17 +126,56 @@ void ConfigParser::parse_body_size(std::string b)
 void ConfigParser::parse_listen(std::string b)
 {
 	remove_whitespace(b);
-	_config->_listen = stoi(b);
-	//std::cout << b << std::endl;
-	_config->_ports.push_back(stoi(b));
+
+	if (b.empty())
+		return ;
+	if (b.compare(0, 9, "localhost") == 0)
+	{
+		_config->_host = LOCALHOST;
+		b = b.substr(9);
+		if (b.find(':') != b.npos)
+		{
+			//_config->_host = b.substr(0, b.find(':'));
+			b = b.substr(b.find(':') + 1);
+			if (b.size())
+			{
+				_config->_listen = stoi(b);
+				_config->_ports.push_back(stoi(b));
+			}
+		}
+	}
+	else if (b.find('.') != b.npos) // contains an ip
+	{
+		if (b.find(':') != b.npos)
+		{
+			_config->_host = b.substr(0, b.find(':'));
+			b = b.substr(b.find(':') + 1);
+			if (b.size())
+			{
+				_config->_listen = stoi(b);
+				_config->_ports.push_back(stoi(b));
+			}
+		}
+		else
+			_config->_host = b;
+	}
+	else
+	{
+		// maybe check if number
+		_config->_listen = stoi(b);
+		_config->_ports.push_back(stoi(b));
+	}
 }
 
 
+// fonction obsolete
 void ConfigParser::parse_host(std::string b)
 {
-	remove_whitespace(b);
-	if (b == "localhost")
-		b = LOCALHOST;
+	//remove_whitespace(b);
+	// check if is ip;
+	std::string localhost = "localhost";
+
+
 	_config->_host = b;
 }
 
@@ -205,6 +252,18 @@ void ConfigParser::parse_cgi_type(std::string b)
 	_config->_cgi_type = b;
 }
 
+void ConfigParser::parse_location(std::string b)
+{
+	Location loc;
+	loc.parse(b);
+	loc.print();
+	_config->_locations.push_back(loc);
+	//b = "void";
+	// Parse mode if or not
+	// parse
+
+}
+
 void ConfigParser::remove_whitespace(std::string& s)
 {
 	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
@@ -218,6 +277,10 @@ void ConfigParser::remove_whitespace(std::string& s)
 	while (std::distance(start, end) > 0 && std::isspace(*end));
 	s = std::string(start, end + 1);
 }
+
+
+
+
 
 void ConfigParser::print_data(Config* config)
 {
