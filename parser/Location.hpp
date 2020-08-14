@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
 #include <map>
 
 #define LOCEXCEPTION "Bad location block: "
@@ -23,6 +24,7 @@ class Location
 	void operator = (const Location&);
 
 	void parse(std::string);
+	std::string get_name();
 
 	std::string		get_path(); // path = _root + _name
 	std::string		get_file_path(std::string); // to search files inside location
@@ -39,6 +41,8 @@ class Location
 	std::string _index;
 	std::string _try_files;
 	std::string _allow;
+
+	std::vector<std::string> _methods;
 
 	fmap _map;
 

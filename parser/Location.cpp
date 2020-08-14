@@ -154,3 +154,8 @@ void Location::print()
 	"_mode: " << _mode << std::endl << "index: " << _index << std::endl <<
 	"try files: " << _try_files << std::endl << "allow: " << _allow << std::endl;;
 }
+
+std::string Location::get_name()
+{
+	return (_name);
+}
