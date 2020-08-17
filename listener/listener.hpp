@@ -50,6 +50,7 @@ class Listener {
 		int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
+		int			m_nbConf;
 	
 		Listener() {};
 

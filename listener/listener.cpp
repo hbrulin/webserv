@@ -20,7 +20,7 @@ std::string Listener::getHost(char *buffer, std::string toParse)
 int Listener::checkpast(int i)
 {
 	for (int j = 0; j < i ; j++) {
-		if (m_address[j].sin_addr.s_addr == m_address[i].sin_addr.s_addr && m_sock[j] == m_sock[i] && i != j)
+		if (m_address[j].sin_addr.s_addr == m_address[i].sin_addr.s_addr && m_port[j] == m_port[i] && i != j)
 			return(1);		
 	}
 	return(0);
@@ -113,7 +113,7 @@ int Listener::init() {
 		if(!checkpast(i)){
 			if (bind(m_sock[i], (struct sockaddr*) &m_address[i], sizeof(m_address[i])) < 0)
 			{
-				std::cout << errno << std::endl;
+				//std::cout << i << std::endl;
 				strerror(errno);
 				//perror("msg");
 				close(m_sock[i]);
@@ -184,8 +184,9 @@ int Listener::run() {
 					ret = look_for_sock(j);
 					//std::cout << ret.first << ret.second << std::endl;
 					if (ret.first) {
-						//std::cout << "test" << std::endl;
+						//std::cout << ret.first << std::endl;
 						accept_incoming_connections(ret.first);
+						m_nbConf = ret.second;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
 						m_close = false;
@@ -203,8 +204,9 @@ int Listener::run() {
 
 std::pair<int, int>	Listener::look_for_sock(int j)
 {
+	//std::cout << "J is " << j << std::endl;
 	for (int i = 0; i < _size ; i++) {
-		//std::cout << m_sock[i] << std::endl;
+		//std::cout << "sock is" <<  m_sock[i] << std::endl;
 		if (j == m_sock[i])
 			return std::pair<int, int>(j, i);
 	}
@@ -294,7 +296,7 @@ void Listener::receive_data(int fd) {
 		//len = ret;
 		//send(fd, buffer, len, 0);
 
-		int i = look_for_sock(fd).second;
+		//int i = look_for_sock(fd).second;
 	
 		//choose config according to server name
 		std::string host = getHost(buffer, "Host: ");
@@ -304,11 +306,11 @@ void Listener::receive_data(int fd) {
 		for (int j = 0; j < _size ; j++)
 		{
 			if (host == _conf[j]._server_name)
-				i = j;
+				m_nbConf = j;
 		}
-		std::cout << i << std::endl;
+		std::cout << "server" << m_nbConf << std::endl;
 		//init request
-		Request req(buffer, fd, _conf[i], *m_port); //changer le i if server_name
+		Request req(buffer, fd, _conf[m_nbConf], *m_port); //changer le i if server_name
 		//std::cout << buffer << std::endl;
 		req.parse();
 		req.handle();
