@@ -326,6 +326,63 @@ void Location::check_methods_validity()
 	}
 }
 
+bool Location::check_allowed_method(std::string method)
+{
+	for (unsigned long i = 0; i < _methods.size(); i++)
+	{
+		if (_methods[i] == method)
+			return (true);
+	}
+	return (false);
+}
+
+std::string Location::get_index()
+{
+	return (_index);
+}
+
+std::string Location::get_index_path()
+{
+	return (get_path() + _index);
+}
+
+bool Location::upload(std::string file)
+{
+	if (!_send_files)
+		return (false);
+	(void)file;
+	// upload to _uploaded_files_root
+	return (true);
+}
+
+unsigned int Location::get_body_size()
+{
+	return (_body_size);
+}
+
+std::string		Location::get_cgi_root()
+{
+	return (_cgi_root);
+}
+
+std::string		Location::get_listing()
+{
+	if (!_directory_listing)
+		return ("Directory listing not allowed");
+	// return a string with all files in location
+	return ("directory listing on");
+}
+/*
+boolcheck_allowed_cgi(std::string ext)
+{
+	for (unsigned long i = 0; i < _cgi_type.size(); i++)
+	{
+		if (_cgi_type[i] == ext)
+			return (true);
+	}
+	return (false);
+}*/
+
 /*
 void check_path_validity()
 {

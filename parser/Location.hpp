@@ -28,6 +28,16 @@ class Location
 
 	std::string		get_path(); // path = _root + _name
 	std::string		get_file_path(std::string); // to search files inside location
+	bool			check_allowed_method(std::string method);
+	bool			check_allowed_cgi(std::string ext);
+	bool			upload(std::string file);
+
+	std::string		get_index();
+	std::string		get_index_path();
+	unsigned int	get_body_size();
+	std::string		get_cgi_root();
+	std::string		get_listing();
+
 
 	//Location get_location(std::string);
 
