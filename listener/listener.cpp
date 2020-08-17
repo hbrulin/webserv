@@ -302,13 +302,13 @@ void Listener::receive_data(int fd) {
 		std::string host = getHost(buffer, "Host: ");
 		//std::cout << host << std::endl;
 		size_t n = host.find(":");
-		host.substr(0, n);
+		host = host.substr(0, n);
 		for (int j = 0; j < _size ; j++)
 		{
 			if (host == _conf[j]._server_name)
 				m_nbConf = j;
 		}
-		std::cout << "server" << m_nbConf << std::endl;
+		//std::cout << "server" << m_nbConf << std::endl;
 		//init request
 		Request req(buffer, fd, _conf[m_nbConf], *m_port); //changer le i if server_name
 		//std::cout << buffer << std::endl;
