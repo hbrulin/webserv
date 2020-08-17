@@ -1,5 +1,32 @@
 #include "listener.hpp"
 
+std::string Listener::getHost(char *buffer, std::string toParse)
+{
+    int n;
+	std::string s(buffer);
+    std::string referer;
+	n = s.find(toParse);
+	if (n != (int)std::string::npos)
+	{
+        n = n + std::string(toParse).size();
+		int i = n;
+		while (buffer[i] != '\n' && buffer[i] != '\r') { i++;}
+		referer = s.substr(n, i - n);
+        return referer;
+	}
+    return "";
+}
+
+int Listener::checkpast(int i)
+{
+	for (int j = 0; j < i ; j++) {
+		if (m_address[j].sin_addr.s_addr == m_address[i].sin_addr.s_addr && m_sock[j] == m_sock[i] && i != j)
+			return(1);		
+	}
+	return(0);
+}
+
+
 Listener::Listener(std::vector<Config> conf, int size) {
 
 	_size = size;
@@ -83,13 +110,15 @@ int Listener::init() {
 	}
 
 	for (int i = 0; i < _size ; i++) {
-		if (bind(m_sock[i], (struct sockaddr*) &m_address[i], sizeof(m_address[i])) < 0)
-		{
-			//std::cout << errno << std::endl;
-			strerror(errno);
-			//perror("msg");
-			close(m_sock[i]);
-			exit(EXIT_FAILURE); //VOIR SI ON EXIT SI UN SERVEUR SUR PLUSIEURS FAIL
+		if(!checkpast(i)){
+			if (bind(m_sock[i], (struct sockaddr*) &m_address[i], sizeof(m_address[i])) < 0)
+			{
+				std::cout << errno << std::endl;
+				strerror(errno);
+				//perror("msg");
+				close(m_sock[i]);
+				exit(EXIT_FAILURE); //VOIR SI ON EXIT SI UN SERVEUR SUR PLUSIEURS FAIL
+			}
 		}
 	}
 	//std::cout << "test" << std::endl;
@@ -266,7 +295,20 @@ void Listener::receive_data(int fd) {
 		//send(fd, buffer, len, 0);
 
 		int i = look_for_sock(fd).second;
-		Request req(buffer, fd, _conf[i], *m_port); //mettre direct dans le Listener
+	
+		//choose config according to server name
+		std::string host = getHost(buffer, "Host: ");
+		//std::cout << host << std::endl;
+		size_t n = host.find(":");
+		host.substr(0, n);
+		for (int j = 0; j < _size ; j++)
+		{
+			if (host == _conf[j]._server_name)
+				i = j;
+		}
+		std::cout << i << std::endl;
+		//init request
+		Request req(buffer, fd, _conf[i], *m_port); //changer le i if server_name
 		//std::cout << buffer << std::endl;
 		req.parse();
 		req.handle();

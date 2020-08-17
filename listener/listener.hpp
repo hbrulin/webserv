@@ -29,6 +29,8 @@ class Listener {
 		void receive_data(int fd);
 		void close_conn(int fd);
 		std::pair<int, int>	look_for_sock(int j);
+		std::string getHost(char *buffer, std::string toParse);
+		int checkpast(int i);
 
 	private:
 		/*META VAR*/
