@@ -98,7 +98,7 @@ unsigned int Data::getSize()
 	return (_configList.size());
 }
 
-const std::vector<Config>& Data::getConfigList()
+std::vector<Config>& Data::getConfigList()
 {
 	return (_configList);
 }

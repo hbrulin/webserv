@@ -44,7 +44,7 @@ class Data
 
 	// GETTERS
 	unsigned int getSize(); // return _serverList.size()
-	 std::vector<Config>& getConfigList(); // return _serverList
+	std::vector<Config>& getConfigList(); // return _serverList
 	const Config& operator [] (unsigned int); // getter for list[]
 
 	static const char* _SUPPORTED_CGI[];
