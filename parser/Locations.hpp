@@ -21,10 +21,24 @@ class Locations
 
 	std::string get_path(std::string name);
 
+	Location& get_loc_by_url(std::string url);
+
+	void 	print();
+
 
 	private:
 	std::vector<Location> 	_v;
-	Location 				_blank;
+	Location 				_blank; // blnk location returned if none was found
 };
 
 #endif
+
+/*
+site:80/1/8/a
+site:80/a
+
+location "/1/" {blal}
+location "/1/8"
+location "/a" {}
+url
+*/

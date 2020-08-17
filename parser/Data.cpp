@@ -136,12 +136,12 @@ static void check_path_validity(Config& config)
 		throw (std::logic_error(error + config._root + " is invalid"));
 	if (!path_exists(config._errors))
 		throw (std::logic_error(error + config._errors + " is invalid"));
-	if (!path_exists(config._cgi_root))
-		throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	if (config._directory_listing && !path_exists(config._default_directory_answer_file))
-		throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
-	if (config._send_files && !path_exists(config._files_root))
-		throw (std::logic_error(error + config._files_root + " is invalid"));
+	//if (!path_exists(config._cgi_root))
+	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
+	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
+	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
+	//if (config._send_files && !path_exists(config._files_root))
+	//	throw (std::logic_error(error + config._files_root + " is invalid"));
 }
 
 static void check_rooting_validity(Config& config)
@@ -244,12 +244,16 @@ void Data::check_multiple_ports()
 
 	for (std::vector<Config>::size_type i = 0; i < size; i++)
 	{
+//		for (unsigned long k = 0; k < _configList[i]._ports.size(); k++)
+//			std::cout << "ports: " << _configList[i]._ports[k] << std::endl;
+//		std::cout << "1\n";
 		if (_configList[i]._ports.size() > 1)
 		{
 			std::vector<Config>::size_type j = 0;
 			while (j < _configList[i]._ports.size() - 1)
 			{
 				Config b(_configList[i]);
+				std::cout << _configList[i]._ports.size() << "j " << j << std::endl;
 				b._listen = _configList[i]._ports[j];
 				_configList.push_back(b);
 				j++;

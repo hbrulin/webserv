@@ -79,6 +79,10 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 
 	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
 		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler*/
+
+/*	_config->_locations.get_loc_by_url("");
+	_config->_locations.get_loc_by_url("/bonjour/aurevoir/salut/");
+	_config->_locations.get_loc_by_url("/");*/
 	return (true);
 }
 
@@ -96,10 +100,10 @@ void ConfigParser::initiate_map()
 	_map["listen"] = &ConfigParser::parse_listen;
 	//_map["host"] = &ConfigParser::parse_host;
 	_map["methods"] = &ConfigParser::parse_method;
-	_map["directory_listing"] = &ConfigParser::parse_directory_listing;
-	_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
-	_map["send_files"] = &ConfigParser::parse_send_files;
-	_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
+	//_map["directory_listing"] = &ConfigParser::parse_directory_listing;
+	//_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
+	//_map["send_files"] = &ConfigParser::parse_send_files;
+	//_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 	_map["location"] = &ConfigParser::parse_location;
@@ -111,16 +115,16 @@ void ConfigParser::parse_root(std::string b)
 	_config->_root = b;
 }
 
-void ConfigParser::parse_errors(std::string b)
-{
-	remove_whitespace(b);
-	_config->_errors = b;
-}
-
 void ConfigParser::parse_body_size(std::string b)
 {
 	remove_whitespace(b);
 	_config->_body_size = stoi(b);
+}
+
+void ConfigParser::parse_errors(std::string b)
+{
+	remove_whitespace(b);
+	_config->_errors = b;
 }
 
 void ConfigParser::parse_listen(std::string b)
@@ -179,6 +183,38 @@ void ConfigParser::parse_host(std::string b)
 	_config->_host = b;
 }
 
+void ConfigParser::parse_server_name(std::string b)
+{
+	remove_whitespace(b);
+	_config->_server_name = b;
+}
+
+
+void ConfigParser::parse_location(std::string b)
+{
+	Location loc;
+	loc.parse(b);
+	_config->_locations.push_back(loc);
+	//b = "void";
+	// Parse mode if or not
+	// parse
+
+}
+
+void ConfigParser::parse_cgi_root(std::string b)
+{
+	remove_whitespace(b);
+	_config->_cgi_root = b;
+}
+
+void ConfigParser::parse_cgi_type(std::string b)
+{
+	remove_whitespace(b);
+	std::transform(b.begin(), b.end(), b.begin(), ::tolower);
+	_config->_cgi_type = b;
+}
+
+
 void ConfigParser::parse_method(std::string b)
 {
 	std::string s = "";
@@ -197,71 +233,6 @@ void ConfigParser::parse_method(std::string b)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
 	}
-}
-
-void ConfigParser::parse_directory_listing(std::string b)
-{
-	remove_whitespace(b);
-	if (b == "yes")
-		_config->_directory_listing = true;
-	else if (b == "no")
-		_config->_directory_listing = false;
-	else
-		throw(std::logic_error("Allow_directory_listing: Must be yes or no"));
-}
-
-void ConfigParser::parse_default_directory_answer_file(std::string b)
-{
-	remove_whitespace(b);
-	_config->_default_directory_answer_file = b;
-}
-
-void ConfigParser::parse_send_files(std::string b)
-{
-	remove_whitespace(b);
-	if (b == "yes")
-		_config->_send_files = true;
-	else if (b == "no")
-		_config->_send_files = false;
-	else
-		throw(std::logic_error("Allow_uploaded: Must be yes or no"));
-}
-
-void ConfigParser::parse_files_root(std::string b)
-{
-	remove_whitespace(b);
-	_config->_files_root = b;
-}
-
-void ConfigParser::parse_server_name(std::string b)
-{
-	remove_whitespace(b);
-	_config->_server_name = b;
-}
-
-void ConfigParser::parse_cgi_root(std::string b)
-{
-	remove_whitespace(b);
-	_config->_cgi_root = b;
-}
-
-void ConfigParser::parse_cgi_type(std::string b)
-{
-	remove_whitespace(b);
-	std::transform(b.begin(), b.end(), b.begin(), ::tolower);
-	_config->_cgi_type = b;
-}
-
-void ConfigParser::parse_location(std::string b)
-{
-	Location loc;
-	loc.parse(b);
-	loc.print();
-	_config->_locations.push_back(loc);
-	//b = "void";
-	// Parse mode if or not
-	// parse
-
 }
 
 void ConfigParser::remove_whitespace(std::string& s)
@@ -288,16 +259,7 @@ void ConfigParser::print_data(Config* config)
 //		config = _config;
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
-	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors
-	<< "\nclient body stuff: " << config->_body_size
-	<< "\nAllow_uploaded: " << config->_send_files << "\nuploaded_files_root: " << config->_files_root
-	<< "\nAllow_directory_listing: " << config->_directory_listing <<
-	"\ndefault_directory_answer_file: " << config->_default_directory_answer_file
-	<< "\nAccepted Methods:";
-	for (std::vector<std::string>::size_type i = 0; i < config->_methods.size(); i++)
-		std::cout << " " << config->_methods[i];
-
-	std::cout << "\nCGI_ROOT: " << _config->_cgi_root << "\nCGI_TYPE: " << _config->_cgi_type;
-
+	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors << std::endl;
+	config->_locations.print();
 	std::cout << std::endl;
 }
