@@ -8,6 +8,10 @@ int main (int ac, char **av) {
 		Data data(av[1]);
 		int size = data.getSize();
 		std::cout << "-1\n";
+
+		Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/aurevoir/");
+		std::cout << "loc found: ";
+		locb.print();
 		Listener server(data.getConfigList(), size);
 		std::cout << "0\n";
 		server.init();
