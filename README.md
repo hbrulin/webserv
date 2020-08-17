@@ -33,3 +33,7 @@ sh testeur/test.sh
 telnet localhost 80
 netcastlocalhost 80 < monfichier
 sudo nginx -s stop
+
+
+#curl resolve servername
+curl --resolve webserv.com:8080:127.0.0.1 http://webserv.com:8080
