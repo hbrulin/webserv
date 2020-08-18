@@ -1,6 +1,6 @@
 #include "Location.hpp"
 
-const char* Location::_SUPPORTED_CGI[] = {"php", "other", NULL};
+const char* Location::_SUPPORTED_CGI[] = {"php", "other", "bla", NULL};
 const char* Location::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
 Location::Location()

@@ -3,7 +3,7 @@
 #define MAX_PORTS 65535
 
 
-const char* Data::_SUPPORTED_CGI[] = {"php", "other", NULL};
+const char* Data::_SUPPORTED_CGI[] = {"php", "other", "bla", NULL};
 const char* Data::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
 static bool block_is_closed(std::string s)

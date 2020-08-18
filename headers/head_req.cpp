@@ -137,7 +137,7 @@ std::string Head_req::getUserAgent(char *m_buffer)
 	{
         n = n + std::string("User-Agents: ").size();
 		int i = n;
-		while (m_buffer[i] != '\r') { i++;}
+		while (m_buffer[i] != '\r' && m_buffer[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return USER_AGENT;

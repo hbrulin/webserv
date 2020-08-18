@@ -31,7 +31,7 @@ void		Request::getBody(char *m_buffer) {
 	{
         n = n + std::string("\n\n").size();
 		i = n;
-		while (m_buffer[i] != EOF) { i++;}
+		while (m_buffer[i] != '\0') { i++;}
 		m_body = s.substr(n, i - n);
 	}
 	//std::cout << n << ' ' << i << std::endl;
