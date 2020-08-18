@@ -306,7 +306,10 @@ void Listener::receive_data(int fd) {
 		for (int j = 0; j < _size ; j++)
 		{
 			if (host == _conf[j]._server_name)
+			{
 				m_nbConf = j;
+				break;
+			}
 		}
 		//std::cout << "server" << m_nbConf << std::endl;
 		//init request

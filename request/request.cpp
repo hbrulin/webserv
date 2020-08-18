@@ -42,16 +42,17 @@ void Request::parse() {
 	/*parse word by word*/
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-
+	std::cout << m_buffer << std::endl;
 	// If the GET request is valid, try and get the name
-	if (!(parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "TRACE" || parsed[0] == "PATCH" || parsed[0] == "DELETE" || parsed[0] == "OPTION" || parsed[0] == "CONNECT" || parsed[0] == "PUT"))
+	/*if (!(parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "TRACE" || parsed[0] == "PATCH" || parsed[0] == "DELETE" || parsed[0] == "OPTION" || parsed[0] == "CONNECT" || parsed[0] == "PUT"))
 	{
 		m_errorCode = 400;
-	}
+	}*/
 	if (check_if_method_is_allowed(parsed[0]))
 	{
 		//std::cout << parsed[0] << std::endl;
 		m_errorCode = 405; // error for method not allowed
+		return;
 	}
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
 	{
