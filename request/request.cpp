@@ -48,9 +48,9 @@ void Request::parse() {
 	{
 		m_errorCode = 400;
 	}
-	if (!(check_if_method_is_allowed(parsed[0])))
+	if (check_if_method_is_allowed(parsed[0]))
 	{
-		std::cout << "ici\n";
+		//std::cout << parsed[0] << std::endl;
 		m_errorCode = 405; // error for method not allowed
 	}
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
@@ -137,6 +137,7 @@ bool Request::check_if_method_is_allowed(std::string method)
 {
 	for (std::vector<std::string>::size_type i = 0; i < _conf._methods.size(); i++)
 	{
+		
 		if (_conf._methods[i] == method)
 			return (true);
 	}
