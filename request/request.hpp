@@ -9,10 +9,12 @@
 #include <iostream>
 #include <vector>
 #include "../parser/Config.hpp"
+#include "../parser/Location.hpp"
 #include "../request/libft.h"
 #include "../headers/head_req.hpp"
 #include "../headers/head_resp.hpp"
 #include "../headers/meta_var.hpp"
+
 
 /*Faire deux classes : une pour reception, une pour envoi?*/
 
@@ -21,6 +23,7 @@ class Request
 	private:
 	Request(){};
 	Config _conf;
+	Location _loc;
 	//HEADERS
 	Head_req _head_req;
 	Head_resp _head_resp;
@@ -40,7 +43,7 @@ class Request
 
 	/*default outputs - à intégrer dans structures ci-dessus??
 	config selon file .config pour index?*/
-	std::string m_content;
+	std::string m_url;
 	std::string m_body;
 	std::string m_header;
 	std::string m_not_found;
@@ -56,23 +59,7 @@ class Request
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf, int port)
-	{
-		_conf = conf;
-		memset((char *) &m_buffer, 0, sizeof(m_buffer));
-		m_buffer = buffer;
-		m_client = fd;
-		m_not_found = "404.html";
-		m_not_allowed = "405.html";
-		m_not_acceptable = "406.html";
-		m_bad_request = "400.html";
-		m_unauthorized = "401.html";
-		m_not_supported = "505.html";
-		m_index = "index.html";
-		m_errorCode = 404; //define other error codes
-		_head_req.SERVER_PORT = std::to_string(port);
-
-	};
+	Request(char *buffer, int fd, Config conf, int port);
 	void parse();
 	void getBody(char *m_buffer);
 	void handle();

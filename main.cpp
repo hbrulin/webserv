@@ -7,17 +7,17 @@ int main (int ac, char **av) {
 	{
 		Data data(av[1]);
 		int size = data.getSize();
-		std::cout << "-1\n";
+		//std::cout << "-1\n";
 
-		Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/aurevoir/");
-		std::cout << "loc found: ";
-		locb.print();
+		//Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/aurevoir/");
+		//std::cout << "loc found: ";
+		//locb.print();
 		Listener server(data.getConfigList(), size);
-		std::cout << "0\n";
+		//std::cout << "0\n";
 		server.init();
-		std::cout << "1\n";
+		//std::cout << "1\n";
 		server.run();
-		std::cout << "2\n";
+		//std::cout << "2\n";
 		//server.clean(); //jamais utilisé vu que ctrl-C?
 		//free
 	}

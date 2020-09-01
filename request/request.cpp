@@ -2,6 +2,23 @@
 #include <iostream>
 #include <unistd.h>
 
+Request::Request(char *buffer, int fd, Config conf, int port)
+	{
+		_conf = conf;
+		memset((char *) &m_buffer, 0, sizeof(m_buffer));
+		m_buffer = buffer;
+		m_client = fd;
+		m_not_found = "404.html";
+		m_not_allowed = "405.html";
+		m_not_acceptable = "406.html";
+		m_bad_request = "400.html";
+		m_unauthorized = "401.html";
+		m_not_supported = "505.html";
+		m_index = "index.html";
+		m_errorCode = 404; //define other error codes
+		_head_req.SERVER_PORT = std::to_string(port);
+
+	};
 
 void Request::split_resp(char *buffer)
 {
@@ -14,11 +31,11 @@ void Request::split_resp(char *buffer)
 		m_header.append(buffer, n);
 		n = n + 3;
 		i = n;
-		m_content.append(&buffer[n], strlen(buffer) - n);
+		m_url.append(&buffer[n], strlen(buffer) - n);
 	}
 	else
 	{
-		m_content.append(buffer, strlen(buffer));
+		m_url.append(buffer, strlen(buffer));
 	}
 }
 
@@ -56,7 +73,7 @@ void Request::parse() {
 	}
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
 	{
-		m_content = parsed[1];
+		m_url = parsed[1];
 		_head_req.REQUEST_METHOD = parsed[0];
 		_head_req.SERVER_PROTOCOL = parsed[2];
 		char **tab = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
@@ -64,15 +81,17 @@ void Request::parse() {
 				_head_req.AUTH_TYPE = tab[0];
 		_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
 		_head_req.CONTENT_LENGTH = _head_req.getStringtoParse(m_buffer, "Content-Length: ");
-		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_content.c_str(), "?", (char *)" #");
-		_head_req.getScriptName((char *)m_content.c_str());
-		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_content.c_str(), "://", ":/?#");
-		if (_head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "")
-			_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_content.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "";
-		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_content, "", "://");
-		if (m_content == "/") //GET / HTTP/1.1
+		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_url.c_str(), "?", (char *)" #");
+		_head_req.getScriptName((char *)m_url.c_str());
+		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_url.c_str(), "://", ":/?#");
+		if (_head_req.getMetatoParse((char*)m_url.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "")
+			_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_url.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "";
+		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_url, "", "://");
+		_loc = _conf._locations.get_loc_by_url(m_url);
+		_loc.print();
+		if (m_url == "/") //GET / HTTP/1.1
 		{
-			m_content = m_index;
+			m_url = m_index;
 		}
 		getBody(m_buffer);
 		//std::cout << _head_req.BODY << std::endl;
@@ -100,7 +119,7 @@ void Request::parse() {
 }
 
 void Request::handle() {
-	if (strstr(m_buffer, "POST") != NULL && m_content.find(".php") != std::string::npos) // .cgi != NULL
+	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL
 	{
 		post();
 		return ;
@@ -126,7 +145,7 @@ int Request::send_to_client() {
 	std::ostringstream oss;
 	oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT")
-		oss << m_content;
+		oss << m_url;
 	m_output = oss.str();
 
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)

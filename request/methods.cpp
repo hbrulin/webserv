@@ -12,7 +12,7 @@ int Request::forking()
 		return (-1);
 	if ((dir_cgi = ft_strjoin(dir_cgi, _conf._cgi_root.c_str())) == NULL)
 		return (-1);
-	if ((path = ft_strjoin(dir_cgi, m_content.c_str())) == NULL)
+	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	std::cout << "path: " << path << std::endl;
@@ -100,7 +100,7 @@ void Request::put() {
 		m_errorCode = 413;
 		return;
 	}
-	m_path = _conf._root + m_content;
+	m_path = _conf._root + m_url;
 	std::ifstream f(m_path);
 	if (f.good())
 		m_errorCode = 200;
@@ -121,14 +121,14 @@ void Request::put() {
 {
 	//open file and check existance
 	//check_content
-	std::string content = m_content.substr(m_content.find('{'), m_content.find('}'));
+	std::string content = m_url.substr(m_url.find('{'), m_url.find('}'));
 	while ()
 }*/
 
 void Request::delete_m()
 {
 	/* a tester sur nginx pour voir les erreurs et tout*/
-	m_path = _conf._root + m_content;
+	m_path = _conf._root + m_url;
 	std::ifstream f(m_path);
 	if (f.good())
 		m_errorCode = 200;
@@ -154,11 +154,11 @@ void Request::delete_m()
 }
 
 void Request::get() {
-	if (m_content == m_index)
-		m_path = _head_req.contentNego(_conf._root, m_content);
+	if (m_url == m_index)
+		m_path = _head_req.contentNego(_conf._root, m_url);
 	else
 	{
-		m_path = _conf._root + m_content;
+		m_path = _conf._root + m_url;
 	}
 	//language check, erreur par défaut pour l'instant
 	if (m_path == "not_acceptable")
@@ -166,7 +166,7 @@ void Request::get() {
 			std::ifstream f(_conf._root + m_not_acceptable);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_acceptable;
-			m_content = str;
+			m_url = str;
 			m_errorCode = 406;
 			return;
 	}
@@ -179,14 +179,14 @@ void Request::get() {
 	{
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
-		m_header = m_content;
+		m_header = m_url;
 		if (m_errorCode == 400)
 		{
 			f.close();
 			std::ifstream f(_conf._root + m_bad_request);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_bad_request;
-			m_content = str;
+			m_url = str;
 			//m_errorCode = 400;
 			f.close();
 		}
@@ -196,7 +196,7 @@ void Request::get() {
 			std::ifstream f(_conf._root + m_not_supported);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_supported;
-			m_content = str;
+			m_url = str;
 			m_errorCode = 505;
 			f.close();
 		}
@@ -206,7 +206,7 @@ void Request::get() {
 			std::ifstream f(_conf._root + m_not_allowed);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_not_allowed;
-			m_content = str;
+			m_url = str;
 			m_errorCode = 405;
 			f.close();
 		}
@@ -216,14 +216,14 @@ void Request::get() {
 			std::ifstream f(_conf._root + m_unauthorized);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			m_path = _conf._root + m_unauthorized;
-			m_content = str;
+			m_url = str;
 			m_errorCode = 401;
 			f.close();
 		}
 		else
 		{
 			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			//m_content = str;
+			//m_url = str;
 			m_errorCode = 200;
 			f.close();
 		}
@@ -233,7 +233,7 @@ void Request::get() {
 		f.close();
 		std::ifstream f(_conf._root + m_not_found);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_content = str;
+		m_url = str;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}

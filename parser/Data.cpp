@@ -81,8 +81,8 @@ Data::Data(const char* file_name)
 //	std::cout << _configList.back()._listen << std::endl;
 //	std::cout << _configList.front()._listen << std::endl;
 //	std::cout << _configList.size() << std::endl;
-	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);
+	/*for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);*/
 
 }
 
@@ -253,7 +253,7 @@ void Data::check_multiple_ports()
 			while (j < _configList[i]._ports.size() - 1)
 			{
 				Config b(_configList[i]);
-				std::cout << _configList[i]._ports.size() << "j " << j << std::endl;
+				//std::cout << _configList[i]._ports.size() << "j " << j << std::endl;
 				b._listen = _configList[i]._ports[j];
 				_configList.push_back(b);
 				j++;
