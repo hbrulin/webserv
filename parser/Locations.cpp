@@ -101,6 +101,6 @@ Location& Locations::get_loc_by_url(std::string url)
 		}
 		urls.pop();
 	}
-	std::cout << "blank" << std::endl;
+	//std::cout << "blank" << std::endl;
 	return (_blank);
 }

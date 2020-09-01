@@ -168,7 +168,7 @@ int Listener::run() {
 			sock_count = select(m_highsock + 1, &m_working_set, NULL, NULL, NULL);
 			if (sock_count < 0) {
 				strerror(errno);
-				exit(EXIT_FAILURE); //FAUT-IL EXIT SI SELECT FAIL?
+				//exit(EXIT_FAILURE); //FAUT-IL EXIT SI SELECT FAIL? non
 			}
 
 			/*Descriptors are available*/
