@@ -34,15 +34,7 @@ class Request
 	char curr_dir[200];
 	char *dir_cgi;
 	char *path;
-	//int index_auth;
-	//GET
-	//POST
-	//FILES
-	//META_DATA
-	//std::string _server_name;
 
-	/*default outputs - à intégrer dans structures ci-dessus??
-	config selon file .config pour index?*/
 	std::string m_url;
 	std::string m_body;
 	std::string m_header;

@@ -75,12 +75,12 @@ static void stack_url(std::stack<std::string>& urls, std::string b)
 		if (i != b.npos)
 		{
 			urls.push(b.substr(0, i + 1));
-			std::cout << urls.top() << std::endl;
+			//std::cout << urls.top() << std::endl;
 		}
 		else
 		{
 			urls.push(b);
-			std::cout << urls.top() << std::endl;
+			//std::cout << urls.top() << std::endl;
 			break ;
 		}
 		i = b.find_first_of('/', i + 1);

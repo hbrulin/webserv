@@ -20,25 +20,6 @@ Request::Request(char *buffer, int fd, Config conf, int port)
 
 	};
 
-void Request::split_resp(char *buffer)
-{
-	std::string s(buffer);
-	int i = 0;
-	//SCRIPT_NAME
-	int n = s.find("'\n'");
-	if (n != (int)std::string::npos)
-	{
-		m_header.append(buffer, n);
-		n = n + 3;
-		i = n;
-		m_url.append(&buffer[n], strlen(buffer) - n);
-	}
-	else
-	{
-		m_url.append(buffer, strlen(buffer));
-	}
-}
-
 void		Request::getBody(char *m_buffer) {
 	int n;
 	int i = 0;
@@ -60,62 +41,28 @@ void Request::parse() {
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	//std::cout << m_buffer << std::endl;
-	// If the GET request is valid, try and get the name
-	if (!(parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "TRACE" || parsed[0] == "PATCH" || parsed[0] == "DELETE" || parsed[0] == "OPTION" || parsed[0] == "CONNECT" || parsed[0] == "PUT"))
-	{
-		m_errorCode = 400;
-	}
-	if (check_if_method_is_allowed(parsed[0]))
-	{
-		//std::cout << parsed[0] << std::endl;
-		m_errorCode = 405; // error for method not allowed
-		return;
-	}
 	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
 	{
 		m_url = parsed[1];
-		_head_req.REQUEST_METHOD = parsed[0];
-		_head_req.SERVER_PROTOCOL = parsed[2];
-		char **tab = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
-		if (tab != NULL && tab[0] != NULL)
-				_head_req.AUTH_TYPE = tab[0];
-		_head_req.CONTENT_TYPE = _head_req.getStringtoParse(m_buffer, "Content-Type: ");
-		_head_req.CONTENT_LENGTH = _head_req.getStringtoParse(m_buffer, "Content-Length: ");
-		_head_req.QUERY_STRING = _head_req.getMetatoParse((char *)m_url.c_str(), "?", (char *)" #");
-		_head_req.getScriptName((char *)m_url.c_str());
-		_head_req.SERVER_NAME = _head_req.getMetatoParse((char *)m_url.c_str(), "://", ":/?#");
-		if (_head_req.getMetatoParse((char*)m_url.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "")
-			_head_req.SERVER_PORT = _head_req.getMetatoParse((char*)m_url.c_str(), _head_req.SERVER_NAME + ":", "?/#") != "";
-		//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_url, "", "://");
+		_head_req.parse(parsed, m_buffer, m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
-		_loc.print();
+		//_loc.print();
 		if (m_url == "/") //GET / HTTP/1.1
-		{
 			m_url = m_index;
-		}
 		getBody(m_buffer);
 		//std::cout << _head_req.BODY << std::endl;
 	}
-	// HEADERS
-	_head_req.REFERER = _head_req.getReferer(m_buffer);
-	_head_req.USER_AGENT = _head_req.getUserAgent(m_buffer);
-	//parsing languages into vector
-	std::string lg = _head_req.getStringtoParse(m_buffer, "Accept-Language: ");
-	if (lg != "")
+	else
 	{
-		std::stringstream s(lg);
-		std::string segment;
-		while(std::getline(s, segment, ','))
-		{
-			_head_req.ACCEPT_LANGUAGE.push_back(segment);
-		}
+		m_errorCode = 400;
+		return;
 	}
-	//rest of parsing
-	if (_head_req.getStringtoParse(m_buffer, "Accept-Charset: ") != "")
-		_head_req.ACCEPT_CHARSET = ft_split(_head_req.getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
-	if (_head_req.getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
-		_head_req.TRANSFER_ENCODING = ft_split(_head_req.getStringtoParse(m_buffer, "Transfer-Encoding: ").c_str(), ',');
-	_head_req.DATE = _head_req.getStringtoParse(m_buffer, "Date: ");
+	if (check_if_method_is_allowed(parsed[0]))
+	{
+		m_errorCode = 405; // error for method not allowed
+		return;
+	}
+
 }
 
 void Request::handle() {

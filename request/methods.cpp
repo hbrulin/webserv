@@ -1,5 +1,24 @@
 #include "request.hpp"
 
+void Request::split_resp(char *buffer)
+{
+	std::string s(buffer);
+	int i = 0;
+	//SCRIPT_NAME
+	int n = s.find("'\n'");
+	if (n != (int)std::string::npos)
+	{
+		m_header.append(buffer, n);
+		n = n + 3;
+		i = n;
+		m_url.append(&buffer[n], strlen(buffer) - n);
+	}
+	else
+	{
+		m_url.append(buffer, strlen(buffer));
+	}
+}
+
 int Request::forking()
 {
 	int pid, res, status;
@@ -15,11 +34,11 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
-	std::cout << "path: " << path << std::endl;
+	//std::cout << "path: " << path << std::endl;
 	std::string _headers = _head_req.get_meta(_conf);
 	//if (content_env != NULL)
 	std::string s_env = content_env.append(_headers);
-	std::cout << s_env << std::endl;
+	//std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
@@ -29,7 +48,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-		std::cout << _head_resp.getBuffer(200, path, _conf._methods);
+	//	std::cout << _head_resp.getBuffer(200, path, _conf._methods);
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
@@ -77,14 +96,14 @@ void Request::post() {
 		if (n != (int)std::string::npos)
 		{
         	n = n + std::string("\r\n\r\n").size();
-			std::cout << "size" << s.size() << std::endl;
-			std::cout << "n" << n << std::endl;
+		//	std::cout << "size" << s.size() << std::endl;
+		//	std::cout << "n" << n << std::endl;
 			content_env = s.substr(n, s.size() - n);
-			std::cout << "content env" << content_env << std::endl;
+		//	std::cout << "content env" << content_env << std::endl;
 			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 		}
 		m_output = "";
-		std::cout << "before forking" << std::endl;
+		//std::cout << "before forking" << std::endl;
 		forking();
 }
 

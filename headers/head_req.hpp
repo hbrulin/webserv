@@ -5,9 +5,13 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <vector>
+#include <string>
 #include <iterator>
 #include "../libft/libft.h"
 #include "../parser/Config.hpp"
+#include <sstream>
+#include <fstream>
+#include <iostream>
 
 class Head_req
 {
@@ -54,6 +58,7 @@ class Head_req
     std::string get_meta(Config _Config);
     void        getScriptName(char *m_buffer);
 	std::string contentNego(std::string root, std::string content);
+	void		parse(std::vector<std::string> parsed, char *m_buffer, std::string url);
     struct stat st;
 };
 

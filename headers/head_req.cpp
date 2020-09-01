@@ -183,3 +183,40 @@ std::string Head_req::contentNego(std::string root, std::string content) {
 	}
 	return res;
 }
+
+void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::string url) {
+	REQUEST_METHOD = parsed[0];
+	SERVER_PROTOCOL = parsed[2];
+	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
+	if (tab != NULL && tab[0] != NULL)
+	AUTH_TYPE = tab[0];
+	CONTENT_TYPE = getStringtoParse(m_buffer, "Content-Type: ");
+	CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
+	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
+	getScriptName((char *)url.c_str());
+	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
+	if (getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "")
+		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";
+	//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_url, "", "://");
+	REFERER = getReferer(m_buffer);
+	USER_AGENT = getUserAgent(m_buffer);
+	//rest of parsing
+	if (getStringtoParse(m_buffer, "Accept-Charset: ") != "")
+		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
+	if (getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
+		TRANSFER_ENCODING = ft_split(getStringtoParse(m_buffer, "Transfer-Encoding: ").c_str(), ',');
+	DATE = getStringtoParse(m_buffer, "Date: ");
+
+	//parsing languages into vector
+	std::string lg = getStringtoParse(m_buffer, "Accept-Language: ");
+	if (lg != "")
+	{
+		std::stringstream s(lg);
+		std::string segment;
+		while(std::getline(s, segment, ','))
+		{
+			ACCEPT_LANGUAGE.push_back(segment);
+		}
+	}
+
+}
