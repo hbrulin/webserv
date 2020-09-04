@@ -328,8 +328,10 @@ void Location::check_methods_validity()
 
 bool Location::check_allowed_method(std::string method)
 {
+	std::cout << _methods.size() <<  std::endl;
 	for (unsigned long i = 0; i < _methods.size(); i++)
 	{
+		std::cout << _methods[i] << std::endl;
 		if (_methods[i] == method)
 			return (true);
 	}

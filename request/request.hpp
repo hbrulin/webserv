@@ -45,6 +45,7 @@ class Request
 	std::string m_unauthorized;
 	std::string m_not_supported;
 	std::string m_index;
+	std::string m_length_required;
 	std::string m_path;
 	int m_errorCode;
 	//output

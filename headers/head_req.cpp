@@ -205,6 +205,8 @@ void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::stri
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
 	if (getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
 		TRANSFER_ENCODING = ft_split(getStringtoParse(m_buffer, "Transfer-Encoding: ").c_str(), ',');
+	else
+		TRANSFER_ENCODING = NULL;
 	DATE = getStringtoParse(m_buffer, "Date: ");
 
 	//parsing languages into vector

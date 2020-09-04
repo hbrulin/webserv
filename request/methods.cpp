@@ -89,6 +89,15 @@ int Request::forking()
 }
 
 void Request::post() {
+	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
+	{
+			std::ifstream f(_conf._root + m_length_required);
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_path = _conf._root + m_length_required;
+			m_url = str;
+			m_errorCode = 411;
+			return;
+	}
 	int n;
 		std::string s(m_buffer);
     	//std::string referer;
@@ -100,6 +109,7 @@ void Request::post() {
 		//	std::cout << "n" << n << std::endl;
 			content_env = s.substr(n, s.size() - n);
 		//	std::cout << "content env" << content_env << std::endl;
+		std::cout << "size" << _head_req.CONTENT_LENGTH << std::endl;
 			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 		}
 		m_output = "";
@@ -109,10 +119,14 @@ void Request::post() {
 
 void Request::put() {
 
-	if (_head_req.CONTENT_LENGTH.empty() || _head_req.TRANSFER_ENCODING == NULL)
+	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
-		m_errorCode = 400;
-		return;
+			std::ifstream f(_conf._root + m_length_required);
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_path = _conf._root + m_length_required;
+			m_url = str;
+			m_errorCode = 411;
+			return;
 	}
 	else if (stoi(_head_req.CONTENT_LENGTH) > _conf._body_size)
 	{
@@ -174,7 +188,7 @@ void Request::delete_m()
 
 void Request::get() {
 	if (m_url == m_index)
-		m_path = _head_req.contentNego(_conf._root, m_url);
+		m_path = _head_req.contentNego (_conf._root, m_url);
 	else
 	{
 		m_path = _conf._root + m_url;
@@ -209,16 +223,16 @@ void Request::get() {
 			//m_errorCode = 400;
 			f.close();
 		}
-		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1" && m_errorCode != 405)
-		{
-			f.close();
-			std::ifstream f(_conf._root + m_not_supported);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_not_supported;
-			m_url = str;
-			m_errorCode = 505;
-			f.close();
-		}
+//		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1" && m_errorCode != 405)
+//		{
+//			f.close();
+//			std::ifstream f(_conf._root + m_not_supported);
+//			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+//			m_path = _conf._root + m_not_supported;
+//			m_url = str;
+//			m_errorCode = 505;
+//			f.close();
+//		}
 		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();

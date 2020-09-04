@@ -9,13 +9,14 @@ Request::Request(char *buffer, int fd, Config conf, int port)
 		m_buffer = buffer;
 		m_client = fd;
 		m_not_found = "404.html";
-		m_not_allowed = "405.html";
+		m_not_allowed = "405.html"; // tester avant
 		m_not_acceptable = "406.html";
 		m_bad_request = "400.html";
 		m_unauthorized = "401.html";
-		m_not_supported = "505.html";
+		m_not_supported = "505.html"; //tester avant 
 		m_index = "index.html";
-		m_errorCode = 404; //define other error codes
+		m_length_required = "411.html";
+		m_errorCode = 200; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
 
 	};
@@ -38,13 +39,30 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() {
 
 	/*parse word by word*/
+	_loc = _conf._locations.get_loc_by_url(m_url);
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	//std::cout << m_buffer << std::endl;
-	if (parsed.size() >= 3 && (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE"))
+//	if (!_loc.check_allowed_method(parsed[0])) // la fonction ne fonctionne pas
+//	{
+//		m_errorCode = 405; // error for method not allowed
+//		return;
+//	}
+//	else if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
+	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_buffer, m_url);
+		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
+		{
+			m_errorCode = 505;
+			std::ifstream f(_conf._root + m_not_supported);
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_path = _conf._root + m_not_supported;
+			m_url = str;
+			f.close();
+			return;
+		}
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		//_loc.print();
 		if (m_url == "/") //GET / HTTP/1.1
@@ -57,16 +75,13 @@ void Request::parse() {
 		m_errorCode = 400;
 		return;
 	}
-	if (check_if_method_is_allowed(parsed[0]))
-	{
-		m_errorCode = 405; // error for method not allowed
-		return;
-	}
 
 }
 
 void Request::handle() {
-	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL
+	if (m_errorCode > 400)
+		return;
+	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		post();
 		return ;
@@ -81,7 +96,7 @@ void Request::handle() {
 		return ;
 	}
 	else
-	{	//also works for HEAD, change is in sendToClient()
+	{	//also works for HEAD, change is in sendToClient()                                                                                                                                                                                                                                                                                                                               
 		get();
 	}
 
@@ -92,7 +107,7 @@ int Request::send_to_client() {
 	std::ostringstream oss;
 	if (_head_req.REQUEST_METHOD != "POST")
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
-	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && _head_req.REQUEST_METHOD != "POST")
+	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT")
 		oss << m_url;
 	m_output = oss.str();
 
