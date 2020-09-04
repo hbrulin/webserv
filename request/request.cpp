@@ -90,8 +90,9 @@ void Request::handle() {
 
 int Request::send_to_client() {
 	std::ostringstream oss;
-	oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
-	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT")
+	if (_head_req.REQUEST_METHOD != "POST")
+		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
+	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && _head_req.REQUEST_METHOD != "POST")
 		oss << m_url;
 	m_output = oss.str();
 

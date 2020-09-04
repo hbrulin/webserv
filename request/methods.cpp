@@ -38,7 +38,7 @@ int Request::forking()
 	std::string _headers = _head_req.get_meta(_conf);
 	//if (content_env != NULL)
 	std::string s_env = content_env.append(_headers);
-	std::cout << s_env << std::endl;
+	//std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
