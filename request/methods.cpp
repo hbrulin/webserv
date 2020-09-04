@@ -34,11 +34,11 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
-	//std::cout << "path: " << path << std::endl;
+	std::cout << "path: " << path << std::endl;
 	std::string _headers = _head_req.get_meta(_conf);
 	//if (content_env != NULL)
 	std::string s_env = content_env.append(_headers);
-	//std::cout << s_env << std::endl;
+	std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
@@ -48,7 +48,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-	//	std::cout << _head_resp.getBuffer(200, path, _conf._methods);
+		std::cout << _head_resp.getBuffer(200, path, _conf._methods);
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{

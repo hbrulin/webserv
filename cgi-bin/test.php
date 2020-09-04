@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/php
 <?php
 $_name = getenv('name');
 $address = getenv('address');
