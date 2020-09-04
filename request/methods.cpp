@@ -109,7 +109,6 @@ void Request::post() {
 		//	std::cout << "n" << n << std::endl;
 			content_env = s.substr(n, s.size() - n);
 		//	std::cout << "content env" << content_env << std::endl;
-		std::cout << "size" << _head_req.CONTENT_LENGTH << std::endl;
 			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 		}
 		m_output = "";
