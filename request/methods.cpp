@@ -117,7 +117,7 @@ void Request::post() {
 }
 
 void Request::put() {
-	_conf._body_size = 20;
+	//_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
 	
 	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
