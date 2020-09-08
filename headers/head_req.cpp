@@ -159,11 +159,11 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
     return referer;
 }
 
-std::string Head_req::contentNego(std::string root, std::string content) {
+std::string Head_req::contentNego(std::string root) {
 	size_t i = 0;
 	if (ACCEPT_LANGUAGE.empty())
-		return root + "fr/" + content;
-	std::string res = "not_acceptable";
+		return root + "fr/";
+	std::string res = root + "fr/";
 	for (std::vector<std::string>::iterator it = ACCEPT_LANGUAGE.begin(); it!=ACCEPT_LANGUAGE.end(); ++it) {
 		std::string tmp = *it;
 		if ((i = tmp.find(';')) != std::string::npos)
@@ -171,11 +171,11 @@ std::string Head_req::contentNego(std::string root, std::string content) {
 			tmp = tmp.substr(0, i);
 		}
 		//std::cout << tmp << std::endl;
-    	std::ifstream f(root + tmp + "/" + content);
+    	std::ifstream f(root + tmp + "/");
 		//std::cout << root + tmp + content << std::endl;
 
 		if (f.good()) {
-			res = root + tmp + "/" + content;
+			res = root + tmp + "/";
 			f.close();
 			break;
 		}

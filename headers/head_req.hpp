@@ -57,7 +57,7 @@ class Head_req
     std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
     std::string get_meta(Config _Config);
     void        getScriptName(char *m_buffer);
-	std::string contentNego(std::string root, std::string content);
+	std::string contentNego(std::string root);
 	void		parse(std::vector<std::string> parsed, char *m_buffer, std::string url);
     struct stat st;
 };

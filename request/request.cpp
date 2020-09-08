@@ -81,6 +81,9 @@ void Request::parse() {
 void Request::handle() {
 	if (m_errorCode > 400)
 		return;
+	//changing of root so that it includes the language
+	_conf._root =  _head_req.contentNego(_conf._root);
+	m_path = _conf._root + m_url;
 	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		post();

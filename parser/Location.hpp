@@ -43,7 +43,7 @@ class Location
 
 	void print();
 
-	private:
+	public:
 	std::string _name; // name of the directory
 	std::string _root; // Preceding the location name
 	std::string	_mode; // mode of searching files

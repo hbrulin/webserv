@@ -117,7 +117,8 @@ void Request::post() {
 }
 
 void Request::put() {
-
+	_conf._body_size = 20;
+	
 	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
 			std::ifstream f(_conf._root + m_length_required);
@@ -130,18 +131,19 @@ void Request::put() {
 	else if (stoi(_head_req.CONTENT_LENGTH) > _conf._body_size)
 	{
 		m_errorCode = 413;
+		std::cout << _head_req.CONTENT_LENGTH << "\n";
+		std::cout << _conf._body_size << "\n";
 		return;
 	}
-	m_path = _conf._root + m_url;
-	std::ifstream f(m_path);
+	std::ifstream f(_loc._uploaded_files_root + m_url);
 	if (f.good())
 		m_errorCode = 200;
 	else
 		m_errorCode = 201; //created
 	f.close();
-
+	std::cout << _loc._uploaded_files_root << "\n";
 	int n = stoi(_head_req.CONTENT_LENGTH);
-	std::ofstream ff(m_path);
+	std::ofstream ff(_loc._uploaded_files_root + m_url);
 	if (ff.good())
 		ff << m_body.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
 	else
@@ -160,7 +162,7 @@ void Request::put() {
 void Request::delete_m()
 {
 	/* a tester sur nginx pour voir les erreurs et tout*/
-	m_path = _conf._root + m_url;
+	//m_path = _conf._root + m_url;
 	std::ifstream f(m_path);
 	if (f.good())
 		m_errorCode = 200;
@@ -186,14 +188,14 @@ void Request::delete_m()
 }
 
 void Request::get() {
-	if (m_url == m_index)
+	/*if (m_url == m_index)
 		m_path = _head_req.contentNego (_conf._root, m_url);
 	else
 	{
 		m_path = _conf._root + m_url;
-	}
-	//language check, erreur par défaut pour l'instant
-	if (m_path == "not_acceptable")
+	}*/
+
+	/*if (m_path == "not_acceptable")
 	{
 			std::ifstream f(_conf._root + m_not_acceptable);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -201,7 +203,7 @@ void Request::get() {
 			m_url = str;
 			m_errorCode = 406;
 			return;
-	}
+	}*/
 
 	// Open the document in the local file system
 	std::ifstream f(m_path);
