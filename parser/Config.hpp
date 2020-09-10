@@ -43,7 +43,7 @@ struct Config
 	std::string 				_cgi_type;
 	std::string 				_cgi_root;
 
-	int 						_body_size;// --> don't know what it is
+	unsigned int 						_body_size;// --> don't know what it is
 	std::vector<std::string> 	_methods; // list of accepted method
 
 //	Location _cgi;
