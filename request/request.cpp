@@ -62,10 +62,10 @@ void Request::parse() {
 			return;
 		}
 		_loc = _conf._locations.get_loc_by_url(m_url);
-		std::cout << "//////////////////////\n";
+		//std::cout << "//////////////////////\n";
 		m_index = _loc._index;
-		_loc.print();
-		std::cout << "//////////////////////\n";
+		//_loc.print();
+		//std::cout << "//////////////////////\n";
 		if (m_url == "/") //GET / HTTP/1.1
 			m_url = m_index;
 		getBody(m_buffer);
