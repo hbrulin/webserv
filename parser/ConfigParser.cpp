@@ -84,8 +84,8 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 	_config->_locations.get_loc_by_url("/bonjour/aurevoir/salut/");
 	_config->_locations.get_loc_by_url("/");*/
 	_config->set_blank();
-	std::cout << "\nBLANK\n\n";
-	_config->_locations._blank.print();
+	/*std::cout << "\nBLANK\n\n";
+	_config->_locations._blank.print();*/
 	print_data(_config);
 	return (true);
 }
@@ -122,7 +122,10 @@ void ConfigParser::parse_root(std::string b)
 void ConfigParser::parse_body_size(std::string b)
 {
 	remove_whitespace(b);
-	_config->_body_size = stoi(b);
+	int body = stoi(b);
+	if (body < 0)
+		throw(std::logic_error("Body size cannot be negative"));
+	_config->_body_size = body;
 }
 
 void ConfigParser::parse_errors(std::string b)

@@ -295,7 +295,10 @@ void Location::parse_uploaded_files_root(std::string b)
 void Location::parse_body_size(std::string b)
 {
 	remove_whitespace(b);
-	_body_size = stoi(b);
+	int body = stoi(b);
+	if (body < 0)
+		throw(std::logic_error("Bad Location block: Body size cannot be negative"));
+	_body_size = body;
 }
 
 
