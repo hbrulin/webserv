@@ -14,7 +14,6 @@ Request::Request(char *buffer, int fd, Config conf, int port)
 		m_bad_request = "400.html";
 		m_unauthorized = "401.html";
 		m_not_supported = "505.html"; //tester avant 
-		m_index = "index.html";
 		m_length_required = "411.html";
 		m_errorCode = 200; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
@@ -38,8 +37,7 @@ void		Request::getBody(char *m_buffer) {
 
 void Request::parse() {
 
-	/*parse word by word*/
-	_loc = _conf._locations.get_loc_by_url(m_url);
+	//_loc = _conf._locations.get_loc_by_url(m_url);
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	//std::cout << m_buffer << std::endl;
@@ -56,15 +54,18 @@ void Request::parse() {
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
 			m_errorCode = 505;
-			std::ifstream f(_conf._root + m_not_supported);
+			std::ifstream f(_loc._root + m_not_supported);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_not_supported;
+			m_path = _loc._root + m_not_supported;
 			m_url = str;
 			f.close();
 			return;
 		}
 		_loc = _conf._locations.get_loc_by_url(m_url);
+		//std::cout << "//////////////////////\n";
+		m_index = _loc._index;
 		//_loc.print();
+		//std::cout << "//////////////////////\n";
 		if (m_url == "/") //GET / HTTP/1.1
 			m_url = m_index;
 		getBody(m_buffer);
@@ -82,8 +83,8 @@ void Request::handle() {
 	if (m_errorCode > 400)
 		return;
 	//changing of root so that it includes the language
-	_conf._root =  _head_req.contentNego(_conf._root);
-	m_path = _conf._root + m_url;
+	_loc._root =  _head_req.contentNego(_loc._root);
+	m_path = _loc._root + m_url;
 	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		post();
@@ -109,7 +110,7 @@ void Request::handle() {
 int Request::send_to_client() {
 	std::ostringstream oss;
 	if (_head_req.REQUEST_METHOD != "POST")
-		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _conf._methods);
+		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT")
 		oss << m_url;
 	m_output = oss.str();
@@ -121,10 +122,10 @@ int Request::send_to_client() {
 
 bool Request::check_if_method_is_allowed(std::string method)
 {
-	for (std::vector<std::string>::size_type i = 0; i < _conf._methods.size(); i++)
+	for (std::vector<std::string>::size_type i = 0; i < _loc._methods.size(); i++)
 	{
 		//std::cout << _conf._methods[i] << std::endl;
-		if (_conf._methods[i] == method)
+		if (_loc._methods[i] == method)
 			return (true);
 	}
 	return (false);

@@ -29,7 +29,7 @@ int Request::forking()
 		return (-1);
 	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
 		return (-1);
-	if ((dir_cgi = ft_strjoin(dir_cgi, _conf._cgi_root.c_str())) == NULL)
+	if ((dir_cgi = ft_strjoin(dir_cgi, _loc._cgi_root.c_str())) == NULL)
 		return (-1);
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
@@ -48,7 +48,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-		std::cout << _head_resp.getBuffer(200, path, _conf._methods);
+		std::cout << _head_resp.getBuffer(200, path, _loc._methods);
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
@@ -91,9 +91,9 @@ int Request::forking()
 void Request::post() {
 	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
 	{
-			std::ifstream f(_conf._root + m_length_required);
+			std::ifstream f(_loc._root + m_length_required);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_length_required;
+			m_path = _loc._root + m_length_required;
 			m_url = str;
 			m_errorCode = 411;
 			return;
@@ -117,18 +117,18 @@ void Request::post() {
 }
 
 void Request::put() {
-	_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
+	//_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
 	
 	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
-			std::ifstream f(_conf._root + m_length_required);
+			std::ifstream f(_loc._root + m_length_required);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_length_required;
+			m_path = _loc._root + m_length_required;
 			m_url = str;
 			m_errorCode = 411;
 			return;
 	}
-	else if (stoi(_head_req.CONTENT_LENGTH) > _conf._body_size)
+	else if (((unsigned int)stoi(_head_req.CONTENT_LENGTH)) > _loc._body_size)
 	{
 		m_errorCode = 413;
 		//std::cout << _head_req.CONTENT_LENGTH << "\n";
@@ -218,9 +218,9 @@ void Request::get() {
 		if (m_errorCode == 400)
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_bad_request);
+			std::ifstream f(_loc._root + m_bad_request);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_bad_request;
+			m_path = _loc._root + m_bad_request;
 			m_url = str;
 			//m_errorCode = 400;
 			f.close();
@@ -238,9 +238,9 @@ void Request::get() {
 		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_not_allowed);
+			std::ifstream f(_loc._root + m_not_allowed);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_not_allowed;
+			m_path = _loc._root + m_not_allowed;
 			m_url = str;
 			m_errorCode = 405;
 			f.close();
@@ -248,9 +248,9 @@ void Request::get() {
 		else if (!isAuthorized(m_header))
 		{
 			f.close();
-			std::ifstream f(_conf._root + m_unauthorized);
+			std::ifstream f(_loc._root + m_unauthorized);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_unauthorized;
+			m_path = _loc._root + m_unauthorized;
 			m_url = str;
 			m_errorCode = 401;
 			f.close();
@@ -266,7 +266,7 @@ void Request::get() {
 	else
 	{
 		f.close();
-		std::ifstream f(_conf._root + m_not_found);
+		std::ifstream f(_loc._root + m_not_found);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
