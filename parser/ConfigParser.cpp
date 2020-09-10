@@ -83,6 +83,10 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 /*	_config->_locations.get_loc_by_url("");
 	_config->_locations.get_loc_by_url("/bonjour/aurevoir/salut/");
 	_config->_locations.get_loc_by_url("/");*/
+	_config->set_blank();
+	std::cout << "\nBLANK\n\n";
+	_config->_locations._blank.print();
+	print_data(_config);
 	return (true);
 }
 

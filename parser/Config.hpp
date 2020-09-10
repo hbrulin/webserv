@@ -21,6 +21,8 @@ struct Config
 	Config();
 	Config(const Config&);
 
+	void set_blank();
+
 	std::string _server_name;
 	std::string _root; //-> root path of the server like www/
 	std::string _errors; // ->root of default errors directory
@@ -29,7 +31,7 @@ struct Config
 	//routing
 	unsigned int 				_listen; // the listen port
 	std::vector<unsigned int>	_ports; // vec containing all the ports passed
-	std::string _host; // local host or something else
+	std::string 				_host; // local host or something else
 
 
 	//bool 		_directory_listing;
@@ -38,18 +40,15 @@ struct Config
 	//bool		_send_files;
 	//std::string	_files_root;
 
-	std::string _cgi_type;
-	std::string _cgi_root;
+	std::string 				_cgi_type;
+	std::string 				_cgi_root;
 
-	int _body_size;// --> don't know what it is
-	std::vector<std::string> _methods; // list of accepted method
+	int 						_body_size;// --> don't know what it is
+	std::vector<std::string> 	_methods; // list of accepted method
 
 //	Location _cgi;
 
 	Locations _locations;
-
-
-
 
 	char	**_auth_path;
 	char	**_auth_realm;

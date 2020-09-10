@@ -28,3 +28,11 @@ Config::Config(const Config& b)
 	_cgi_root = b._cgi_root;
 
 }
+
+void Config::set_blank()
+{
+	_locations._blank._body_size = _body_size;
+	_locations._blank._root = _root;
+	_locations._blank._cgi_root = _cgi_root;
+	_locations._blank._cgi_type = _cgi_type;
+}

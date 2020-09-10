@@ -3,6 +3,8 @@
 const char* Location::_SUPPORTED_CGI[] = {"php", "other", "bla", NULL};
 const char* Location::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
+// Faire une loc par defaut
+
 Location::Location()
 {
 	_name = "";
@@ -11,7 +13,7 @@ Location::Location()
 	_try_files = "";
 	_index = "";
 	_allow = "";
-	_body_size = 0;
+	_body_size = 10000000;
 	_uploaded_files_root = "";
 	_send_files = false;
 	_cgi_type = "";

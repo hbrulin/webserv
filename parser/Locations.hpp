@@ -25,8 +25,7 @@ class Locations
 
 	void 	print();
 
-
-	private:
+	public:
 	std::vector<Location> 	_v;
 	Location 				_blank; // blnk location returned if none was found
 };

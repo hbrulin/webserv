@@ -5,7 +5,6 @@
 
 Locations::Locations()
 {
-
 }
 
 Locations::~Locations() {}
@@ -62,7 +61,6 @@ void Locations::print()
 	{
 		_v[i].print();
 	}
-
 }
 
 static void stack_url(std::stack<std::string>& urls, std::string b)
