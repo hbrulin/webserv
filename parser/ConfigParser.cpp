@@ -234,7 +234,7 @@ void ConfigParser::parse_method(std::string b)
 		//std::cout << s << std::endl;
 		remove_whitespace(s);
 		std::transform(s.begin(), s.end(),s.begin(), ::toupper); // convert to lower case
-		_config->_methods.push_back(s);
+		//_config->_methods.push_back(s);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)) == std::string::npos)
 			break;
