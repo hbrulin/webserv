@@ -279,18 +279,30 @@ void Listener::receive_data(int fd) {
 	{
 		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
-	//	std::cout << "Received: " << std::string(buffer, 0, sizeof(buffer));
+		std::string s(buffer, 0, sizeof(buffer));
+//		std::cout << "ret: " << ret << std::endl;
+//		std::cout << "Received: " << s << "--" << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
 			break;
 		}
 
 		/*Check if connection was closed by client*/
-		if (ret == 0) {
-			//print something?
+		if (ret == 0)
+		{
 			m_close = true; //client will be removed
 			break;
 		}
+		// else if (s =="\n\r\n")
+		// {
+		// 	m_close = true; //client will be removed
+		// 	break;
+		// }
+		// else if (s == "\n"){
+		// 	//print something?
+		// 	m_close = true; //client will be removed
+		// 	break;
+		// }
 
 		//else data was received
 		//len = ret;

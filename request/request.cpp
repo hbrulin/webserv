@@ -38,19 +38,14 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() {
 
 	//_loc = _conf._locations.get_loc_by_url(m_url);
+	//std::cout << m_buffer << std::endl;
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-	//std::cout << m_buffer << std::endl;
-//	if (!_loc.check_allowed_method(parsed[0])) // la fonction ne fonctionne pas
-//	{
-//		m_errorCode = 405; // error for method not allowed
-//		return;
-//	}
-//	else if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_buffer, m_url);
+		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
 			m_errorCode = 505;
@@ -61,13 +56,24 @@ void Request::parse() {
 			f.close();
 			return;
 		}
-		_loc = _conf._locations.get_loc_by_url(m_url);
+		if (!_loc.check_allowed_method(parsed[0])) // la fonction ne fonctionne pas
+		{
+			m_errorCode = 405; // error for method not allowed
+			std::ifstream f(_loc._root + m_not_allowed);
+			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+			m_path = _loc._root + m_not_allowed;
+			m_url = str;
+			f.close();
+			return;
+		}
 		//std::cout << "//////////////////////\n";
 		m_index = _loc._index;
 		//_loc.print();
 		//std::cout << "//////////////////////\n";
-		if (m_url == "/") //GET / HTTP/1.1
+		if (m_url.back() == '/') //GET / HTTP/1.1
+		{
 			m_url = m_index;
+		}
 		getBody(m_buffer);
 		//std::cout << _head_req.BODY << std::endl;
 	}
@@ -83,10 +89,24 @@ void Request::handle() {
 	if (m_errorCode > 400)
 		return;
 	//changing of root so that it includes the language
-	_loc._root =  _head_req.contentNego(_loc._root);
-	m_path = _loc._root + m_url;
-	if (strstr(m_buffer, "POST") != NULL && m_url.find(".php") != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	std::cout << "loc name" <<_loc._name << std::endl;
+	if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 	{
+		std::cout << "front" << m_url.find(_loc._name.front()) << std::endl;
+		
+		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root);
+		m_path = m_url;
+	}
+	else
+	{
+		_loc._root =  _head_req.contentNego(_loc._root);
+		m_path = _loc._root + m_url;
+	}
+	std::cout << "type" << _loc._cgi_type << std::endl;
+	std::cout << "url" << m_url << std::endl;
+	if (strstr(m_buffer, "POST") != NULL && m_url.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	{
+		std::cout << "ici" << std::endl;
 		post();
 		return ;
 	}
