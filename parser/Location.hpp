@@ -64,6 +64,7 @@ class Location
 
 	std::string					_cgi_type;
 	std::string					_cgi_root;
+	std::string					_cgi_file;
 
 
 	fmap _map;

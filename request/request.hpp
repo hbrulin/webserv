@@ -48,6 +48,7 @@ class Request
 	std::string m_length_required;
 	std::string m_path;
 	int m_errorCode;
+	bool is_cgi;
 	//output
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
 	//memset m_content et m_output
@@ -67,6 +68,9 @@ class Request
 	void split_resp(char *buffer);
 	int isAllowed(std::string path);
 	bool check_if_method_is_allowed(std::string);
+	void get_post_content();
+	void get_query_string();
+	void exec_cgi();
 	
 };
 

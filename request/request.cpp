@@ -17,6 +17,7 @@ Request::Request(char *buffer, int fd, Config conf, int port)
 		m_length_required = "411.html";
 		m_errorCode = 200; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
+		is_cgi = false;
 
 	};
 
@@ -89,11 +90,9 @@ void Request::handle() {
 	if (m_errorCode > 400)
 		return;
 	//changing of root so that it includes the language
-	std::cout << "loc name" <<_loc._name << std::endl;
+	_head_req.REQUEST_URI = m_url;
 	if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 	{
-		std::cout << "front" << m_url.find(_loc._name.front()) << std::endl;
-		
 		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root);
 		m_path = m_url;
 	}
@@ -102,13 +101,20 @@ void Request::handle() {
 		_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
 	}
-	std::cout << "type" << _loc._cgi_type << std::endl;
-	std::cout << "url" << m_url << std::endl;
-	if (strstr(m_buffer, "POST") != NULL && m_url.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	content_env = _head_req.getStringtoParse((char *)m_url.c_str(), "?"); // on recup le query string s'il existe
+	_head_req.QUERY_STRING = content_env;
+	if (m_url.find("?") != std::string::npos)
+		m_url.replace(m_url.find("?"),m_url.size(), ""); //on retire le query string de l'url
+	if ((strstr(m_buffer, "POST") != NULL || strstr(m_buffer, "GET") != NULL) && m_url.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
-		std::cout << "ici" << std::endl;
-		post();
+		is_cgi = true;
+		exec_cgi();
 		return ;
+	}
+	else if (strstr(m_buffer, "POST") != NULL)
+	{
+		post();
+		return;
 	}
 	else if (strstr(m_buffer, "PUT") != NULL) {
 		put();
@@ -129,9 +135,9 @@ void Request::handle() {
 
 int Request::send_to_client() {
 	std::ostringstream oss;
-	if (_head_req.REQUEST_METHOD != "POST")
+	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
-	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT")
+	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
 	m_output = oss.str();
 

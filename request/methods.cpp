@@ -29,16 +29,12 @@ int Request::forking()
 		return (-1);
 	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
 		return (-1);
-	if ((dir_cgi = ft_strjoin(dir_cgi, _loc._cgi_root.c_str())) == NULL)
-		return (-1);
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	std::cout << "path: " << path << std::endl;
-	std::string _headers = _head_req.get_meta(_conf);
-	//if (content_env != NULL)
+	std::string _headers = _head_req.get_meta();
 	std::string s_env = content_env.append(_headers);
-	//std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
@@ -48,7 +44,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-		std::cout << _head_resp.getBuffer(200, path, _loc._methods);
+		std::cout << _head_resp.getBuffer(200, path, _loc._methods); // A revoir car renvoie mauvais header si ne fonctionne pas
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
@@ -87,6 +83,42 @@ int Request::forking()
 	}
 	return res;
 }
+void Request::get_post_content()
+{
+	int n;
+	std::string s(m_buffer);
+	n = s.find("\r\n\r"); //peut etre rajouter un \n
+	if (n != (int)std::string::npos)
+	{
+    	n = n + std::string("\r\n\r\n").size();
+		content_env = s.substr(n, s.size() - n);
+	}
+	else
+	{
+		n = s.find("\n\n");
+		if (n != (int)std::string::npos)
+		{
+        	n = n + std::string("\n\n").size();
+			content_env = s.substr(n, s.size() - n);
+		}
+	}
+	m_output = "";
+}
+
+
+void Request::exec_cgi(){
+	_loc._cgi_file = "test.php";
+	if (strstr(m_buffer, "POST") != NULL)
+	{
+		post(); // on recupere les infos dans le body
+	}
+	m_url = _loc._cgi_root + _loc._cgi_file;
+	std::cout << "cgi url" << m_url << std::endl;
+	_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
+	_head_req.SERVER_NAME = _conf._server_name;
+	_head_req.SCRIPT_NAME = _loc._cgi_file;
+	forking();
+}
 
 void Request::post() {
 	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
@@ -98,22 +130,13 @@ void Request::post() {
 			m_errorCode = 411;
 			return;
 	}
-	int n;
-		std::string s(m_buffer);
-    	//std::string referer;
-		n = s.find("\r\n\r");
-		if (n != (int)std::string::npos)
-		{
-        	n = n + std::string("\r\n\r\n").size();
-		//	std::cout << "size" << s.size() << std::endl;
-		//	std::cout << "n" << n << std::endl;
-			content_env = s.substr(n, s.size() - n);
-		//	std::cout << "content env" << content_env << std::endl;
-			_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
-		}
-		m_output = "";
-		//std::cout << "before forking" << std::endl;
-		forking();
+	get_post_content();
+	std::ifstream f(_loc._root + "post.html");
+	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+	m_path = _loc._root + "post.html";
+	m_url = str;
+			//m_errorCode = 400;
+	f.close();
 }
 
 void Request::put() {

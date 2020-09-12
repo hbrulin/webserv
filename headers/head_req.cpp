@@ -1,6 +1,6 @@
 #include "head_req.hpp"
 
-std::string Head_req::get_meta(Config _Config)
+std::string Head_req::get_meta()
 {
 	memset((char *) &str, 0, sizeof(str));
 	// content_env = ft_strtrim(content_env, "'/t''/0'");
@@ -19,22 +19,18 @@ std::string Head_req::get_meta(Config _Config)
 	str.append(PATH_TRANSLATED);
 	str.append("&QUERY_STRING="); // if nothing ?
 	str.append(QUERY_STRING);
-	str.append("&REMOTE_ADDR=");
-	str.append("&REMOTE_USER=");
+	str.append("&REMOTE_ADDR="); //AJOUTER avec l'adressse IP
+	str.append("&REMOTE_USER="); //AJOUTER en dur
 	str.append("&REMOTE_IDENT=");
+	str.append("login_user");
 	str.append("&REQUEST_METHOD=");
 	str.append(REQUEST_METHOD);
-	str.append("&REQUEST_URI="); // -----------
+	str.append("&REQUEST_URI=");
+	str.append(REQUEST_URI);
 	str.append("&SCRIPT_NAME=");
-	if (SCRIPT_NAME == "")
-		str.append("/");
-	else
-		str.append(SCRIPT_NAME);
+	str.append(SCRIPT_NAME);
 	str.append("&SERVER_NAME="); // to take
-	if (SERVER_NAME == "")
-		SERVER_NAME =  _Config._server_name; // changer par localhost
-	else
-		str.append(SERVER_NAME);
+	str.append(SERVER_NAME);
 	str.append("&SERVER_PORT="); // to take
 	str.append(SERVER_PORT);
 	str.append("&SERVER_PROTOCOL=");

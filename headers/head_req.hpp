@@ -9,6 +9,7 @@
 #include <iterator>
 #include "../libft/libft.h"
 #include "../parser/Config.hpp"
+#include "../parser/Location.hpp"
 #include <sstream>
 #include <fstream>
 #include <iostream>
@@ -55,7 +56,7 @@ class Head_req
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
     std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
-    std::string get_meta(Config _Config);
+    std::string get_meta();
     void        getScriptName(char *m_buffer);
 	std::string contentNego(std::string root);
 	void		parse(std::vector<std::string> parsed, char *m_buffer, std::string url);
