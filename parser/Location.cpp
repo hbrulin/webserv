@@ -18,6 +18,7 @@ Location::Location()
 	_send_files = false;
 	_cgi_type = "";
 	_cgi_root = "";
+	_cgi_file = "";
 	_directory_listing = false;
 	_directory_answer_file = "";
 
@@ -34,6 +35,7 @@ void Location::initiate_map()
 	_map["methods"] = &Location::parse_method;
 	_map["cgi_root"] = &Location::parse_cgi_root;
 	_map["cgi_type"] = &Location::parse_cgi_type;
+	_map["cgi_file"] = &Location::parse_cgi_file;
 	_map["allow_directory_listing"] = &Location::parse_directory_listing;
 	_map["directory_answer_file"] = &Location::parse_default_directory_answer_file;
 	_map["body_size"] = &Location::parse_body_size;
@@ -55,6 +57,7 @@ Location::Location(const Location& l)
 	_methods = l._methods;
 	_cgi_root = l._cgi_root;
 	_cgi_type = l._cgi_type;
+	_cgi_file = l._cgi_file;
 	_body_size = l._body_size;
 	_send_files = l._send_files;
 	_uploaded_files_root = l._uploaded_files_root;
@@ -74,6 +77,7 @@ void Location::operator = (const Location& l)
 	_methods = l._methods;
 	_cgi_root = l._cgi_root;
 	_cgi_type = l._cgi_type;
+	_cgi_file = l._cgi_file;
 	_body_size = l._body_size;
 	_send_files = l._send_files;
 	_uploaded_files_root = l._uploaded_files_root;
@@ -87,25 +91,36 @@ void Location::parse(std::string b)
 	// parse mode
 	// parse name
 	// parse root
+	unsigned long name_end;
+	unsigned long arg_end = b.find('{');
+
 
 	_root = "";
-	if (b.find('/') == b.npos)
+	if ((b.find('/') == b.npos || b.find('/') > arg_end) && (b.find('.') == b.npos || b.find('.') > arg_end))
 		throw(std::logic_error("Bad location block: Missing name"));
-	_mode = b.substr(0, b.find('/'));
+
+
+	if (b.find('/') != b.npos && b.find('/') < arg_end)
+		name_end = b.find('/');
+	else
+		name_end = b.find('.');
+	_mode = b.substr(0, name_end);
+	std::cout << "MODE: " << _mode << std::endl;
 	remove_whitespace(_mode);
+
 	if (!check_mode())
 		throw(std::logic_error("Bad location block: Unrecognized mode: '" + _mode + "'"));
-	b = b.substr(b.find('/'));
+	b = b.substr(name_end);
 
 	if (b.find('{') == b.npos)
 		throw(std::logic_error("Bad location block: Missing token '{' after name"));
 
 	_name = b.substr(0, b.find('{'));
-	_name = _name.substr(1); // { inclus si substr(1, find({)) ?????
+	//_name = _name.substr(1); // { inclus si substr(1, find({)) ?????
 	remove_whitespace(_name);
 
 	//if (!_name.empty()) // pas sur de ca
-	_name = "/" + _name;
+	//_name = "/" + _name;
 
 	b = b.substr(b.find('{') + 1);
 
@@ -206,7 +221,7 @@ void Location::remove_whitespace(std::string& s)
 
 std::string Location::get_path()
 {
-	return (_root + _name);
+	return (_root);
 }
 
 
@@ -234,7 +249,8 @@ void Location::print()
 	<< "\nAllow_directory_listing: " << _directory_listing <<
 	"\ndefault_directory_answer_file: " << _directory_answer_file;
 
-	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type;
+	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type
+	<< "\nCGI_FILE: " << _cgi_file;
 	std::cout << std::endl;
 }
 
@@ -301,6 +317,13 @@ void Location::parse_body_size(std::string b)
 	_body_size = body;
 }
 
+void Location::parse_cgi_file(std::string b)
+{
+	remove_whitespace(b);
+	//if (b.find_first_of('.') == b.npos || b.find_first_of('.') != b.find_last_of('.'))
+	//	throw(std::logic_error("Bad Location block: 'invalid cgi file:'must contains '.''"));
+	_cgi_file = b;
+}
 
 // checks :
 
@@ -350,9 +373,12 @@ std::string Location::get_index()
 
 std::string Location::get_index_path()
 {
+	// if no root -> conf.root + name
+	// if root -> root
+	// if alias conf.root + alias
 	return (get_path() + _index);
 }
-
+/*
 bool Location::upload(std::string file)
 {
 	if (!_send_files)
@@ -360,7 +386,7 @@ bool Location::upload(std::string file)
 	(void)file;
 	// upload to _uploaded_files_root
 	return (true);
-}
+}*/
 
 unsigned int Location::get_body_size()
 {

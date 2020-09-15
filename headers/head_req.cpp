@@ -121,6 +121,7 @@ std::string Head_req::getReferer(char *m_buffer)
 		while (m_buffer[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
+	std::cout << "referer" << referer << std::endl;
     return referer;
 }
 
@@ -224,7 +225,7 @@ void Head_req::getRemAddr()
 
 
 void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::string url) {
-	
+	//std::cout << "m buffer" << m_buffer << std::endl;
 	REQUEST_METHOD = parsed[0];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');

@@ -2,7 +2,7 @@
 #include <iostream>
 #include <unistd.h>
 
-Request::Request(char *buffer, int fd, Config conf, int port)
+Request::Request(char *buffer, int fd, Config conf, int port, unsigned long addr)
 	{
 		_conf = conf;
 		memset((char *) &m_buffer, 0, sizeof(m_buffer));
@@ -18,6 +18,9 @@ Request::Request(char *buffer, int fd, Config conf, int port)
 		m_errorCode = 200; //define other error codes
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;
+		s_addr = addr;
+		pid_ret = 0;
+		std::cout << "adresse IP" << s_addr << std::endl;
 
 	};
 
@@ -140,6 +143,17 @@ int Request::send_to_client() {
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
+	std::cout << "m_output" << m_output << std::endl;
+	if (!is_cgi)
+		m_output = oss.str();
+	std::cout << "m_output" << m_output << std::endl;
+	if (pid_ret > 0)
+	{
+		oss << "HTTP/1.1 " << 500;
+	oss << " Internal Server Error\r\n";
+    oss << "Content-Type: text/html" << "\r\n";
+    oss << "Content-Length: 97\r\n\r\n";
+    oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
 	m_output = oss.str();
 //	std::cout << m_client << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)

@@ -84,6 +84,7 @@ class Location
 	void parse_send_files(std::string b);
 	void parse_uploaded_files_root(std::string b);
 	void parse_body_size(std::string b);
+	void parse_cgi_file(std::string);
 
 
 	void remove_whitespace(std::string&);

@@ -325,7 +325,7 @@ void Listener::receive_data(int fd) {
 		}
 		//std::cout << "server" << m_nbConf << std::endl;
 		//init request
-		Request req(buffer, fd, _conf[m_nbConf], *m_port); //changer le i if server_name
+		Request req(buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 		//std::cout << buffer << std::endl;
 		req.parse();
 		req.handle();

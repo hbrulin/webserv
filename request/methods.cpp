@@ -48,12 +48,8 @@ int Request::forking()
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
-			m_output = "HTTP/1.1 400 Bad Request\r\n"
-        	"Content-length: 97\r\n"
-        	"Content-Type: text/html\r\n\r\n"
-        	"<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-			send(m_client, m_output.c_str(), m_output.size() + 1, 0);
 			exit(127);
+			return 0;
 		}
 		return 2;
 	}
@@ -67,12 +63,12 @@ int Request::forking()
 			if (WIFSIGNALED(status))
 			{
 				if (WTERMSIG(status) == 2)
-					return -1;
+					return -3;
 				else if (WTERMSIG(status) == 3)
-					return -1;
+					return -2;
 			}
 			else
-				return -1;
+				return WEXITSTATUS(status);
 			if (ret == pid)
 				boucle = 0;
 		}
@@ -81,7 +77,7 @@ int Request::forking()
 	{
 		perror("fork");
 	}
-	return res;
+	return 0;
 }
 void Request::get_post_content()
 {
@@ -107,7 +103,7 @@ void Request::get_post_content()
 
 
 void Request::exec_cgi(){
-	_loc._cgi_file = "test.php";
+	//_loc._cgi_file = "test.php";
 	if (strstr(m_buffer, "POST") != NULL)
 	{
 		post(); // on recupere les infos dans le body
@@ -117,7 +113,8 @@ void Request::exec_cgi(){
 	_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
-	forking();
+	pid_ret = forking();
+	std::cout << "pid ret" << pid_ret << std::endl;
 }
 
 void Request::post() {

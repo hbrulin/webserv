@@ -31,6 +31,7 @@ class Request
 	char *m_buffer;
 	std::string content_env; //env que l'on recup dans requete POST pour les cgi
 	int m_client;
+	unsigned long s_addr;
 	char curr_dir[200];
 	char *dir_cgi;
 	char *path;
@@ -48,12 +49,13 @@ class Request
 	std::string m_length_required;
 	std::string m_path;
 	int m_errorCode;
+	int pid_ret;
 	bool is_cgi;
 	//output
 	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf, int port);
+	Request(char *buffer, int fd, Config conf, int port, unsigned long addr);
 	void parse();
 	void getBody(char *m_buffer);
 	void handle();
