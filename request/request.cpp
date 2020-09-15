@@ -150,12 +150,15 @@ int Request::send_to_client() {
 	if (pid_ret > 0)
 	{
 		oss << "HTTP/1.1 " << 500;
-	oss << " Internal Server Error\r\n";
-    oss << "Content-Type: text/html" << "\r\n";
-    oss << "Content-Length: 97\r\n\r\n";
-    oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-	m_output = oss.str();
-//	std::cout << m_client << std::endl;
+		oss << " Internal Server Error\r\n";
+		oss << "Content-Type: text/html" << "\r\n";
+		oss << "Content-Length: 97\r\n\r\n";
+		oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
+		m_output = oss.str();
+		send(m_client, m_output.c_str(), m_output.size() + 1, 0);
+		return 0;
+	}
+	//std::cout << "ici" << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;
