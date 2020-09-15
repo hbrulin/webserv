@@ -33,6 +33,32 @@ int Request::forking()
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	std::cout << "path: " << path << std::endl;
+	std::ifstream f(path);
+	if (!f.good())
+	{
+		return 127;
+	}
+	struct stat buf;
+	int ret;
+	if ((ret = stat((const char *)path, &buf)) < 0)
+		std::cout << "erreur stat" << strerror(errno) << std::endl;
+	else 
+	{
+		const char chars[] = "rwxrwxrwx";
+		char mode[10];
+  		for (size_t i = 0; i < 9; i++) 
+		{
+    		mode[i] = (buf.st_mode & (1 << (8-i))) ? chars[i] : '-';
+		}
+		mode[9] = '\0';
+  		std::cout << "mode: " << mode << std::endl;
+		if (mode[2] != 'x' || mode[5] != 'x' || mode[8] != 'x')
+		{
+			return (127);
+		}
+	}
+
+	
 	std::string _headers = _head_req.get_meta();
 	std::string s_env = content_env.append(_headers);
 	char **env = ft_split(s_env.c_str(), '&');

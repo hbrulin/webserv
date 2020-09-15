@@ -149,6 +149,7 @@ int Request::send_to_client() {
 	std::cout << "m_output" << m_output << std::endl;
 	if (pid_ret > 0)
 	{
+		std::cout << "error 500" << std::endl;
 		oss << "HTTP/1.1 " << 500;
 		oss << " Internal Server Error\r\n";
 		oss << "Content-Type: text/html" << "\r\n";
