@@ -102,6 +102,7 @@ std::string Head_req::getStringtoParse(char *m_buffer, std::string toParse)
 		int i = n;
 		while (m_buffer[i] != '\n' && m_buffer[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
+		//std::cout << referer << std::endl;
         return referer;
 	}
     return "";
@@ -135,8 +136,9 @@ std::string Head_req::getUserAgent(char *m_buffer)
 		int i = n;
 		while (m_buffer[i] != '\r' && m_buffer[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
+		//std::cout << referer << std::endl;
 	}
-    return USER_AGENT;
+    return referer;
 }
 
 std::string Head_req::getAcceptLangage(char *m_buffer)
@@ -180,7 +182,49 @@ std::string Head_req::contentNego(std::string root) {
 	return res;
 }
 
+
+void Head_req::getRemAddr()
+{	
+	int count = 0;
+	std::string s(USER_AGENT);
+	int begin = 0;
+	int cpy = 0;
+	int end = 0;
+
+	while (!(isdigit(s[begin])) && s[begin])
+		begin++;
+	cpy = begin;
+	while (count < 3)
+	{
+		end = cpy + 1;
+		while (s[end] != '.' && s[end])
+			end++;
+		if (end - cpy < 5)
+		{
+			count++;
+			cpy = end + 1;
+		}
+		else
+		{
+			cpy++;
+			while (!(isdigit(s[cpy])))
+				cpy++;
+			begin = cpy;
+			count = 0;
+		}
+	}
+	if (count == 3)
+	{
+		while (s[end] != ' ' && s[end])
+			end++;
+	}
+	REMOTE_ADDR = s.substr(begin, end - begin);
+	std::cout << REMOTE_ADDR << std::endl;
+}
+
+
 void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::string url) {
+	
 	REQUEST_METHOD = parsed[0];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
@@ -196,6 +240,7 @@ void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::stri
 	//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_url, "", "://");
 	REFERER = getReferer(m_buffer);
 	USER_AGENT = getUserAgent(m_buffer);
+	getRemAddr();
 	//rest of parsing
 	if (getStringtoParse(m_buffer, "Accept-Charset: ") != "")
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');

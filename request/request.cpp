@@ -46,6 +46,7 @@ void Request::parse() {
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_buffer, m_url);
+		//std::cout << _head_req.USER_AGENT << std::endl;
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
@@ -140,7 +141,7 @@ int Request::send_to_client() {
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
 	m_output = oss.str();
-
+//	std::cout << m_client << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;

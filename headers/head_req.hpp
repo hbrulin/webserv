@@ -13,6 +13,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <cctype>
 
 class Head_req
 {
@@ -32,6 +33,7 @@ class Head_req
     std::string HOST; //OK + Add PORT according to config_file -> déjà dans la requete
     std::string REFERER; // How to get that > Link ???
     std::string USER_AGENT; // OS, version, application
+    std::string REMOTE_ADDR;
 	std::string DATE; // HH:MM:SS GMT
     //META
     std::string str;
@@ -53,6 +55,7 @@ class Head_req
     std::string getDate();
     std::string getReferer(char *string);
     std::string getUserAgent(char *string);
+    void        getRemAddr();
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);
     std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
