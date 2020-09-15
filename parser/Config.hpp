@@ -44,7 +44,7 @@ struct Config
 	std::string 				_cgi_root;
 
 	unsigned int 						_body_size;// --> don't know what it is
-	std::vector<std::string> 	_methods; // list of accepted method
+	///std::vector<std::string> 	_methods; // list of accepted method
 
 //	Location _cgi;
 

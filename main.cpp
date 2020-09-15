@@ -12,6 +12,11 @@ int main (int ac, char **av) {
 		//Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/aurevoir/");
 		//std::cout << "loc found: ";
 		//locb.print();
+		//std::cout << "HERE" << data.getConfigList()[0]._locations.size() << std::endl;
+		//std::cout << data.getConfigList()[0]._locations._blank.check_allowed_method("GET") << std::endl;
+		/*Location locb = data.getConfigList()[0]._locations.get_loc_by_url("");
+		locb.print();
+		std::cout << "HERE: " << locb.check_allowed_method("POST") << std::endl;*/
 		Listener server(data.getConfigList(), size);
 		//std::cout << "0\n";
 		server.init();

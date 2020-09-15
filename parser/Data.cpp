@@ -168,7 +168,7 @@ static void check_rooting_validity(Config& config)
 		j = config._host.find_first_of('.', j) + 1;
 	}
 }
-
+/*
 static void check_methods_validity(Config& config)
 {
 	std::string error = "Error on server: " + config._server_name + ": ";
@@ -195,7 +195,7 @@ static void check_methods_validity(Config& config)
 			break ;
 		j++;
 	}
-}
+}*/
 /*
 static void check_server_doubles(std::vector<Config>& configList)
 {
@@ -223,7 +223,7 @@ void Data::check_validity()
 		try
 		{
 			check_path_validity(_configList[i]);
-			check_methods_validity(_configList[i]);
+		//	check_methods_validity(_configList[i]);
 			check_rooting_validity(_configList[i]);
 		}
 		catch (std::logic_error& e)
