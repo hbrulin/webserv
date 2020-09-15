@@ -42,7 +42,13 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() {
 
 	//_loc = _conf._locations.get_loc_by_url(m_url);
-	//std::cout << m_buffer << std::endl;
+	std::cout << m_buffer << std::endl;
+	std::string s(m_buffer);
+	if (s =="\n\r\n")
+	{
+		m_errorCode = 411; 
+		return;
+	}
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
