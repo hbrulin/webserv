@@ -1,6 +1,0 @@
-location:
-	refaire le config file avec les bons attributs
-	gerer les ;odes et le try files
-	faire un algo dans locations qui cherche la loc correspondante
-	parser l'url (peut etre avec une stack)
-	profit
