@@ -90,6 +90,20 @@ Location& Locations::get_loc_by_url(std::string url)
 	std::stack<std::string> urls;
 
 	stack_url(urls, url);
+
+	std::string last = urls.top();
+
+	if (last.find('.') != last.npos) // if true, we got a file
+	{
+		last = last.substr(last.find('.'));
+		//std::cout << "llaaa: " << last << std::endl;
+		for (unsigned long i = 0; i < _v.size(); i++)
+		{
+			if (last == _v[i].get_name())
+				return (_v[i]);
+		}
+	}
+
 	while (urls.size())
 	{
 		for (unsigned long i = 0; i < _v.size(); i++)

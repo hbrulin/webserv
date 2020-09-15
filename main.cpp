@@ -9,9 +9,9 @@ int main (int ac, char **av) {
 		int size = data.getSize();
 		//std::cout << "-1\n";
 
-		//Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/aurevoir/");
-		//std::cout << "loc found: ";
-		//locb.print();
+		/*Location locb = data.getConfigList()[0]._locations.get_loc_by_url("lol/oui/truck.bla");
+		std::cout << "loc found: ";
+		locb.print();*/
 		//std::cout << "HERE" << data.getConfigList()[0]._locations.size() << std::endl;
 		//std::cout << data.getConfigList()[0]._locations._blank.check_allowed_method("GET") << std::endl;
 		/*Location locb = data.getConfigList()[0]._locations.get_loc_by_url("");
