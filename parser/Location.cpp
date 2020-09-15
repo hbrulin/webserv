@@ -320,8 +320,8 @@ void Location::parse_body_size(std::string b)
 void Location::parse_cgi_file(std::string b)
 {
 	remove_whitespace(b);
-	if (b.find_first_of('.') == b.npos || b.find_first_of('.') != b.find_last_of('.'))
-		throw(std::logic_error("Bad Location block: 'invalid cgi file:'must contains '.''"));
+	//if (b.find_first_of('.') == b.npos || b.find_first_of('.') != b.find_last_of('.'))
+	//	throw(std::logic_error("Bad Location block: 'invalid cgi file:'must contains '.''"));
 	_cgi_file = b;
 }
 
@@ -373,6 +373,9 @@ std::string Location::get_index()
 
 std::string Location::get_index_path()
 {
+	// if no root -> conf.root + name
+	// if root -> root
+	// if alias conf.root + alias
 	return (get_path() + _index);
 }
 /*
