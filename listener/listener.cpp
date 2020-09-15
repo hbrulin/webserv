@@ -280,7 +280,7 @@ void Listener::receive_data(int fd) {
 		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
 		std::string s(buffer, 0, sizeof(buffer));
-		std::cout << buffer << std::endl;
+		//std::cout << buffer << std::endl;
 //		std::cout << "Received: " << s << "--" << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
@@ -293,11 +293,6 @@ void Listener::receive_data(int fd) {
 			m_close = true; //client will be removed
 			break;
 		}
-		// else if (s =="\n\r\n")
-		// {
-		// 	m_close = true; //client will be removed
-		// 	break;
-		// }
 		// else if (s == "\n"){
 		// 	//print something?
 		// 	m_close = true; //client will be removed
@@ -325,6 +320,9 @@ void Listener::receive_data(int fd) {
 		}
 		//std::cout << "server" << m_nbConf << std::endl;
 		//init request
+		//std::cout << "!!!!!!!!!!!!!" << std::endl;
+		//std::cout << buffer << std::endl;
+		//std::cout << "!!!!!!!!!!!!!" << std::endl;
 		Request req(buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 		//std::cout << buffer << std::endl;
 		req.parse();
