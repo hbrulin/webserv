@@ -272,22 +272,15 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
-	char *buffer;
-	int bytes;
-
-	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	memset((void *)buffer, 0, BUFFER_SIZE + 1);
-	//char buffer[4096]; //taille buffer??
-	//memset((char *) &buffer, 0, sizeof(buffer));
+	char buffer[4096]; //taille buffer??
+	memset((char *) &buffer, 0, sizeof(buffer));
 	/*This error checking is compliant with correction - check for -1 and 0 */
 	while (1)
 	{
-		memset((void *)buffer, 0, BUFFER_SIZE + 1);
-		//ret = recv(fd, buffer, sizeof(buffer), 0);
-		bytes = strlen(buffer);
-		ret = read(fd, buffer + bytes, BUFFER_SIZE - bytes);
-		bytes += ret;
+		memset((char *) &buffer, 0, sizeof(buffer));
+		ret = recv(fd, buffer, sizeof(buffer), 0);
 		std::string s(buffer, 0, sizeof(buffer));
+		std::cout << buffer << std::endl;
 //		std::cout << "Received: " << s << "--" << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error

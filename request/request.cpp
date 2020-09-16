@@ -42,7 +42,7 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() {
 
 	//_loc = _conf._locations.get_loc_by_url(m_url);
-	std::cout << m_buffer << std::endl;
+	//std::cout << m_buffer << std::endl;
 	std::string s(m_buffer);
 	if (s =="\n\r\n")
 	{
@@ -86,8 +86,6 @@ void Request::parse() {
 			m_url = m_index;
 		}
 		getBody(m_buffer);
-		if (m_body.empty() && parsed[0] == "POST")
-			m_errorCode = 411;
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	else
