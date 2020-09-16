@@ -41,9 +41,9 @@ void		Request::getBody(char *m_buffer) {
 
 void Request::parse() {
 
-	//_loc = _conf._locations.get_loc_by_url(m_url);
 	//std::cout << m_buffer << std::endl;
 	std::string s(m_buffer);
+	std::cout << s << std::endl;
 	if (s =="\n\r\n")
 	{
 		m_errorCode = 411; 
@@ -55,7 +55,6 @@ void Request::parse() {
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_buffer, m_url);
-		//std::cout << _head_req.USER_AGENT << std::endl;
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{

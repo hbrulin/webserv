@@ -272,16 +272,16 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
-	char buffer[4096]; //taille buffer??
-	memset((char *) &buffer, 0, sizeof(buffer));
+	char buffer[BUFFER_SIZE + 1]; //taille buffer??
+	memset((char *) &buffer, 0, BUFFER_SIZE + 1);
 	/*This error checking is compliant with correction - check for -1 and 0 */
 	while (1)
 	{
 		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
-		std::string s(buffer, 0, sizeof(buffer));
-		std::cout << buffer << std::endl;
-//		std::cout << "Received: " << s << "--" << std::endl;
+		//std::string s(buffer, 0, sizeof(buffer));
+		buffer[ret + 1] = '\0';
+		//std::cout << buffer << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
 			break;
@@ -319,10 +319,6 @@ void Listener::receive_data(int fd) {
 			}
 		}
 		//std::cout << "server" << m_nbConf << std::endl;
-		//init request
-		//std::cout << "!!!!!!!!!!!!!" << std::endl;
-		//std::cout << buffer << std::endl;
-		//std::cout << "!!!!!!!!!!!!!" << std::endl;
 		Request req(buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 		//std::cout << buffer << std::endl;
 		req.parse();
