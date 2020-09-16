@@ -280,11 +280,6 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
-//	char buffer[BUFFER_SIZE + 1]; //taille buffer??
-//	memset((char *) &buffer, 0, BUFFER_SIZE + 1);
-	/*This error checking is compliant with correction - check for -1 and 0 */
-	//while (1)
-	//{
 
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	ret = recv(fd, m_buffer, BUFFER_SIZE + 1, 0);
