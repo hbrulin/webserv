@@ -189,9 +189,11 @@ int Listener::run() {
 						m_nbConf = ret.second;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
-						m_close = false;
+						//m_close = false;
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
+						m_close = true;
 						close_conn(j);
+						//std::cout << "STOP" << std::endl;
 					}
 
 				}
@@ -275,23 +277,25 @@ void Listener::receive_data(int fd) {
 	char buffer[BUFFER_SIZE + 1]; //taille buffer??
 	memset((char *) &buffer, 0, BUFFER_SIZE + 1);
 	/*This error checking is compliant with correction - check for -1 and 0 */
-	while (1)
-	{
-		memset((char *) &buffer, 0, sizeof(buffer));
+	//while (1)
+	//{
+	//	memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
 		//std::string s(buffer, 0, sizeof(buffer));
 		buffer[ret + 1] = '\0';
 		//std::cout << buffer << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
-			break;
+			//break;
+			return;
 		}
 
 		/*Check if connection was closed by client*/
 		if (ret == 0)
 		{
 			m_close = true; //client will be removed
-			break;
+			//break;
+			return;
 		}
 		// else if (s == "\n"){
 		// 	//print something?
@@ -327,10 +331,11 @@ void Listener::receive_data(int fd) {
 		if (req.send_to_client() == -1)
 		{
 			m_close = true;
-			break;
+			//break;
+			return;
 		}
-
-	}
+		//std::cout << "STOP" << std::endl;
+	//}
 }
 
 /*If the m_close flag was turned on, we need

@@ -44,6 +44,7 @@ void Request::parse() {
 	//std::cout << m_buffer << std::endl;
 	std::string s(m_buffer);
 	std::cout << s << std::endl;
+	//std::cout << "STOP" << std::endl;
 	if (s =="\n\r\n")
 	{
 		m_errorCode = 411; 
