@@ -280,7 +280,6 @@ void Listener::receive_data(int fd) {
 		memset((char *) &buffer, 0, sizeof(buffer));
 		ret = recv(fd, buffer, sizeof(buffer), 0);
 		std::string s(buffer, 0, sizeof(buffer));
-		std::cout << buffer << std::endl;
 //		std::cout << "Received: " << s << "--" << std::endl;
 		if (ret < 0) {
 			m_close = true; //client will be removed if error
