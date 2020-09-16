@@ -32,7 +32,7 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
-	std::cout << "path: " << path << std::endl;
+//	std::cout << "path: " << path << std::endl;
 	std::ifstream f(path);
 	if (!f.good())
 	{

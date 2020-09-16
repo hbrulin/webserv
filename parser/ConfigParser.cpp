@@ -86,7 +86,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 	_config->set_blank();
 	/*std::cout << "\nBLANK\n\n";
 	_config->_locations._blank.print();*/
-	print_data(_config);
+	//print_data(_config);
 	return (true);
 }
 

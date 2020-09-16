@@ -121,7 +121,7 @@ std::string Head_req::getReferer(char *m_buffer)
 		while (m_buffer[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
-	std::cout << "referer" << referer << std::endl;
+	//std::cout << "referer" << referer << std::endl;
     return referer;
 }
 

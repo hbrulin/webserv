@@ -105,7 +105,7 @@ void Location::parse(std::string b)
 	else
 		name_end = b.find('.');
 	_mode = b.substr(0, name_end);
-	std::cout << "MODE: " << _mode << std::endl;
+	//std::cout << "MODE: " << _mode << std::endl;
 	remove_whitespace(_mode);
 
 	if (!check_mode())
@@ -356,10 +356,10 @@ void Location::check_methods_validity()
 
 bool Location::check_allowed_method(std::string method)
 {
-	std::cout << _methods.size() <<  std::endl;
+	//std::cout << _methods.size() <<  std::endl;
 	for (unsigned long i = 0; i < _methods.size(); i++)
 	{
-		std::cout << _methods[i] << std::endl;
+		//std::cout << _methods[i] << std::endl;
 		if (_methods[i] == method)
 			return (true);
 	}
