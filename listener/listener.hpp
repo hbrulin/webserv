@@ -53,6 +53,7 @@ class Listener {
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 		int			m_nbConf;
+		char 		*m_buffer;
 	
 		Listener() {};
 

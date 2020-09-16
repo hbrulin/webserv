@@ -147,6 +147,10 @@ int Listener::run() {
 	int sock_count;
 	std::pair<int, int> ret;
 
+	//IL FAUDRA VOIR SI ON NE DOIT PAS BOUGER CA APRES, QUAND LE TESTEUR REPREND
+	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
+
 	while (m_run) {
 		/* Copy the master fd_set over to the working fd_set.
 		Important because the call to select() is destructive. The copy
@@ -193,6 +197,7 @@ int Listener::run() {
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
 						m_close = true;
 						close_conn(j);
+						//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 						//std::cout << "STOP" << std::endl;
 					}
 
@@ -267,6 +272,7 @@ void Listener::accept_incoming_connections(int i) {
 		if (new_sock > m_highsock)
 			m_highsock = new_sock;
 	}
+	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 }
 
 /* Receive data on this connection until the
@@ -274,68 +280,58 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	int ret;
-	char buffer[BUFFER_SIZE + 1]; //taille buffer??
-	memset((char *) &buffer, 0, BUFFER_SIZE + 1);
+//	char buffer[BUFFER_SIZE + 1]; //taille buffer??
+//	memset((char *) &buffer, 0, BUFFER_SIZE + 1);
 	/*This error checking is compliant with correction - check for -1 and 0 */
 	//while (1)
 	//{
-	//	memset((char *) &buffer, 0, sizeof(buffer));
-		ret = recv(fd, buffer, sizeof(buffer), 0);
-		//std::string s(buffer, 0, sizeof(buffer));
-		buffer[ret + 1] = '\0';
-		//std::cout << buffer << std::endl;
-		if (ret < 0) {
-			m_close = true; //client will be removed if error
-			//break;
-			return;
-		}
 
-		/*Check if connection was closed by client*/
-		if (ret == 0)
-		{
-			m_close = true; //client will be removed
-			//break;
-			return;
-		}
-		// else if (s == "\n"){
-		// 	//print something?
-		// 	m_close = true; //client will be removed
-		// 	break;
-		// }
+	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
+	ret = recv(fd, m_buffer, BUFFER_SIZE + 1, 0);
 
-		//else data was received
-		//len = ret;
-		//send(fd, buffer, len, 0);
+	m_buffer[ret + 1] = '\0';
+	if (ret < 0) {
+		m_close = true; //client will be removed if error
+		return;
+	}
 
-		//int i = look_for_sock(fd).second;
+	/*Check if connection was closed by client*/
+	if (ret == 0)
+	{
+		m_close = true; //client will be removed
+		return;
+	}
+	// else if (s == "\n"){
+	// 	//print something?
+	// 	m_close = true; //client will be removed
+	// 	break;
+	// }
 	
-		//choose config according to server name
-		std::string host = getHost(buffer, "Host: ");
-		//std::cout << host << std::endl;
-		size_t n = host.find(":");
-		host = host.substr(0, n);
-		for (int j = 0; j < _size ; j++)
+	//choose config according to server name
+	std::string host = getHost(m_buffer, "Host: ");
+	//std::cout << host << std::endl;
+	size_t n = host.find(":");
+	host = host.substr(0, n);
+	for (int j = 0; j < _size ; j++)
+	{
+		if (host == _conf[j]._server_name)
 		{
-			if (host == _conf[j]._server_name)
-			{
-				m_nbConf = j;
-				break;
-			}
+			m_nbConf = j;
+			break;
 		}
-		//std::cout << "server" << m_nbConf << std::endl;
-		Request req(buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
-		//std::cout << buffer << std::endl;
-		req.parse();
-		req.handle();
-		//error checking to comply with correction : if error, client will be removed
-		if (req.send_to_client() == -1)
-		{
-			m_close = true;
-			//break;
-			return;
-		}
-		//std::cout << "STOP" << std::endl;
-	//}
+	}
+	//std::cout << "server" << m_nbConf << std::endl;
+	Request req(m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
+	//std::cout << buffer << std::endl;
+	req.parse();
+	req.handle();
+	//error checking to comply with correction : if error, client will be removed
+	if (req.send_to_client() == -1)
+	{
+		m_close = true;
+		return;
+	}
+	//std::cout << "STOP" << std::endl;
 }
 
 /*If the m_close flag was turned on, we need
