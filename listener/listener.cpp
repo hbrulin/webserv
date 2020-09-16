@@ -284,7 +284,7 @@ void Listener::receive_data(int fd) {
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	ret = recv(fd, m_buffer, BUFFER_SIZE + 1, 0);
 
-	m_buffer[ret + 1] = '\0';
+	m_buffer[ret] = '\0';
 	if (ret < 0) {
 		m_close = true; //client will be removed if error
 		return;
