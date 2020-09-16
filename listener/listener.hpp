@@ -14,6 +14,8 @@
 #include "../request/request.hpp"
 #include "../parser/Config.hpp"
 
+#define BUFFER_SIZE 32768
+
 class Listener {
 
 	public:

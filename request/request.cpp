@@ -86,6 +86,8 @@ void Request::parse() {
 			m_url = m_index;
 		}
 		getBody(m_buffer);
+		if (m_body.empty() && parsed[0] == "POST")
+			m_errorCode = 411;
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	else
