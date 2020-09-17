@@ -32,7 +32,8 @@ int Request::forking()
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
-//	std::cout << "path: " << path << std::endl;
+	_head_req.PATH_INFO = path;
+	std::cout << "path cgi: " << path << std::endl;
 	std::ifstream f(path);
 	if (!f.good())
 	{
@@ -61,6 +62,7 @@ int Request::forking()
 	
 	std::string _headers = _head_req.get_meta();
 	std::string s_env = content_env.append(_headers);
+	std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
@@ -146,7 +148,8 @@ void Request::exec_cgi(){
 void Request::post() {
 	if (m_body.empty())
 	{
-		m_errorCode = 204;
+		m_errorCode = 405;
+		m_url = "";
 		return;
 	}
 	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
@@ -159,12 +162,12 @@ void Request::post() {
 			return;
 	}
 	get_post_content();
-	std::ifstream f(_loc._root + "post.html");
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	m_path = _loc._root + "post.html";
-	m_url = str;
+	//std::ifstream f(_loc._root + "post.html");
+	//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+	//m_path = _loc._root + "post.html";
+	//m_url = str;
 			//m_errorCode = 400;
-	f.close();
+	//f.close();
 }
 
 void Request::put() {
@@ -316,10 +319,14 @@ void Request::get() {
 	}
 	else
 	{
+			
 		f.close();
-		std::ifstream f(_loc._root + m_not_found);
+		std::cout << "loc root" << _loc._root << std::endl;
+		std::ifstream f("www/404.html");
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
+		m_errorCode = 404;
+		std::cout << "url" << m_url << std::endl;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}

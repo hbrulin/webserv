@@ -39,12 +39,10 @@ void		Request::getBody(char *m_buffer) {
 	//std::cout << n << ' ' << i << std::endl;
 }
 
-void Request::parse() {
-
-	//std::cout << m_buffer << std::endl;
+void Request::parse() 
+{
 	std::string s(m_buffer);
 	std::cout << s << std::endl;
-	//std::cout << "STOP" << std::endl;
 	if (s =="\n\n")
 	{
 		m_errorCode = 411; 
@@ -80,7 +78,10 @@ void Request::parse() {
 		//std::cout << "//////////////////////\n";
 		m_index = _loc._index;
 		//_loc.print();
-		//std::cout << "//////////////////////\n";
+		//if (m_url.back() == '/' || !strcmp(m_url.c_str(), _loc._name.c_str())) //GET / HTTP/1.1
+		//{
+		//	m_url = m_index;
+		//}
 		if (m_url.back() == '/') //GET / HTTP/1.1
 		{
 			m_url = m_index;
@@ -101,9 +102,13 @@ void Request::handle() {
 		return;
 	//changing of root so that it includes the language
 	_head_req.REQUEST_URI = m_url;
-	if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
+	content_env = _head_req.getStringtoParse((char *)m_url.c_str(), "?"); // on recup le query string s'il existe
+	_head_req.QUERY_STRING = content_env;
+	if (m_url.find("?") != std::string::npos)
+		m_url.replace(m_url.find("?"),m_url.size(), ""); //on retire le query string de l'url
+	if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL) //|| !strncmp(m_url.c_str(), _loc._name.c_str(), _loc._name.size() -1)
 	{
-		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root);
+		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root); // changer 0 par m_url.find(_loc._name.c_str())
 		m_path = m_url;
 	}
 	else
@@ -111,11 +116,11 @@ void Request::handle() {
 		_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
 	}
-	content_env = _head_req.getStringtoParse((char *)m_url.c_str(), "?"); // on recup le query string s'il existe
-	_head_req.QUERY_STRING = content_env;
-	if (m_url.find("?") != std::string::npos)
-		m_url.replace(m_url.find("?"),m_url.size(), ""); //on retire le query string de l'url
-	if ((strstr(m_buffer, "POST") != NULL || strstr(m_buffer, "GET") != NULL) && m_url.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	if (m_url.back() == '/' || !strcmp(m_url.c_str(), _loc._name.c_str())) //GET / HTTP/1.1
+	{
+		m_path = m_path + m_index;
+	}
+	if ((strstr(m_buffer, "POST") != NULL || strstr(m_buffer, "GET") != NULL) && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
 		exec_cgi();
@@ -149,10 +154,8 @@ int Request::send_to_client() {
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
-	//std::cout << "m_output" << m_output << std::endl;
 	if (!is_cgi)
 		m_output = oss.str();
-	//std::cout << "m_output" << m_output << std::endl;
 	if (pid_ret > 0)
 	{
 		std::cout << "error 500" << std::endl;
