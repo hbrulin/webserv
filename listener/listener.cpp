@@ -348,6 +348,7 @@ void Listener::LaunchRequest(int n, int fd)
 		m_close = true;
 		return;
 	}
+	m_close = true;
 
 }
 

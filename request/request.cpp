@@ -166,7 +166,7 @@ int Request::send_to_client() {
 			return -1;
 		return 0;
 	}
-	//std::cout << "ici" << std::endl;
+//	std::cout << m_output << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;
