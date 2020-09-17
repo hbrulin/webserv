@@ -23,6 +23,7 @@ Location::Location()
 	_directory_answer_file = "";
 
 	_methods.push_back("GET");
+	//_methods.push_back("HEAD");
 	initiate_map();
 }
 
