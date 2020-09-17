@@ -197,15 +197,15 @@ int Listener::run() {
 						accept_incoming_connections(ret.first);
 						m_nbConf = ret.second;
 						buf_list.push_back(new Buffers(j));
-						std::cout << "ACCEPT" << std::endl;
+						//std::cout << "ACCEPT" << std::endl;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
-						//m_close = false;
+						m_close = false;
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
-						m_close = true;
+						//m_close = true;
 						close_conn(j);
 						//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-						std::cout << "STOP" << std::endl;
+						//std::cout << "STOP" << std::endl;
 					}
 
 				}
@@ -287,6 +287,8 @@ recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
 	
+	int 		bytes;
+	int 		ret;
 	std::vector<Buffers*>::iterator it = buf_list.begin();
 	std::vector<Buffers*>::iterator ite = buf_list.end();
 	
@@ -295,12 +297,16 @@ void Listener::receive_data(int fd) {
 	int n = it - 1 - buf_list.begin();
 	//std::cout << n << std::endl;
 
-	int ret;
+	bytes = strlen(buf_list[n]->m_buffer);
+
+	ret = read(fd, buf_list[n]->m_buffer + bytes, BUFFER_SIZE - bytes);
+	bytes += ret;
+	buf_list[n]->m_buffer[bytes] = '\0';
 
 	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-	ret = recv(fd, buf_list[n]->m_buffer, BUFFER_SIZE + 1, 0);
+//	ret = recv(fd, buf_list[n]->m_buffer, BUFFER_SIZE + 1, 0);
 
-	buf_list[n]->m_buffer[ret + 1] = '\0';
+//	buf_list[n]->m_buffer[ret] = '\0';
 	if (ret < 0) {
 		m_close = true; //client will be removed if error
 		return;
@@ -353,12 +359,22 @@ determining the new maximum descriptor value
 based on the bits that are still turned on in
 the master set.  */
 void Listener::close_conn(int fd) {
+	
+	std::vector<Buffers*>::iterator it = buf_list.begin();
+	std::vector<Buffers*>::iterator ite = buf_list.end();
+	
+	while (it != ite && (*it)->m_id != fd)
+		it++;
+	it--;
+
 	if (m_close) {
 		close(fd);
 		FD_CLR(fd, &m_set);
 		if (fd == m_highsock) {
 			while (!(FD_ISSET(m_highsock, &m_set)))
 				m_highsock -= 1;
+		delete *it;
+		buf_list.erase(it);
 		}
 	}
 }

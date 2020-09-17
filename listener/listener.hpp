@@ -24,6 +24,9 @@ class Buffers {
 		int		m_id;
 
 		Buffers(int id);
+		virtual ~Buffers() {
+			free(m_buffer);
+		}
 };
 
 class Listener {
