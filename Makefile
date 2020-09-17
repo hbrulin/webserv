@@ -42,6 +42,9 @@ flagless:
 sani:
 	clang++ -fsanitize=address -g3 -o $(NAME) $(SRCS)
 
+c98:
+	$(CC) $(CFLAGS) -std=c++98 $(SRCS)
+
 .PHONY: all, clean, fclean, re, opti
 
 -include $(DPD)
