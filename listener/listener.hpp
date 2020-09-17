@@ -13,8 +13,21 @@
 #include <arpa/inet.h>
 #include "../request/request.hpp"
 #include "../parser/Config.hpp"
+#include <vector>
 
 #define BUFFER_SIZE 32768
+
+class Buffers {
+	
+	public:
+		char *m_buffer;
+		int		m_id;
+
+		Buffers(int id);
+		virtual ~Buffers() {
+			free(m_buffer);
+		}
+};
 
 class Listener {
 
@@ -22,6 +35,7 @@ class Listener {
 		Listener(std::vector<Config> conf, int size);
 		int init();
 		int run();
+		void LaunchRequest(int n, int fd);
 		//void clean();
 	
 	protected:
@@ -53,7 +67,7 @@ class Listener {
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 		int			m_nbConf;
-		char 		*m_buffer;
+		std::vector<Buffers*> buf_list;
 	
 		Listener() {};
 

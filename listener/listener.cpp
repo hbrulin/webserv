@@ -1,5 +1,10 @@
 #include "listener.hpp"
 
+Buffers::Buffers(int id): m_id(id) {
+	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
+	}
+
 std::string Listener::getHost(char *buffer, std::string toParse)
 {
     int n;
@@ -148,7 +153,7 @@ int Listener::run() {
 	std::pair<int, int> ret;
 
 	//IL FAUDRA VOIR SI ON NE DOIT PAS BOUGER CA APRES, QUAND LE TESTEUR REPREND
-	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	//m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 
 	while (m_run) {
@@ -191,11 +196,13 @@ int Listener::run() {
 						//std::cout << ret.first << std::endl;
 						accept_incoming_connections(ret.first);
 						m_nbConf = ret.second;
+						buf_list.push_back(new Buffers(j));
+						//std::cout << "ACCEPT" << std::endl;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
-						//m_close = false;
+						m_close = false;
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
-						m_close = true;
+						//m_close = true;
 						close_conn(j);
 						//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 						//std::cout << "STOP" << std::endl;
@@ -279,12 +286,22 @@ void Listener::accept_incoming_connections(int i) {
 recv fails with EWOULDBLOCK.  If any other failure occurs,
 we will close the connection.    */
 void Listener::receive_data(int fd) {
-	int ret;
+	
+	int 		bytes;
+	int 		ret;
+	std::vector<Buffers*>::iterator it = buf_list.begin();
+	std::vector<Buffers*>::iterator ite = buf_list.end();
+	
+	while (it != ite && (*it)->m_id != fd)
+		it++;
+	int n = it - 1 - buf_list.begin();
+	//std::cout << n << std::endl;
 
-	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-	ret = recv(fd, m_buffer, BUFFER_SIZE + 1, 0);
+	bytes = strlen(buf_list[n]->m_buffer);
 
-	m_buffer[ret] = '\0';
+	ret = read(fd, buf_list[n]->m_buffer + bytes, BUFFER_SIZE - bytes);
+	bytes += ret;
+
 	if (ret < 0) {
 		m_close = true; //client will be removed if error
 		return;
@@ -294,19 +311,24 @@ void Listener::receive_data(int fd) {
 	if (ret == 0)
 	{
 		m_close = true; //client will be removed
-		return;
+		//return;
 	}
-	// else if (s == "\n"){
-	// 	//print something?
-	// 	m_close = true; //client will be removed
-	// 	break;
-	// }
-	
+
+	if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
+	{
+		buf_list[n]->m_buffer[bytes] = '\0';
+		LaunchRequest(n, fd);
+	}
+
+}
+
+void Listener::LaunchRequest(int n, int fd)
+{
 	//choose config according to server name
-	std::string host = getHost(m_buffer, "Host: ");
+	std::string host = getHost(buf_list[n]->m_buffer, "Host: ");
 	//std::cout << host << std::endl;
-	size_t n = host.find(":");
-	host = host.substr(0, n);
+	size_t m = host.find(":");
+	host = host.substr(0, m);
 	for (int j = 0; j < _size ; j++)
 	{
 		if (host == _conf[j]._server_name)
@@ -316,7 +338,7 @@ void Listener::receive_data(int fd) {
 		}
 	}
 	//std::cout << "server" << m_nbConf << std::endl;
-	Request req(m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
+	Request req(buf_list[n]->m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	//std::cout << buffer << std::endl;
 	req.parse();
 	req.handle();
@@ -326,7 +348,8 @@ void Listener::receive_data(int fd) {
 		m_close = true;
 		return;
 	}
-	//std::cout << "STOP" << std::endl;
+	m_close = true;
+
 }
 
 /*If the m_close flag was turned on, we need
@@ -337,12 +360,22 @@ determining the new maximum descriptor value
 based on the bits that are still turned on in
 the master set.  */
 void Listener::close_conn(int fd) {
+	
+	std::vector<Buffers*>::iterator it = buf_list.begin();
+	std::vector<Buffers*>::iterator ite = buf_list.end();
+	
+	while (it != ite && (*it)->m_id != fd)
+		it++;
+	it--;
+
 	if (m_close) {
 		close(fd);
 		FD_CLR(fd, &m_set);
 		if (fd == m_highsock) {
 			while (!(FD_ISSET(m_highsock, &m_set)))
 				m_highsock -= 1;
+		delete *it;
+		buf_list.erase(it);
 		}
 	}
 }

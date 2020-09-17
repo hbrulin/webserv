@@ -220,7 +220,7 @@ void Head_req::getRemAddr()
 			end++;
 	}
 	REMOTE_ADDR = s.substr(begin, end - begin);
-	std::cout << REMOTE_ADDR << std::endl;
+	//std::cout << REMOTE_ADDR << std::endl;
 }
 
 
