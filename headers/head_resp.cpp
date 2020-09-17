@@ -46,7 +46,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "HTTP/1.1 " << code;
 	oss << codeTab.find(code)->second;
 	oss << "Cache-Control: no-cache, private\r\n";
-    oss << "Content-Type: multipart/form-data" << "\r\n";
+    oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
     oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
