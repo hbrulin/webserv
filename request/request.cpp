@@ -28,10 +28,10 @@ void		Request::getBody(char *m_buffer) {
 	int n;
 	int i = 0;
 	std::string s(m_buffer);
-	n = s.find("\n\n");
+	n = s.find("\r\n\r\n");
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("\n\n").size();
+        n = n + std::string("\r\n\r\n").size();
 		i = n;
 		while (m_buffer[i] != '\0') { i++;}
 		m_body = s.substr(n, i - n);
@@ -45,7 +45,7 @@ void Request::parse() {
 	std::string s(m_buffer);
 	std::cout << s << std::endl;
 	//std::cout << "STOP" << std::endl;
-	if (s =="\n\r\n")
+	if (s =="\n\n")
 	{
 		m_errorCode = 411; 
 		return;
@@ -166,7 +166,7 @@ int Request::send_to_client() {
 			return -1;
 		return 0;
 	}
-//	std::cout << m_output << std::endl;
+	std::cout << m_output << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 		return - 1;
 	return 0;

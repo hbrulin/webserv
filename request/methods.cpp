@@ -144,6 +144,11 @@ void Request::exec_cgi(){
 }
 
 void Request::post() {
+	if (m_body.empty())
+	{
+		m_errorCode = 204;
+		return;
+	}
 	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
 	{
 			std::ifstream f(_loc._root + m_length_required);
