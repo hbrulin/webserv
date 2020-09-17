@@ -120,6 +120,7 @@ void Request::handle() {
 	{
 		m_path = m_path + m_index;
 	}
+	std::cout << "cgi type" << _loc._cgi_type << std::endl;
 	if ((strstr(m_buffer, "POST") != NULL || strstr(m_buffer, "GET") != NULL) && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
