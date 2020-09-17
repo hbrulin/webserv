@@ -301,12 +301,7 @@ void Listener::receive_data(int fd) {
 
 	ret = read(fd, buf_list[n]->m_buffer + bytes, BUFFER_SIZE - bytes);
 	bytes += ret;
-	buf_list[n]->m_buffer[bytes] = '\0';
 
-	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-//	ret = recv(fd, buf_list[n]->m_buffer, BUFFER_SIZE + 1, 0);
-
-//	buf_list[n]->m_buffer[ret] = '\0';
 	if (ret < 0) {
 		m_close = true; //client will be removed if error
 		return;
@@ -316,14 +311,19 @@ void Listener::receive_data(int fd) {
 	if (ret == 0)
 	{
 		m_close = true; //client will be removed
-		return;
+		//return;
 	}
-	// else if (s == "\n"){
-	// 	//print something?
-	// 	m_close = true; //client will be removed
-	// 	break;
-	// }
-	
+
+	if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
+	{
+		buf_list[n]->m_buffer[bytes] = '\0';
+		LaunchRequest(n, fd);
+	}
+
+}
+
+void Listener::LaunchRequest(int n, int fd)
+{
 	//choose config according to server name
 	std::string host = getHost(buf_list[n]->m_buffer, "Host: ");
 	//std::cout << host << std::endl;
@@ -348,7 +348,7 @@ void Listener::receive_data(int fd) {
 		m_close = true;
 		return;
 	}
-	//std::cout << "STOP" << std::endl;
+
 }
 
 /*If the m_close flag was turned on, we need

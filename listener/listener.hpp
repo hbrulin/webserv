@@ -35,6 +35,7 @@ class Listener {
 		Listener(std::vector<Config> conf, int size);
 		int init();
 		int run();
+		void LaunchRequest(int n, int fd);
 		//void clean();
 	
 	protected:

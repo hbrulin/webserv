@@ -51,7 +51,7 @@ int Request::forking()
     		mode[i] = (buf.st_mode & (1 << (8-i))) ? chars[i] : '-';
 		}
 		mode[9] = '\0';
-  		std::cout << "mode: " << mode << std::endl;
+  		//std::cout << "mode: " << mode << std::endl;
 		if (mode[2] != 'x' || mode[5] != 'x' || mode[8] != 'x')
 		{
 			return (127);
@@ -135,12 +135,12 @@ void Request::exec_cgi(){
 		post(); // on recupere les infos dans le body
 	}
 	m_url = _loc._cgi_root + _loc._cgi_file;
-	std::cout << "cgi url" << m_url << std::endl;
+	//std::cout << "cgi url" << m_url << std::endl;
 	_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
 	pid_ret = forking();
-	std::cout << "pid ret" << pid_ret << std::endl;
+	//std::cout << "pid ret" << pid_ret << std::endl;
 }
 
 void Request::post() {
