@@ -8,10 +8,10 @@ int main (int ac, char **av) {
 		Data data(av[1]);
 		int size = data.getSize();
 		//std::cout << "-1\n";
-
-		//Location locb = data.getConfigList()[0]._locations.get_loc_by_url("/bonjour/lol.html");
+		//data.getConfigList()[0]._locations.print();
+		//Location locc = data.getConfigList()[0]._locations.get_loc_by_url("/.bla");
 		//std::cout << "loc found: ";
-		//locb.print();
+		//locc.print();
 		//std::cout << locb._cgi_file << std::endl;
 		//std::cout << "HERE" << data.getConfigList()[0]._locations.size() << std::endl;
 		//std::cout << data.getConfigList()[0]._locations._blank.check_allowed_method("GET") << std::endl;

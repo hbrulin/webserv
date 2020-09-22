@@ -13,7 +13,7 @@ Location::Location()
 	_try_files = "";
 	_index = "";
 	_allow = "";
-	_body_size = 10000000;
+	_body_size = 120000000;
 	_uploaded_files_root = "";
 	_send_files = false;
 	_cgi_type = "";
@@ -119,6 +119,8 @@ void Location::parse(std::string b)
 	_name = b.substr(0, b.find('{'));
 	//_name = _name.substr(1); // { inclus si substr(1, find({)) ?????
 	remove_whitespace(_name);
+	if (_name[_name.size() - 1] != '/' && _name[0] != '.')
+		_name.push_back('/');
 
 	//if (!_name.empty()) // pas sur de ca
 	//_name = "/" + _name;

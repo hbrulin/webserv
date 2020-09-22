@@ -108,6 +108,8 @@ Location& Locations::get_loc_by_url(std::string url)
 	{
 		for (unsigned long i = 0; i < _v.size(); i++)
 		{
+			if (urls.top()[urls.top().size() - 1] != '/')
+				urls.top().push_back('/');
 			if (urls.top() == _v[i].get_name())
 				return (_v[i]);
 		}

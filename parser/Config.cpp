@@ -7,6 +7,7 @@ Config::Config()
 	_listen = 80;
 	_root = "";
 	_host = "0.0.0.0";
+	_body_size = 120000000;
 	//_ports.push_back(80);
 }
 
@@ -20,7 +21,7 @@ Config::Config(const Config& b)
 	_root = b._root;
 
 	_ports = b._ports;
-
+	_body_size = b._body_size;
 	_locations = Locations(b._locations);
 
 	// a retirer des qu'on peut:
