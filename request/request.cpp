@@ -76,15 +76,9 @@ void Request::parse()
 			return;
 		}
 		m_index = _loc._index;
-		//_loc.print();
+		_loc.print();
 		if (m_url.find("?") != std::string::npos)
 			m_url.replace(m_url.find("?"),m_url.size(), "");
-		
-		//std::string tmp = (m_url + "/");
-
-		//std::cout << "//////////////////////  " << m_url << "\n";
-		//std::cout << "//////////////////////  " << _loc._name << "\n";
-		//std::cout << "//////////////////////  " << tmp << "\n";
 
 		_loc._name.pop_back();
 		if (m_url == "/" || _loc._name == m_url)
@@ -95,6 +89,10 @@ void Request::parse()
 		{
 			m_url.erase(0, _loc._name.size());
 		}
+
+		//std::cout << "!!!!  " << _loc._name << "\n";
+		//std::cout << "!!!!  " << m_url << "\n";
+
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
