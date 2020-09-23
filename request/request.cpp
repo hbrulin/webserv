@@ -80,13 +80,20 @@ void Request::parse()
 		if (m_url.find("?") != std::string::npos)
 			m_url.replace(m_url.find("?"),m_url.size(), "");
 		
-		std::string tmp = (m_url + "/");
+		//std::string tmp = (m_url + "/");
+
 		//std::cout << "//////////////////////  " << m_url << "\n";
 		//std::cout << "//////////////////////  " << _loc._name << "\n";
 		//std::cout << "//////////////////////  " << tmp << "\n";
-		if (m_url == "/" || _loc._name == tmp)
+
+		_loc._name.pop_back();
+		if (m_url == "/" || _loc._name == m_url)
 		{
 			m_url = m_index;
+		}
+		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
+		{
+			m_url.erase(0, _loc._name.size());
 		}
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
