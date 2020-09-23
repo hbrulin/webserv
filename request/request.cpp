@@ -75,17 +75,22 @@ void Request::parse()
 			f.close();
 			return;
 		}
-		//std::cout << "//////////////////////\n";
 		m_index = _loc._index;
 		//_loc.print();
-		//if (m_url.back() == '/' || !strcmp(m_url.c_str(), _loc._name.c_str())) //GET / HTTP/1.1
-		//{
-		//	m_url = m_index;
-		//}
-		if (m_url.back() == '/') //GET / HTTP/1.1
+		if (m_url.find("?") != std::string::npos)
+			m_url.replace(m_url.find("?"),m_url.size(), "");
+		
+		std::string tmp = (m_url + "/");
+		//std::cout << "//////////////////////  " << m_url << "\n";
+		//std::cout << "//////////////////////  " << _loc._name << "\n";
+		//std::cout << "//////////////////////  " << tmp << "\n";
+		if (m_url == "/" || _loc._name == tmp)
 		{
 			m_url = m_index;
 		}
+		if (_loc._root != "YoupiBanane/")
+			_loc._root =  _head_req.contentNego(_loc._root);
+		m_path = _loc._root + m_url;
 		getBody(m_buffer);
 		//std::cout << _head_req.BODY << std::endl;
 	}
@@ -104,9 +109,9 @@ void Request::handle() {
 	_head_req.REQUEST_URI = m_url;
 	content_env = _head_req.getStringtoParse((char *)m_url.c_str(), "?"); // on recup le query string s'il existe
 	_head_req.QUERY_STRING = content_env;
-	if (m_url.find("?") != std::string::npos)
-		m_url.replace(m_url.find("?"),m_url.size(), ""); //on retire le query string de l'url
-	if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL) //|| !strncmp(m_url.c_str(), _loc._name.c_str(), _loc._name.size() -1)
+	/*if (m_url.find("?") != std::string::npos)
+		m_url.replace(m_url.find("?"),m_url.size(), "");*/ //on retire le query string de l'url
+	/*if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL) //|| !strncmp(m_url.c_str(), _loc._name.c_str(), _loc._name.size() -1)
 	{
 		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root); // changer 0 par m_url.find(_loc._name.c_str())
 		m_path = m_url;
@@ -119,8 +124,8 @@ void Request::handle() {
 	if (m_url.back() == '/' || !strcmp(m_url.c_str(), _loc._name.c_str())) //GET / HTTP/1.1
 	{
 		m_path = m_path + m_index;
-	}
-	std::cout << "cgi type" << _loc._cgi_type << std::endl;
+	}*/
+	//std::cout << "cgi type" << _loc._cgi_type << std::endl;
 	if ((strstr(m_buffer, "POST") != NULL || strstr(m_buffer, "GET") != NULL) && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
