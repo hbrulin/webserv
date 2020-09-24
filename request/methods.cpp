@@ -239,6 +239,7 @@ void Request::get() {
 
 	if (f.good())
 	{
+		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
 		m_header = m_url;

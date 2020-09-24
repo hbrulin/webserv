@@ -181,7 +181,7 @@ int Request::send_to_client() {
 		return 0;
 	}
 	std::cout << m_output << std::endl;
-	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
+	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 		return - 1;
 	return 0;
 }
