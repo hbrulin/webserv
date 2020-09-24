@@ -22,6 +22,7 @@ class Buffers {
 	public:
 		char *m_buffer;
 		int		m_id;
+		int		body_parse;
 
 		Buffers(int id);
 		virtual ~Buffers() {

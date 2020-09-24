@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id) {
+Buffers::Buffers(int id): m_id(id), body_parse(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	}
@@ -313,11 +313,23 @@ void Listener::receive_data(int fd) {
 		m_close = true; //client will be removed
 		//return;
 	}
-
 	if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
 	{
-		buf_list[n]->m_buffer[bytes] = '\0';
-		LaunchRequest(n, fd);
+		if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
+		{
+			if (buf_list[n]->body_parse == 0)
+				buf_list[n]->body_parse = 1;
+			else 
+			{
+				buf_list[n]->m_buffer[bytes] = '\0';
+				LaunchRequest(n, fd);
+			}
+		}
+		else
+		{
+			buf_list[n]->m_buffer[bytes] = '\0';
+			LaunchRequest(n, fd);
+		}
 	}
 
 }

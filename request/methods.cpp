@@ -177,6 +177,7 @@ void Request::put() {
 		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
 	else 
 		n = m_body.size();
+	//std::cout << n << "!!!!!!\n";
 	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
 			std::ifstream f(_loc._root + m_length_required);
@@ -189,8 +190,6 @@ void Request::put() {
 	else if ((_head_req.CONTENT_LENGTH.empty() == 0 && (unsigned int)stoi(_head_req.CONTENT_LENGTH)) > _loc._body_size)
 	{
 		m_errorCode = 413;
-		//std::cout << _head_req.CONTENT_LENGTH << "\n";
-		//std::cout << _conf._body_size << "\n";
 		return;
 	}
 	m_path = _loc._uploaded_files_root + m_url;
