@@ -28,7 +28,7 @@ class Head_resp
     public:
     std::string getLastModified(const char *path);
     std::string getDate();
-    std::string getBuffer(int code, const char *path, std::vector<std::string> methods, std::string method);
+    std::string getBuffer(int code, const char *path, std::vector<std::string> methods);
     std::string getContentLength(const char *path);
     struct stat st;
 };
