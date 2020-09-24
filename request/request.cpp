@@ -52,8 +52,10 @@ void Request::parse()
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
+		
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_buffer, m_url);
+		//m_method = _head_req.REQUEST_METHOD;
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
@@ -162,7 +164,7 @@ void Request::handle() {
 int Request::send_to_client() {
 	std::ostringstream oss;
 	if (!is_cgi)
-		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
+		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
 	if (!is_cgi)

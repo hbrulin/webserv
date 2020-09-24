@@ -40,7 +40,7 @@ std::string Head_resp::getContentLength(const char *path)
     return CONTENT_LENGTH;
 }
 
-std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods)
+std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods, std::string method)
 {
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
@@ -66,6 +66,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 		 	oss << *it << ", ";
 		oss << "\r\n" << std::endl;
 	}
-    oss << "\r\n";
+	if (method != "HEAD")
+    	oss << "\r\n";
     return oss.str();
 }

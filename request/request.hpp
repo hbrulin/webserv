@@ -39,6 +39,7 @@ class Request
 	char *dir_cgi;
 	char *path;
 
+	//std::string m_method;
 	std::string m_url;
 	std::string m_body;
 	std::string m_header;
