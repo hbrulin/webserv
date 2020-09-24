@@ -172,7 +172,11 @@ void Request::post() {
 
 void Request::put() {
 	//_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
-	
+	unsigned int n;
+	if (_head_req.CONTENT_LENGTH.empty() == 0)
+		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
+	else 
+		n = m_body.size();
 	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
 	{
 			std::ifstream f(_loc._root + m_length_required);
@@ -182,7 +186,7 @@ void Request::put() {
 			m_errorCode = 411;
 			return;
 	}
-	else if (((unsigned int)stoi(_head_req.CONTENT_LENGTH)) > _loc._body_size)
+	else if ((_head_req.CONTENT_LENGTH.empty() == 0 && (unsigned int)stoi(_head_req.CONTENT_LENGTH)) > _loc._body_size)
 	{
 		m_errorCode = 413;
 		//std::cout << _head_req.CONTENT_LENGTH << "\n";
@@ -197,7 +201,6 @@ void Request::put() {
 		m_errorCode = 201; //created
 	f.close();
 	//std::cout << _loc._uploaded_files_root << "\n";
-	int n = stoi(_head_req.CONTENT_LENGTH);
 	std::ofstream ff(m_path);
 	if (ff.good())
 		ff << m_body.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
