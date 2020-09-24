@@ -15,6 +15,8 @@
 #include "../headers/head_resp.hpp"
 #include "../headers/meta_var.hpp"
 #include <algorithm>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 /*Faire deux classes : une pour reception, une pour envoi?*/

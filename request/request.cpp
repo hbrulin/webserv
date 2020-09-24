@@ -76,7 +76,7 @@ void Request::parse()
 			return;
 		}
 		m_index = _loc._index;
-		_loc.print();
+		//_loc.print();
 		if (m_url.find("?") != std::string::npos)
 			m_url.replace(m_url.find("?"),m_url.size(), "");
 
@@ -130,7 +130,7 @@ void Request::handle() {
 	{
 		m_path = m_path + m_index;
 	}*/
-	std::cout << "cgi type" << _loc._cgi_type << std::endl;
+	//std::cout << "cgi type" << _loc._cgi_type << std::endl;
 	if (strstr(m_buffer, "POST") != NULL && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;

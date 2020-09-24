@@ -33,7 +33,7 @@ int Request::forking()
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
-	std::cout << "path cgi: " << path << std::endl;
+	//std::cout << "path cgi: " << path << std::endl;
 	std::ifstream f(path);
 	if (!f.good())
 	{
@@ -62,7 +62,7 @@ int Request::forking()
 	
 	std::string _headers = _head_req.get_meta();
 	std::string s_env = content_env.append(_headers);
-	std::cout << s_env << std::endl;
+	//std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");
@@ -225,45 +225,18 @@ void Request::delete_m()
 		m_errorCode = 204; //created
 	f.close();
 	unlink(m_path.c_str());
-	/*
-	DELETE /echo/delete/json HTTP/1.1
-	Authorization: Bearer mt0dgHmLJMVQhvjpNXDyA83vA_PxH23Y
-	Accept: application/json
-	Content-Type: application/json
-	Content-Length: 19
-	Host: reqbin.com
-	*/
-	/*
-	HTTP/1.1 200 OK
-	Content-Length: 19
-	Content-Type: application/json
-
-	{"success":"true"}
-	*/
 }
 
 void Request::get() {
-	/*if (m_url == m_index)
-		m_path = _head_req.contentNego (_conf._root, m_url);
-	else
-	{
-		m_path = _conf._root + m_url;
-	}*/
-
-	/*if (m_path == "not_acceptable")
-	{
-			std::ifstream f(_conf._root + m_not_acceptable);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _conf._root + m_not_acceptable;
-			m_url = str;
-			m_errorCode = 406;
-			return;
-	}*/
-
 	// Open the document in the local file system
+	int fd = open(m_path.c_str(), O_RDONLY);
+	struct stat buf;
+	fstat(fd, &buf);
+	close(fd);
+	if (buf.st_mode & S_IFDIR)
+		m_path = m_path + "/youpi.bad_extension";
 	std::ifstream f(m_path);
 
-	// Check if it opened and if it did, take content
 	if (f.good())
 	{
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -279,16 +252,6 @@ void Request::get() {
 			//m_errorCode = 400;
 			f.close();
 		}
-//		else if (_head_req.SERVER_PROTOCOL != "HTTP/1.1" && m_errorCode != 405)
-//		{
-//			f.close();
-//			std::ifstream f(_conf._root + m_not_supported);
-//			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-//			m_path = _conf._root + m_not_supported;
-//			m_url = str;
-//			m_errorCode = 505;
-//			f.close();
-//		}
 		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
@@ -319,14 +282,14 @@ void Request::get() {
 	}
 	else
 	{
-			
+		//std::cout << "WARNING" << std::endl;
 		f.close();
-		std::cout << "loc root" << _loc._root << std::endl;
+		//std::cout << "loc root" << _loc._root << std::endl;
 		std::ifstream f("www/404.html");
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
 		m_errorCode = 404;
-		std::cout << "url" << m_url << std::endl;
+		//std::cout << "url" << m_url << std::endl;
 		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
