@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id), body_parse(0) {
+Buffers::Buffers(int id): m_id(id) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	}
@@ -317,6 +317,7 @@ void Listener::receive_data(int fd) {
 	{
 		if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 		{
+			//add condition content-length
 			if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 			{
 				buf_list[n]->m_buffer[bytes] = '\0';

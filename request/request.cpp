@@ -36,7 +36,12 @@ void		Request::getBody(char *m_buffer) {
 		while (m_buffer[i] != '\0') { i++;}
 		m_body = s.substr(n, i - n);
 	}
-	//std::cout << n << ' ' << i << std::endl;
+	//std::cout << "!!!!" << _head_req.TRANSFER_ENCODING << std::endl;
+	if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
+		&& _head_req.TRANSFER_ENCODING == "chunked")
+	{
+		std::cout << _head_req.TRANSFER_ENCODING << std::endl;
+	}
 }
 
 void Request::parse() 

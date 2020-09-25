@@ -49,12 +49,13 @@ class Head_req
     std::string REQUEST_URI;
     std::string SERVER_PORT;
     std::string SERVER_NAME; //déjà dans le listener
-    char **TRANSFER_ENCODING;
+    std::string TRANSFER_ENCODING;
     // std::string SERVER_SOFTWARE;
     //functions
     std::string getDate();
     std::string getReferer(char *string);
     std::string getUserAgent(char *string);
+	std::string getTransferEncoding(char *m_buffer);
     void        getRemAddr();
     std::string getAcceptLangage(char *string);
     std::string getStringtoParse(char *m_buffer, std::string toParse);

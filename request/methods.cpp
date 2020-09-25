@@ -152,7 +152,7 @@ void Request::post() {
 		m_url = "";
 		return;
 	}*/
-	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == NULL)
+	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == "")
 	{
 			std::ifstream f(_loc._root + m_length_required);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -178,7 +178,7 @@ void Request::put() {
 	else 
 		n = m_body.size();
 	//std::cout << n << "!!!!!!\n";
-	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING == NULL)
+	if (_head_req.CONTENT_LENGTH.empty() && _head_req.TRANSFER_ENCODING.empty())
 	{
 			std::ifstream f(_loc._root + m_length_required);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());

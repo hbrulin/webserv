@@ -158,6 +158,22 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
     return referer;
 }
 
+std::string Head_req::getTransferEncoding(char *m_buffer)
+{
+    int n;
+	std::string s(m_buffer);
+    std::string referer;
+	n = s.find("Transfer-Encoding: ");
+	if (n != (int)std::string::npos)
+	{
+        n = n + std::string("Transfer-Encoding: ").size();
+		int i = n;
+		while (m_buffer[i] != '\r') { i++;}
+		referer = s.substr(n, i - n);
+	}
+    return referer;
+}
+
 std::string Head_req::contentNego(std::string root) {
 	size_t i = 0;
 	if (ACCEPT_LANGUAGE.empty())
@@ -245,10 +261,8 @@ void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::stri
 	//rest of parsing
 	if (getStringtoParse(m_buffer, "Accept-Charset: ") != "")
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
-	if (getStringtoParse(m_buffer, "Transfer-Encoding: ") != "")
-		TRANSFER_ENCODING = ft_split(getStringtoParse(m_buffer, "Transfer-Encoding: ").c_str(), ',');
-	else
-		TRANSFER_ENCODING = NULL;
+	if (strstr(m_buffer, "Transfer-Encoding: ") != NULL)
+		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
 	DATE = getStringtoParse(m_buffer, "Date: ");
 
 	//parsing languages into vector
