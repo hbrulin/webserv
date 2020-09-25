@@ -55,8 +55,10 @@ class Request
 	int m_errorCode;
 	int pid_ret;
 	bool is_cgi;
+	unsigned int m_chunk_size;
+
 	//output
-	std::string m_output; //peut-être pas nécessaire, réutiliser m_content?
+	std::string m_output; 
 	//memset m_content et m_output
 	public:
 	Request(char *buffer, int fd, Config conf, int port, unsigned long addr);

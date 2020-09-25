@@ -72,7 +72,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-		std::cout << _head_resp.getBuffer(200, path, _loc._methods); // A revoir car renvoie mauvais header si ne fonctionne pas
+		std::cout << _head_resp.getBuffer(200, path, _loc._methods, m_chunk_size); // A revoir car renvoie mauvais header si ne fonctionne pas
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{
@@ -173,7 +173,9 @@ void Request::post() {
 void Request::put() {
 	//_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
 	unsigned int n;
-	if (_head_req.CONTENT_LENGTH.empty() == 0)
+	if (_head_req.TRANSFER_ENCODING == "chunked")
+		n = m_chunk_size;
+	else if (_head_req.CONTENT_LENGTH.empty() == 0)
 		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
 	else 
 		n = m_body.size();

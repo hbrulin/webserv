@@ -20,9 +20,11 @@ Request::Request(char *buffer, int fd, Config conf, int port, unsigned long addr
 		is_cgi = false;
 		s_addr = addr;
 		pid_ret = 0;
+		m_chunk_size = 0;
 		//std::cout << "adresse IP" << s_addr << std::endl;
 
 	};
+
 
 void		Request::getBody(char *m_buffer) {
 	int n;
@@ -36,12 +38,26 @@ void		Request::getBody(char *m_buffer) {
 		while (m_buffer[i] != '\0') { i++;}
 		m_body = s.substr(n, i - n);
 	}
-	//std::cout << "!!!!" << _head_req.TRANSFER_ENCODING << std::endl;
+
+	std::istringstream f(m_body);
+	std::string buf;
+	std::string total;
+	bool flag = 0;
 	if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
 		&& _head_req.TRANSFER_ENCODING == "chunked")
 	{
-		std::cout << _head_req.TRANSFER_ENCODING << std::endl;
+		while (std::getline(f, buf))
+		{
+			if (!flag)
+				m_chunk_size += strtol(buf.c_str(), NULL, 16);
+			else
+				total += buf;
+			flag = !flag;
+		}
 	}
+	m_body = total;
+	//std::cout << m_body << std::endl;
+	//std::cout << m_chunk_size << std::endl;
 }
 
 void Request::parse() 
@@ -169,7 +185,7 @@ void Request::handle() {
 int Request::send_to_client() {
 	std::ostringstream oss;
 	if (!is_cgi)
-		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
+		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, m_chunk_size);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
 	if (!is_cgi)
