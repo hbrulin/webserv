@@ -317,9 +317,7 @@ void Listener::receive_data(int fd) {
 	{
 		if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 		{
-			if (buf_list[n]->body_parse == 0)
-				buf_list[n]->body_parse = 1;
-			else 
+			if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 			{
 				buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
