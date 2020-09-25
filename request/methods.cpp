@@ -72,7 +72,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
-		std::cout << _head_resp.getBuffer(200, path, _loc._methods); // A revoir car renvoie mauvais header si ne fonctionne pas
+		std::cout << _head_resp.getBuffer(200, path, _loc._methods, _head_req.REQUEST_METHODcd ); // A revoir car renvoie mauvais header si ne fonctionne pas
 		res = execve(path, NULL, env);
 		if (res != 0)
 		{

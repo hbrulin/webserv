@@ -40,7 +40,7 @@ std::string Head_resp::getContentLength(const char *path)
     return CONTENT_LENGTH;
 }
 
-std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods)
+std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods, std::string _method)
 {
 	//std::cout << "!!!!!" << fichier << std::endl;
     std::ostringstream oss;
@@ -49,7 +49,12 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
-    oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
+	if (_method != "PUT")
+    	oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
+	else
+	{
+		oss << "Content-Length: 0" << "\r\n";
+	}
 	//oss << "Transfer-Encoding: deflate\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
 	/*if (WWW_AUTHENTICATE != NULL)
