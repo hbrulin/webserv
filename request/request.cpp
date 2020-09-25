@@ -185,7 +185,7 @@ void Request::handle() {
 int Request::send_to_client() {
 	std::ostringstream oss;
 	if (!is_cgi)
-		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, m_chunk_size);
+		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
 	if (!is_cgi)

@@ -320,7 +320,7 @@ void Listener::receive_data(int fd) {
 			//add condition content-length
 			if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 			{
-				buf_list[n]->m_buffer[bytes] = '\0';
+				//buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
 			}
 		}

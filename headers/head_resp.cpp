@@ -40,7 +40,7 @@ std::string Head_resp::getContentLength(const char *path)
     return CONTENT_LENGTH;
 }
 
-std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods, int encoding)
+std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods)
 {
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
@@ -48,10 +48,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
-	if (encoding)
-		oss << "Content-Length: " << encoding << "\r\n";
-	else
-    	oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
+    oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
 	oss << "Content-Location: " << fichier << "\r\n";
 	/*if (WWW_AUTHENTICATE != NULL)
