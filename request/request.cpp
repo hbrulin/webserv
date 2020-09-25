@@ -54,8 +54,8 @@ void		Request::getBody(char *m_buffer) {
 				total += buf;
 			flag = !flag;
 		}
+		m_body = total;
 	}
-	m_body = total;
 	//std::cout << m_body << std::endl;
 	//std::cout << m_chunk_size << std::endl;
 }

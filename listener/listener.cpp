@@ -322,15 +322,16 @@ void Listener::receive_data(int fd) {
 			{
 				//buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
+				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 		}
 		else
 		{
 			buf_list[n]->m_buffer[bytes] = '\0';
 			LaunchRequest(n, fd);
+			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 		}
 	}
-
 }
 
 void Listener::LaunchRequest(int n, int fd)
@@ -359,7 +360,7 @@ void Listener::LaunchRequest(int n, int fd)
 		m_close = true;
 		return;
 	}
-	m_close = true;
+	//m_close = true;
 
 }
 

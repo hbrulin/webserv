@@ -233,12 +233,16 @@ void Request::delete_m()
 
 void Request::get() {
 	// Open the document in the local file system
+
 	int fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
 	fstat(fd, &buf);
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
+	{
 		m_path = m_path + "/youpi.bad_extension";
+	}
+
 	std::ifstream f(m_path);
 
 	if (f.good())
@@ -290,6 +294,7 @@ void Request::get() {
 		//std::cout << "WARNING" << std::endl;
 		f.close();
 		//std::cout << "loc root" << _loc._root << std::endl;
+		m_path = _loc._root + m_not_found;
 		std::ifstream f("www/404.html");
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;

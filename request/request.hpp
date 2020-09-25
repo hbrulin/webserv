@@ -17,6 +17,8 @@
 #include <algorithm>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 
 /*Faire deux classes : une pour reception, une pour envoi?*/

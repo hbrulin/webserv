@@ -32,7 +32,7 @@ std::string Head_resp::getDate()
 std::string Head_resp::getContentLength(const char *path)
 {
 	CONTENT_LENGTH = "";
-		if (lstat((const char *)path, &st) == 0)
+	if (lstat((const char *)path, &st) == 0)
 	{
 		size_t length = (size_t)st.st_size;
 		CONTENT_LENGTH = std::to_string(length);	
@@ -42,6 +42,7 @@ std::string Head_resp::getContentLength(const char *path)
 
 std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std::string> methods)
 {
+	//std::cout << "!!!!!" << fichier << std::endl;
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
 	oss << codeTab.find(code)->second;
