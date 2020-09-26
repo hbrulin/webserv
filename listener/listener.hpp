@@ -22,6 +22,9 @@ class Buffers {
 	public:
 		char *m_buffer;
 		int		m_id;
+		long int			m_content_length;
+		long int			track_length;
+		int					track_recv;
 
 		Buffers(int id);
 		virtual ~Buffers() {
@@ -36,6 +39,7 @@ class Listener {
 		int init();
 		int run();
 		void LaunchRequest(int n, int fd);
+		int getLength(char *m_buffer, std::string toParse);
 		//void clean();
 	
 	protected:

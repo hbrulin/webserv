@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id) {
+Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	}
@@ -240,7 +240,7 @@ void Listener::set_non_blocking(int sock) {
 	if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
 		//std::cout << errno << std::endl;
 		strerror(errno);
-		exit(EXIT_FAILURE); //check if exit if only one fails
+		//exit(EXIT_FAILURE); //check if exit if only one fails
 	}
 }
 
@@ -317,13 +317,26 @@ void Listener::receive_data(int fd) {
 	{
 		if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 		{
-			//add condition content-length
+			//add condition si 0 content-length et 0 transfer encoding
 			if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 			{
-				//buf_list[n]->m_buffer[bytes] = '\0';
+				buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
+			else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
+			{
+				buf_list[n]->track_recv++;
+				buf_list[n]->m_content_length = getLength(buf_list[n]->m_buffer, "Content-Length: ");
+				if (buf_list[n]->track_recv != 1)
+					buf_list[n]->track_length += ret;
+				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
+				{
+					LaunchRequest(n, fd);
+					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+				}
+			}
+			
 		}
 		else
 		{
@@ -351,7 +364,6 @@ void Listener::LaunchRequest(int n, int fd)
 	}
 	//std::cout << "server" << m_nbConf << std::endl;
 	Request req(buf_list[n]->m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
-	//std::cout << buffer << std::endl;
 	req.parse();
 	req.handle();
 	//error checking to comply with correction : if error, client will be removed
@@ -390,4 +402,23 @@ void Listener::close_conn(int fd) {
 		buf_list.erase(it);
 		}
 	}
+}
+
+
+int Listener::getLength(char *m_buffer, std::string toParse)
+{
+    int n;
+	std::string s(m_buffer);
+    std::string referer;
+	n = s.find(toParse);
+	if (n != (int)std::string::npos)
+	{
+        n = n + std::string(toParse).size();
+		int i = n;
+		while (m_buffer[i] != '\n' && m_buffer[i] != '\r') { i++;}
+		referer = s.substr(n, i - n);
+		//std::cout << referer << std::endl;
+        return strtol(referer.c_str(), NULL, 10);
+	}
+    return 0;
 }
