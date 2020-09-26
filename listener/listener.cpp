@@ -334,6 +334,7 @@ void Listener::receive_data(int fd) {
 				{
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+					buf_list[n]->track_recv = 0;
 				}
 			}
 			
