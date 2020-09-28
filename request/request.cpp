@@ -63,7 +63,9 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() 
 {
 	std::string s(m_buffer);
-	std::cout << s << std::endl;
+	size_t npos = s.find("\r\n\r\n");
+	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
+	//std::cout << s << std::endl;
 	if (s =="\n\n")
 	{
 		m_errorCode = 411; 
@@ -183,6 +185,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
+	std::cout << _head_req.get_meta() << std::endl;
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);

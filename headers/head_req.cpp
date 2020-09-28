@@ -5,6 +5,15 @@ std::string Head_req::get_meta()
 	memset((char *) &str, 0, sizeof(str));
 	// content_env = ft_strtrim(content_env, "'/t''/0'");
 	// str.append(content_env);
+	//ajouter http_request_method et http_content-type ???
+	str.append("&HTTP_HOST=");
+	str.append(HOST);
+	str.append("&HTTP_USER_AGENT=");
+	str.append(USER_AGENT);
+	str.append("&HTTP_ACCEPT_ENCODING=");
+	str.append(ACCEPT_ENCODING);
+	str.append("&HTTP_TRANSFER_ENCODING=");
+	str.append(TRANSFER_ENCODING);
 	str.append("&AUTH_TYPE=");
 	str.append(AUTH_TYPE);
 	str.append("&CONTENT_LENGTH=");
@@ -247,6 +256,7 @@ void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::stri
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
 	if (tab != NULL && tab[0] != NULL)
 	AUTH_TYPE = tab[0];
+	ACCEPT_ENCODING = getStringtoParse(m_buffer, "Accept-Encoding: ");
 	CONTENT_TYPE = getStringtoParse(m_buffer, "Content-Type: ");
 	CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
@@ -263,8 +273,7 @@ void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::stri
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
 	if (strstr(m_buffer, "Transfer-Encoding: ") != NULL)
 		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
-	DATE = getStringtoParse(m_buffer, "Date: ");
-
+	DATE = getStringtoParse(m_buffer, "Date: ");	
 	//parsing languages into vector
 	std::string lg = getStringtoParse(m_buffer, "Accept-Language: ");
 	if (lg != "")

@@ -35,6 +35,7 @@ class Head_req
     std::string USER_AGENT; // OS, version, application
     std::string REMOTE_ADDR;
 	std::string DATE; // HH:MM:SS GMT
+    std::string ACCEPT_ENCODING;
     //META
     std::string str;
     std::string AUTH_TYPE;
