@@ -183,6 +183,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
+	std::cout << _head_req.get_meta() << std::endl;
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
