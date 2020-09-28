@@ -319,7 +319,7 @@ void Listener::receive_data(int fd) {
 		{
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
-				//std::cout << buf_list[n]->m_buffer << std::endl;
+				//std::cout << "test" << std::endl;
 				//add condition si 0 content-length et 0 transfer encoding
 				if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
