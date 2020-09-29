@@ -29,7 +29,9 @@ std::string Head_req::get_meta()
 	str.append("&QUERY_STRING="); // if nothing ?
 	str.append(QUERY_STRING);
 	str.append("&REMOTE_ADDR="); //AJOUTER avec l'adressse IP
+	str.append(REMOTE_ADDR);
 	str.append("&REMOTE_USER="); //AJOUTER en dur
+	str.append("user");
 	str.append("&REMOTE_IDENT=");
 	str.append("login_user");
 	str.append("&REQUEST_METHOD=");
@@ -245,12 +247,10 @@ void Head_req::getRemAddr()
 			end++;
 	}
 	REMOTE_ADDR = s.substr(begin, end - begin);
-	//std::cout << REMOTE_ADDR << std::endl;
 }
 
 
 void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::string url) {
-	//std::cout << "m buffer" << m_buffer << std::endl;
 	REQUEST_METHOD = parsed[0];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
