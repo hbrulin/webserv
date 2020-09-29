@@ -323,7 +323,7 @@ void Listener::receive_data(int fd) {
 				//add condition si 0 content-length et 0 transfer encoding
 				if (strstr(buf_list[n]->m_buffer, "POST") != NULL && strstr(buf_list[n]->m_buffer, "0\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
-					std::cout << "test post chunked" << std::endl;
+					//std::cout << "test post chunked" << std::endl;
 					//buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
@@ -359,7 +359,6 @@ void Listener::receive_data(int fd) {
 				{
 					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
 				}
-				
 			}
 			else
 			{

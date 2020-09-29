@@ -63,8 +63,8 @@ void		Request::getBody(char *m_buffer) {
 void Request::parse() 
 {
 	std::string s(m_buffer);
-	//size_t npos = s.find("\r\n\r\n");
-	//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
+	size_t npos = s.find("\r\n\r\n");
+	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
 	/*if (s =="\n\n")
 	{
 		m_errorCode = 411; 
