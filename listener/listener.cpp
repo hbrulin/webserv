@@ -327,7 +327,7 @@ void Listener::receive_data(int fd) {
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}
-				else if (strstr(buf_list[n]->m_buffer, "0\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				else if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
 					buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
