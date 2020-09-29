@@ -319,16 +319,24 @@ void Listener::receive_data(int fd) {
 		{
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
-				//std::cout << "test" << std::endl;
 				//add condition si 0 content-length et 0 transfer encoding
-				if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				if (strstr(buf_list[n]->m_buffer, "PUT") == NULL && strstr(buf_list[n]->m_buffer, "0\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
+					std::cout << "test post chunked" << std::endl;
+					buf_list[n]->m_buffer[bytes] = '\0';
+					LaunchRequest(n, fd);
+					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+				}
+				else if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				{
+					std::cout << "test chunked" << std::endl;
 					buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
 				{
+					std::cout << "test lentgh" << std::endl;
 					buf_list[n]->track_recv++;
 					buf_list[n]->m_content_length = getLength(buf_list[n]->m_buffer, "Content-Length: ");
 					if (buf_list[n]->track_recv != 1)

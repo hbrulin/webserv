@@ -33,7 +33,10 @@ int Request::forking()
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
-	//std::cout << "path cgi: " << path << std::endl;
+	// std::string s(m_buffer);
+	// size_t npos = s.find("\r\n\r\n");
+	// std::string body = s.substr(npos, s.size());
+	std::cout << "buffer: " << m_buffer << std::endl;
 	std::ifstream f(path);
 	if (!f.good())
 	{
@@ -58,11 +61,8 @@ int Request::forking()
 			return (127);
 		}
 	}
-
-	
 	std::string _headers = _head_req.get_meta();
 	std::string s_env = content_env.append(_headers);
-	//std::cout << s_env << std::endl;
 	char **env = ft_split(s_env.c_str(), '&');
 	if (pipe(pp))
 		perror("pipe");

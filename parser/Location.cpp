@@ -357,7 +357,7 @@ void Location::check_methods_validity()
 	}
 }
 
-bool Location::check_allowed_method(std::string method)
+bool Location::check_allowed_method(std::string method, std::string request_uri) 
 {
 	//std::cout << _methods.size() <<  std::endl;
 	for (unsigned long i = 0; i < _methods.size(); i++)
@@ -366,6 +366,9 @@ bool Location::check_allowed_method(std::string method)
 		if (_methods[i] == method)
 			return (true);
 	}
+	_cgi_method = "POST";
+	if (_cgi_method == method && request_uri.find(_cgi_type) != std::string::npos)
+		return (true);
 	return (false);
 }
 
