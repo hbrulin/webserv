@@ -65,12 +65,11 @@ void Request::parse()
 	std::string s(m_buffer);
 	//size_t npos = s.find("\r\n\r\n");
 	//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-	//std::cout << s << std::endl;
-	if (s =="\n\n")
+	/*if (s =="\n\n")
 	{
 		m_errorCode = 411; 
 		return;
-	}
+	}*/
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")

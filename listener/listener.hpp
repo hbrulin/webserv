@@ -15,7 +15,7 @@
 #include "../parser/Config.hpp"
 #include <vector>
 
-#define BUFFER_SIZE 11000000
+#define BUFFER_SIZE 12000000
 
 class Buffers {
 	

@@ -315,21 +315,23 @@ void Listener::receive_data(int fd) {
 	}*/
 	if (ret > 0)
 	{
+		buf_list[n]->m_buffer[bytes] = '\0';
 		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
 		{
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
 				//add condition si 0 content-length et 0 transfer encoding
-				/*if (strstr(buf_list[n]->m_buffer, "POST") != NULL && strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				if (strstr(buf_list[n]->m_buffer, "POST") != NULL && strstr(buf_list[n]->m_buffer, "0\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
 					std::cout << "test post chunked" << std::endl;
-					buf_list[n]->m_buffer[bytes] = '\0';
+					//buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				}*/
+				}
+				//std::cout << "test post chunked" << std::endl;
 				if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
-					buf_list[n]->m_buffer[bytes] = '\0';
+					//buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}
@@ -349,9 +351,20 @@ void Listener::receive_data(int fd) {
 				}
 				
 			}
+			else if (buf_list[n]->m_buffer[0] == '0')
+			{
+				if (buf_list[n]->m_buffer + 5 == '\0')
+					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+				else
+				{
+					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
+				}
+				
+			}
 			else
 			{
-				buf_list[n]->m_buffer[bytes] = '\0';
+				//std::cout << "!!!!" << buf_list[n]->m_buffer << std::endl;
+				//buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
@@ -374,7 +387,7 @@ void Listener::LaunchRequest(int n, int fd)
 			break;
 		}
 	}
-	//std::cout << "server" << m_nbConf << std::endl;
+	//std::cout << "!!!!!!!" << std::endl;
 	Request req(buf_list[n]->m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();
 	req.handle();
