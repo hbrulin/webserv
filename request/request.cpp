@@ -183,7 +183,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	//std::cout << _head_req.get_meta() << std::endl;
+	//std::cout << "TEST" << std::endl;
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
@@ -204,8 +204,8 @@ int Request::send_to_client() {
 			return -1;
 		return 0;
 	}
-	std::cout << "good" << std::endl;
-	//std::cout << m_output << std::endl;
+	//std::cout << "good" << std::endl;
+	std::cout << m_output << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 		return - 1;
 	return 0;
