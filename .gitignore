@@ -4,3 +4,4 @@ webserv
 webserv.dSYM
 .vscode
 obj
+.DS_Store
