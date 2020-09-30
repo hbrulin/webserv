@@ -49,7 +49,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "Cache-Control: no-cache, private\r\n";
     oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
-	if (_method != "PUT" && _method != "POST")
+	if (_method != "PUT")
     	oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
 	else
 	{

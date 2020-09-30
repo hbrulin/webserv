@@ -59,17 +59,9 @@ void		Request::getBody() {
 
 void Request::parse() 
 {
-	//std::string s(m_buffer);
-	//size_t npos = s.find("\r\n\r\n");
-	//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
-	/*if (s =="\n\n")
-	{
-		m_errorCode = 411; 
-		return;
-	}*/
 	std::cout << m_headers << std::endl;
-	std::cout << m_body << std::endl;
+	std::cout << m_body.substr(0, 10) << std::endl;
+	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
@@ -206,7 +198,7 @@ int Request::send_to_client() {
 		return 0;
 	}
 	//std::cout << "good" << std::endl;
-	std::cout << m_output << std::endl;
+	//std::cout << m_output << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 		return - 1;
 	return 0;

@@ -317,7 +317,7 @@ void Listener::receive_data(int fd) {
 	if (ret > 0)
 	{
 		buf_list[n]->m_buffer[bytes] = '\0';
-		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
+		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			buf_list[n]->headers = ft_strdup(buf_list[n]->m_buffer);
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
@@ -327,6 +327,7 @@ void Listener::receive_data(int fd) {
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 				//ELSE ERROR SEND AND RETURN
+				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 			else
 			{
@@ -335,12 +336,14 @@ void Listener::receive_data(int fd) {
 				buf_list[n]->headers = "";
 			}
 		}
-		if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
+		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
 		{
+			//std::cout << "TEST\n";
 			buf_list[n]->body += buf_list[n]->m_buffer;
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 			{
+				//std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
 				LaunchRequest(n, fd);
 				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 				buf_list[n]->headers = "";
@@ -380,6 +383,8 @@ void Listener::LaunchRequest(int n, int fd)
 			break;
 		}
 	}
+	//std::cout << buf_list[n]->headers << std::endl;
+	//std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
 	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();
 	req.handle();

@@ -1,6 +1,0 @@
-std::string s(buf_list[n]->m_buffer);
-					std::cout << "!!!!!!\n"; 
-					size_t npos = s.find("\r\n\r\n");
-					std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-					std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
-					std::cout << s.substr(s.size() - 10, s.size()) <<  std::endl << std::endl;
