@@ -353,7 +353,7 @@ void Listener::receive_data(int fd) {
 		{
 			buf_list[n]->body += buf_list[n]->m_buffer;
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n") != NULL)
+			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 			{
 				LaunchRequest(n, fd);
 				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
