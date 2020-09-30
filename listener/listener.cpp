@@ -323,15 +323,13 @@ void Listener::receive_data(int fd) {
 			size_t npos = s.find("\r\n\r\n");
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
-			//if (buf_list[n]->body.empty() == 0)
-			//	std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
-			//std::cout << buf_list[n]->headers << std::endl << std::endl;*/
+
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
 				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n") != NULL)
 					{
 						LaunchRequest(n, fd);
 						buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
@@ -342,8 +340,6 @@ void Listener::receive_data(int fd) {
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 				//ELSE ERROR SEND AND RETURN
-				//if (buf_list[n]->m_buffer[npos + 5] != '\0')
-				//	buf_list[n]->body = s.substr(npos + 5, s.size());
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 			else
@@ -355,13 +351,10 @@ void Listener::receive_data(int fd) {
 		}
 		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
 		{
-			//std::cout << "TEST\n";
 			buf_list[n]->body += buf_list[n]->m_buffer;
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n") != NULL)
 			{
-				//std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
-				//std::cout << "TEST\n";
 				LaunchRequest(n, fd);
 				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 				buf_list[n]->headers = "";
@@ -401,8 +394,11 @@ void Listener::LaunchRequest(int n, int fd)
 			break;
 		}
 	}
-	std::cout << buf_list[n]->headers << std::endl;
-	std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
+
+	std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
+	if (buf_list[n]->body.empty() == 0)
+		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;
+
 	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();
 	req.handle();
