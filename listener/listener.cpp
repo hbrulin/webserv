@@ -329,7 +329,7 @@ void Listener::receive_data(int fd) {
 				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n") != NULL)
+					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 					{
 						LaunchRequest(n, fd);
 						buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
