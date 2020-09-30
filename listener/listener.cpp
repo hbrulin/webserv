@@ -1,22 +1,23 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0) {
+Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_chunk(0), body_parse_length(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
+	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
+	headers = "";
+	body = "";
 	}
 
-std::string Listener::getHost(char *buffer, std::string toParse)
+std::string Listener::getHost(std::string buffer, std::string toParse)
 {
     int n;
-	std::string s(buffer);
     std::string referer;
-	n = s.find(toParse);
+	n = buffer.find(toParse);
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
 		while (buffer[i] != '\n' && buffer[i] != '\r') { i++;}
-		referer = s.substr(n, i - n);
+		referer = buffer.substr(n, i - n);
         return referer;
 	}
     return "";
@@ -318,70 +319,57 @@ void Listener::receive_data(int fd) {
 		buf_list[n]->m_buffer[bytes] = '\0';
 		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL)
 		{
+			buf_list[n]->headers = ft_strdup(buf_list[n]->m_buffer);
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
-				//add condition si 0 content-length et 0 transfer encoding
-				if (strstr(buf_list[n]->m_buffer, "POST") != NULL && strstr(buf_list[n]->m_buffer, "0\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
-				{
-					//std::cout << "test post chunked" << std::endl;
-					//buf_list[n]->m_buffer[bytes] = '\0';
-					//std::string s(buf_list[n]->m_buffer);
-					//std::cout << "!!!!!!\n"; 
-					//size_t npos = s.find("\r\n\r\n");
-					//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-					//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
-					LaunchRequest(n, fd);
-					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				}
-				//std::cout << "test post chunked" << std::endl;
-				else if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
-				{
-					//buf_list[n]->m_buffer[bytes] = '\0';
-					LaunchRequest(n, fd);
-					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-					buf_list[n]->track_recv = 0;
-				}
+				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
-				{
-					std::cout << "test lentgh" << std::endl;
-					buf_list[n]->track_recv++;
-					buf_list[n]->m_content_length = getLength(buf_list[n]->m_buffer, "Content-Length: ");
-					if (buf_list[n]->track_recv != 1)
-						buf_list[n]->track_length += ret;
-					if (buf_list[n]->track_length == buf_list[n]->m_content_length)
-					{
-						LaunchRequest(n, fd);
-						memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-						buf_list[n]->track_recv = 0;
-					}
-				}
-			}
-			else if (buf_list[n]->m_buffer[0] == '0')
-			{
-				if (buf_list[n]->m_buffer + 5 != '\0')
-					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
-				/*else
-				{
-					//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				}*/
+					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
+				//ELSE ERROR SEND AND RETURN
 			}
 			else
 			{
-				//std::cout << "!!!!" << buf_list[n]->m_buffer << std::endl;
-				//buf_list[n]->m_buffer[bytes] = '\0';
 				LaunchRequest(n, fd);
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+				buf_list[n]->headers = "";
 			}
+		}
+		if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
+		{
+			buf_list[n]->body += buf_list[n]->m_buffer;
+			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+			{
+				LaunchRequest(n, fd);
+				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+				buf_list[n]->headers = "";
+				buf_list[n]->body = "";
+			}
+			else if (buf_list[n]->body_parse_length)
+			{
+				buf_list[n]->track_recv++;
+				buf_list[n]->m_content_length = getLength(buf_list[n]->body, "Content-Length: ");
+				if (buf_list[n]->track_recv != 1)
+					buf_list[n]->track_length += ret;
+				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
+				{
+					LaunchRequest(n, fd);
+					buf_list[n]->track_recv = 0;
+					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
+					buf_list[n]->headers = "";
+					buf_list[n]->body = "";
+				}
+			}
+
 		}
 	}
 }
 
 void Listener::LaunchRequest(int n, int fd)
 {
-
 	//choose config according to server name
-	std::string host = getHost(buf_list[n]->m_buffer, "Host: ");
-	//std::cout << host << std::endl;
+	std::string host = getHost(buf_list[n]->headers, "Host: ");
 	size_t m = host.find(":");
 	host = host.substr(0, m);
 	for (int j = 0; j < _size ; j++)
@@ -392,12 +380,7 @@ void Listener::LaunchRequest(int n, int fd)
 			break;
 		}
 	}
-	/*std::cout << "!!!!!!\n"; 
-	std::string s(buf_list[n]->m_buffer);
-	size_t npos = s.find("\r\n\r\n");
-	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-	std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;*/
-	Request req(buf_list[n]->m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
+	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();
 	req.handle();
 	//error checking to comply with correction : if error, client will be removed
@@ -439,18 +422,17 @@ void Listener::close_conn(int fd) {
 }
 
 
-int Listener::getLength(char *m_buffer, std::string toParse)
+int Listener::getLength(std::string body, std::string toParse)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
-	n = s.find(toParse);
+	n = body.find(toParse);
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
-		while (m_buffer[i] != '\n' && m_buffer[i] != '\r') { i++;}
-		referer = s.substr(n, i - n);
+		while (body[i] != '\n' && body[i] != '\r') { i++;}
+		referer = body.substr(n, i - n);
 		//std::cout << referer << std::endl;
         return strtol(referer.c_str(), NULL, 10);
 	}

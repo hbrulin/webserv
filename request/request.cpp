@@ -2,11 +2,12 @@
 #include <iostream>
 #include <unistd.h>
 
-Request::Request(char *buffer, int fd, Config conf, int port, unsigned long addr)
+Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
 	{
 		_conf = conf;
-		memset((char *) &m_buffer, 0, sizeof(m_buffer));
-		m_buffer = buffer;
+		//memset((char *) &m_buffer, 0, sizeof(m_buffer));
+		m_headers = headers;
+		m_body = body;
 		m_client = fd;
 		m_not_found = "404.html";
 		m_not_allowed = "405.html"; // tester avant
@@ -26,8 +27,8 @@ Request::Request(char *buffer, int fd, Config conf, int port, unsigned long addr
 	};
 
 
-void		Request::getBody(char *m_buffer) {
-	int n;
+void		Request::getBody() {
+	/*int n;
 	int i = 0;
 	std::string s(m_buffer);
 	n = s.find("\r\n\r\n");
@@ -37,47 +38,45 @@ void		Request::getBody(char *m_buffer) {
 		i = n;
 		while (m_buffer[i] != '\0') { i++;}
 		m_body = s.substr(n, i - n);
-	}
+	}*/
 
 	std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
 	bool flag = 0;
-	if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
-		&& _head_req.TRANSFER_ENCODING == "chunked")
+	while (std::getline(f, buf))
 	{
-		while (std::getline(f, buf))
-		{
-			if (!flag)
-				m_chunk_size += strtol(buf.c_str(), NULL, 16);
-			else
-				total += buf;
-			flag = !flag;
-		}
-		m_body = total;
+		if (!flag)
+			m_chunk_size += strtol(buf.c_str(), NULL, 16);
+		else
+			total += buf;
+		flag = !flag;
 	}
+	m_body = total;
 	//std::cout << "body" << m_body << std::endl;
 	//std::cout << m_chunk_size << std::endl;
 }
 
 void Request::parse() 
 {
-	std::string s(m_buffer);
-	size_t npos = s.find("\r\n\r\n");
-	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-	std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
+	//std::string s(m_buffer);
+	//size_t npos = s.find("\r\n\r\n");
+	//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
+	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 	/*if (s =="\n\n")
 	{
 		m_errorCode = 411; 
 		return;
 	}*/
-	std::istringstream iss(m_buffer);
+	std::cout << m_headers << std::endl;
+	std::cout << m_body << std::endl;
+	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
 		
 		m_url = parsed[1];
-		_head_req.parse(parsed, m_buffer, m_url);
+		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		//m_method = _head_req.REQUEST_METHOD;
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
@@ -119,7 +118,9 @@ void Request::parse()
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
-		getBody(m_buffer);
+		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
+			&& _head_req.TRANSFER_ENCODING == "chunked")
+			getBody();
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	else
@@ -154,22 +155,22 @@ void Request::handle() {
 		m_path = m_path + m_index;
 	}*/
 	//std::cout << "cgi type" << _loc._cgi_type << std::endl;
-	if (strstr(m_buffer, "POST") != NULL && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	if (_head_req.REQUEST_METHOD == "POST" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
 		exec_cgi();
 		return ;
 	}
-	else if (strstr(m_buffer, "POST") != NULL)
+	else if (_head_req.REQUEST_METHOD == "POST")
 	{
 		post();
 		return;
 	}
-	else if (strstr(m_buffer, "PUT") != NULL) {
+	else if (_head_req.REQUEST_METHOD == "PUT") {
 		put();
 		return;
 	}
-	else if (strstr(m_buffer, "DELETE") != NULL)
+	else if (_head_req.REQUEST_METHOD == "DELETE")
 	{
 		delete_m();
 		return ;

@@ -51,7 +51,7 @@ std::string Head_req::get_meta()
 	return str;
 }
 
-void Head_req::getScriptName(char *m_buffer) // remplacer par cgi extension
+void Head_req::getScriptName(const char *m_buffer) // remplacer par cgi extension
 {
 	std::string s(m_buffer), str_q, str_p;
 	//REQUEST_URI
@@ -73,7 +73,7 @@ void Head_req::getScriptName(char *m_buffer) // remplacer par cgi extension
 	if (m_buffer[len] != '\0') {PATH_INFO = str_p.append(&m_buffer[i], len - i);}
 }
 
-std::string Head_req::getMetatoParse(char *m_buffer, std::string toParse, std::string Sep)
+std::string Head_req::getMetatoParse(const char *m_buffer, std::string toParse, std::string Sep)
 {
     int n;
 	std::string s(m_buffer);
@@ -101,7 +101,7 @@ std::string Head_req::getMetatoParse(char *m_buffer, std::string toParse, std::s
     return "";
 }
 
-std::string Head_req::getStringtoParse(char *m_buffer, std::string toParse)
+std::string Head_req::getStringtoParse(const char *m_buffer, std::string toParse)
 {
     int n;
 	std::string s(m_buffer);
@@ -119,7 +119,7 @@ std::string Head_req::getStringtoParse(char *m_buffer, std::string toParse)
     return "";
 }
 
-std::string Head_req::getReferer(char *m_buffer)
+std::string Head_req::getReferer(const char *m_buffer)
 {
     int n;
 	std::string s(m_buffer);
@@ -136,7 +136,7 @@ std::string Head_req::getReferer(char *m_buffer)
     return referer;
 }
 
-std::string Head_req::getUserAgent(char *m_buffer)
+std::string Head_req::getUserAgent(const char *m_buffer)
 {
     int n;
 	std::string s(m_buffer);
@@ -153,7 +153,7 @@ std::string Head_req::getUserAgent(char *m_buffer)
     return referer;
 }
 
-std::string Head_req::getAcceptLangage(char *m_buffer)
+std::string Head_req::getAcceptLangage(const char *m_buffer)
 {
     int n;
 	std::string s(m_buffer);
@@ -169,7 +169,7 @@ std::string Head_req::getAcceptLangage(char *m_buffer)
     return referer;
 }
 
-std::string Head_req::getTransferEncoding(char *m_buffer)
+std::string Head_req::getTransferEncoding(const char *m_buffer)
 {
     int n;
 	std::string s(m_buffer);
@@ -250,7 +250,7 @@ void Head_req::getRemAddr()
 }
 
 
-void		Head_req::parse(std::vector<std::string> parsed, char *m_buffer, std::string url) {
+void		Head_req::parse(std::vector<std::string> parsed, const char *m_buffer, std::string url) {
 	REQUEST_METHOD = parsed[0];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');

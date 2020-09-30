@@ -1,6 +1,6 @@
 #include "request.hpp"
 
-int Request::isAuthorized(std::string str)
+/*int Request::isAuthorized(std::string str)
 {
 	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
 	if (_head_resp.WWW_AUTHENTICATE != NULL && _head_resp.WWW_AUTHENTICATE[0] != NULL)
@@ -31,7 +31,7 @@ int Request::isAuthorized(std::string str)
 	}
 	_head_resp.WWW_AUTHENTICATE = NULL;
 	return 1;
-}
+}*/
 
 /*int Request::isAcceptable()
 {

@@ -15,16 +15,20 @@
 #include "../parser/Config.hpp"
 #include <vector>
 
-#define BUFFER_SIZE 12000000
+#define BUFFER_SIZE 32768
 
 class Buffers {
 	
 	public:
+		std::string headers;
+		std::string body;
 		char *m_buffer;
 		int		m_id;
 		long int			m_content_length;
 		long int			track_length;
 		int					track_recv;
+		bool				body_parse_chunk;
+		bool				body_parse_length;
 
 		Buffers(int id);
 		virtual ~Buffers() {
@@ -39,7 +43,7 @@ class Listener {
 		int init();
 		int run();
 		void LaunchRequest(int n, int fd);
-		int getLength(char *m_buffer, std::string toParse);
+		int getLength(std::string body, std::string toParse);
 		//void clean();
 	
 	protected:
@@ -49,7 +53,7 @@ class Listener {
 		void receive_data(int fd);
 		void close_conn(int fd);
 		std::pair<int, int>	look_for_sock(int j);
-		std::string getHost(char *buffer, std::string toParse);
+		std::string getHost(std::string buffer, std::string toParse);
 		int checkpast(int i);
 
 	private:

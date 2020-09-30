@@ -44,6 +44,7 @@ class Request
 	//std::string m_method;
 	std::string m_url;
 	std::string m_body;
+	std::string m_headers;
 	std::string m_header;
 	std::string m_not_found;
 	std::string m_not_acceptable;
@@ -63,9 +64,9 @@ class Request
 	std::string m_output; 
 	//memset m_content et m_output
 	public:
-	Request(char *buffer, int fd, Config conf, int port, unsigned long addr);
+	Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr);
 	void parse();
-	void getBody(char *m_buffer);
+	void getBody();
 	void handle();
 	int send_to_client();
 	void post();

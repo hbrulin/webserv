@@ -116,7 +116,7 @@ int Request::forking()
 void Request::get_post_content()
 {
 	int n;
-	std::string s(m_buffer);
+	std::string s(m_headers + "\r\n\r\n" + m_body);
 	n = s.find("\r\n\r"); //peut etre rajouter un \n
 	if (n != (int)std::string::npos)
 	{
@@ -138,7 +138,7 @@ void Request::get_post_content()
 
 void Request::exec_cgi(){
 	//_loc._cgi_file = "test.php";
-	if (strstr(m_buffer, "POST") != NULL)
+	if (_head_req.REQUEST_METHOD == "POST")
 	{
 		post(); // on recupere les infos dans le body
 	}
@@ -277,7 +277,7 @@ void Request::get() {
 			m_errorCode = 405;
 			f.close();
 		}
-		else if (!isAuthorized(m_header))
+		/*else if (!isAuthorized(m_header))
 		{
 			f.close();
 			std::ifstream f(_loc._root + m_unauthorized);
@@ -286,7 +286,7 @@ void Request::get() {
 			m_url = str;
 			m_errorCode = 401;
 			f.close();
-		}
+		}*/
 		else
 		{
 			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());

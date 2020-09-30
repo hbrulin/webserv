@@ -54,17 +54,17 @@ class Head_req
     // std::string SERVER_SOFTWARE;
     //functions
     std::string getDate();
-    std::string getReferer(char *string);
-    std::string getUserAgent(char *string);
-	std::string getTransferEncoding(char *m_buffer);
+    std::string getReferer(const char *string);
+    std::string getUserAgent(const char *string);
+	std::string getTransferEncoding(const char *m_buffer);
     void        getRemAddr();
-    std::string getAcceptLangage(char *string);
-    std::string getStringtoParse(char *m_buffer, std::string toParse);
-    std::string getMetatoParse(char *m_buffer, std::string toParse, std::string);
+    std::string getAcceptLangage(const char *string);
+    std::string getStringtoParse(const char *m_buffer, std::string toParse);
+    std::string getMetatoParse(const char *m_buffer, std::string toParse, std::string);
     std::string get_meta();
-    void        getScriptName(char *m_buffer);
+    void        getScriptName(const char *m_buffer);
 	std::string contentNego(std::string root);
-	void		parse(std::vector<std::string> parsed, char *m_buffer, std::string url);
+	void		parse(std::vector<std::string> parsed, const char *m_buffer, std::string url);
     struct stat st;
 };
 
