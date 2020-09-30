@@ -319,14 +319,31 @@ void Listener::receive_data(int fd) {
 		buf_list[n]->m_buffer[bytes] = '\0';
 		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
-			buf_list[n]->headers = ft_strdup(buf_list[n]->m_buffer);
+			std::string s(buf_list[n]->m_buffer);
+			size_t npos = s.find("\r\n\r\n");
+			buf_list[n]->headers = s.substr(0, npos);
+			buf_list[n]->body += s.substr(npos + 4, s.size());
+			//if (buf_list[n]->body.empty() == 0)
+			//	std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
+			//std::cout << buf_list[n]->headers << std::endl << std::endl;*/
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
 				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+					{
+						LaunchRequest(n, fd);
+						buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+						buf_list[n]->headers = "";
+						buf_list[n]->body = "";
+					}
+				}
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 				//ELSE ERROR SEND AND RETURN
+				//if (buf_list[n]->m_buffer[npos + 5] != '\0')
+				//	buf_list[n]->body = s.substr(npos + 5, s.size());
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 			else
@@ -344,15 +361,16 @@ void Listener::receive_data(int fd) {
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 			{
 				//std::cout << buf_list[n]->body.substr(0, 10) << std::endl;
+				//std::cout << "TEST\n";
 				LaunchRequest(n, fd);
 				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 				buf_list[n]->headers = "";
 				buf_list[n]->body = "";
 			}
 			else if (buf_list[n]->body_parse_length)
-			{
+			{ //IC IL FAUDRA PRENDRE EN COMPTE LES BODY DEJA RECUP EN MEME TEMPS QUE HEADER
 				buf_list[n]->track_recv++;
-				buf_list[n]->m_content_length = getLength(buf_list[n]->body, "Content-Length: ");
+				buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
 				if (buf_list[n]->track_recv != 1)
 					buf_list[n]->track_length += ret;
 				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
