@@ -334,7 +334,7 @@ void Listener::receive_data(int fd) {
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}
 				//std::cout << "test post chunked" << std::endl;
-				if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				else if (strstr(buf_list[n]->m_buffer, "0\r\n\r\n") != NULL && strstr(buf_list[n]->m_buffer, "chunked") != NULL)
 				{
 					//buf_list[n]->m_buffer[bytes] = '\0';
 					LaunchRequest(n, fd);
@@ -355,16 +355,14 @@ void Listener::receive_data(int fd) {
 						buf_list[n]->track_recv = 0;
 					}
 				}
-				
 			}
 			else if (buf_list[n]->m_buffer[0] == '0')
 			{
 				if (buf_list[n]->m_buffer + 5 != '\0')
-					//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
 				/*else
 				{
-					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
+					//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}*/
 			}
 			else
