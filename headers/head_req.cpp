@@ -51,9 +51,9 @@ std::string Head_req::get_meta()
 	return str;
 }
 
-void Head_req::getScriptName(const char *m_buffer) // remplacer par cgi extension
+void Head_req::getScriptName(std::string s) // remplacer par cgi extension
 {
-	std::string s(m_buffer), str_q, str_p;
+	std::string str_q, str_p;
 	//REQUEST_URI
 	REQUEST_URI = s;
 	int len, i = 0;
@@ -64,19 +64,18 @@ void Head_req::getScriptName(const char *m_buffer) // remplacer par cgi extensio
 		n = n + 4;
 		len = n;
 		i = n;
-		while(n > 0 && m_buffer[n - 1] != '/') {n--;}
-		SCRIPT_NAME = str_q.append(&m_buffer[n], len - n); 
+		while(n > 0 && s[n - 1] != '/') {n--;}
+		SCRIPT_NAME = str_q.append(&s[n], len - n); 
 	}
 	len = n;
 	//PATH_INFO
-	while (m_buffer[len] != '\0' && m_buffer[len] != '?') {len++;}
-	if (m_buffer[len] != '\0') {PATH_INFO = str_p.append(&m_buffer[i], len - i);}
+	while (s[len] != '\0' && s[len] != '?') {len++;}
+	if (s[len] != '\0') {PATH_INFO = str_p.append(&s[i], len - i);}
 }
 
-std::string Head_req::getMetatoParse(const char *m_buffer, std::string toParse, std::string Sep)
+std::string Head_req::getMetatoParse(std::string s, std::string toParse, std::string Sep)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	const char *c_sep = Sep.c_str();
 	n = s.find(toParse);
@@ -84,10 +83,10 @@ std::string Head_req::getMetatoParse(const char *m_buffer, std::string toParse, 
 	{
         n = n + std::string(toParse).size();
 		int i = n;
-		while (m_buffer[i] != '\0') 
+		while (s[i] != '\0') 
 		{ 
 			int j = 0;
-			while(m_buffer[i] != c_sep[j] && c_sep[j] != '\0')
+			while(s[i] != c_sep[j] && c_sep[j] != '\0')
 			{
 				j++;
 			}
@@ -101,17 +100,16 @@ std::string Head_req::getMetatoParse(const char *m_buffer, std::string toParse, 
     return "";
 }
 
-std::string Head_req::getStringtoParse(const char *m_buffer, std::string toParse)
+std::string Head_req::getStringtoParse(std::string s, std::string toParse)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	n = s.find(toParse);
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
-		while (m_buffer[i] != '\n' && m_buffer[i] != '\r') { i++;}
+		while (s[i] != '\n' && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 		//std::cout << referer << std::endl;
         return referer;
@@ -119,67 +117,63 @@ std::string Head_req::getStringtoParse(const char *m_buffer, std::string toParse
     return "";
 }
 
-std::string Head_req::getReferer(const char *m_buffer)
+std::string Head_req::getReferer(std::string s)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	n = s.find("Referer: ");
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string("Referer: ").size();
 		int i = n;
-		while (m_buffer[i] != '\n') { i++;}
+		while (s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
 	//std::cout << "referer" << referer << std::endl;
     return referer;
 }
 
-std::string Head_req::getUserAgent(const char *m_buffer)
+std::string Head_req::getUserAgent(std::string s)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	n = s.find("User-Agent: ");
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string("User-Agents: ").size();
 		int i = n;
-		while (m_buffer[i] != '\r' && m_buffer[i] != '\n') { i++;}
+		while (s[i] != '\r' && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 		//std::cout << referer << std::endl;
 	}
     return referer;
 }
 
-std::string Head_req::getAcceptLangage(const char *m_buffer)
+std::string Head_req::getAcceptLangage(std::string s)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	n = s.find("Accept-Langage: ");
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string("Accept-Langage: ").size();
 		int i = n;
-		while (m_buffer[i] != '\r') { i++;}
+		while (s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
 }
 
-std::string Head_req::getTransferEncoding(const char *m_buffer)
+std::string Head_req::getTransferEncoding(std:: string s)
 {
     int n;
-	std::string s(m_buffer);
     std::string referer;
 	n = s.find("Transfer-Encoding: ");
 	if (n != (int)std::string::npos)
 	{
         n = n + std::string("Transfer-Encoding: ").size();
 		int i = n;
-		while (m_buffer[i] != '\r') { i++;}
+		while (s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
@@ -250,7 +244,7 @@ void Head_req::getRemAddr()
 }
 
 
-void		Head_req::parse(std::vector<std::string> parsed, const char *m_buffer, std::string url) {
+void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std::string url) {
 	REQUEST_METHOD = parsed[0];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
@@ -271,7 +265,7 @@ void		Head_req::parse(std::vector<std::string> parsed, const char *m_buffer, std
 	//rest of parsing
 	if (getStringtoParse(m_buffer, "Accept-Charset: ") != "")
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
-	if (strstr(m_buffer, "Transfer-Encoding: ") != NULL)
+	if (strstr(m_buffer.c_str(), "Transfer-Encoding: ") != NULL)
 		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
 	DATE = getStringtoParse(m_buffer, "Date: ");	
 	//parsing languages into vector

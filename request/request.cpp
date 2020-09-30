@@ -128,7 +128,7 @@ void Request::handle() {
 		return;
 	//changing of root so that it includes the language
 	_head_req.REQUEST_URI = m_url;
-	content_env = _head_req.getStringtoParse((char *)m_url.c_str(), "?"); // on recup le query string s'il existe
+	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
 	_head_req.QUERY_STRING = content_env;
 	/*if (m_url.find("?") != std::string::npos)
 		m_url.replace(m_url.find("?"),m_url.size(), "");*/ //on retire le query string de l'url
