@@ -252,7 +252,8 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 	AUTH_TYPE = tab[0];
 	ACCEPT_ENCODING = getStringtoParse(m_buffer, "Accept-Encoding: ");
 	CONTENT_TYPE = getStringtoParse(m_buffer, "Content-Type: ");
-	CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
+	if (strstr(m_buffer.c_str(), "Content-Length: ") != NULL)
+		CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
 	getScriptName((char *)url.c_str());
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");

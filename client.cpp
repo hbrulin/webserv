@@ -33,10 +33,16 @@ int main(void)
 
     //	While loop:
     char buf[4096];
-    string userInput = "GET / HTTP/1.1\r\n";
+    string userInput = "POST /directory/youpi.bla HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
+    userInput += "Transfer-Encoding: chunked\r\n";
+    userInput += "Content-Type: test/file\r\n";
 	userInput += "Accept-Encoding: gzip\r\n\r\n";
+    int k = 0;
+    while (k++ < 1000000)
+        userInput += "w";
+    userInput += "0\r\n\r\n";
 
     //		Send to server
     int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);

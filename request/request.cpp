@@ -61,6 +61,8 @@ void Request::parse()
 {
 	//std::cout << m_headers << std::endl;
 	//std::cout << m_body.substr(0, 10) << std::endl;
+	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
+	std::cout << "content length" << _head_req.CONTENT_LENGTH << std::endl;
 	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());

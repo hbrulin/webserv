@@ -143,8 +143,8 @@ void Request::exec_cgi(){
 		post(); // on recupere les infos dans le body
 	}
 	m_url = _loc._cgi_root + _loc._cgi_file;
-	//std::cout << "cgi url" << m_url << std::endl;
-	_head_req.CONTENT_LENGTH = std::to_string(content_env.size());
+	//std::cout << "cgi size" << m_body.size() << std::endl;
+	//_head_req.CONTENT_LENGTH = m_body.size();
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
 	pid_ret = forking();
