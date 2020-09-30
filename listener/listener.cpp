@@ -325,6 +325,11 @@ void Listener::receive_data(int fd) {
 				{
 					//std::cout << "test post chunked" << std::endl;
 					//buf_list[n]->m_buffer[bytes] = '\0';
+					//std::string s(buf_list[n]->m_buffer);
+					//std::cout << "!!!!!!\n"; 
+					//size_t npos = s.find("\r\n\r\n");
+					//std::cout << s.substr(0, npos) <<  std::endl << std::endl;
+					//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 					LaunchRequest(n, fd);
 					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				}
@@ -354,12 +359,13 @@ void Listener::receive_data(int fd) {
 			}
 			else if (buf_list[n]->m_buffer[0] == '0')
 			{
-				if (buf_list[n]->m_buffer + 5 == '\0')
-					memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				else
+				if (buf_list[n]->m_buffer + 5 != '\0')
+					//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
+				/*else
 				{
 					buf_list[n]->m_buffer = buf_list[n]->m_buffer + 5;
-				}
+				}*/
 			}
 			else
 			{
@@ -374,6 +380,7 @@ void Listener::receive_data(int fd) {
 
 void Listener::LaunchRequest(int n, int fd)
 {
+
 	//choose config according to server name
 	std::string host = getHost(buf_list[n]->m_buffer, "Host: ");
 	//std::cout << host << std::endl;
@@ -387,7 +394,11 @@ void Listener::LaunchRequest(int n, int fd)
 			break;
 		}
 	}
-	//std::cout << "!!!!!!!" << std::endl;
+	/*std::cout << "!!!!!!\n"; 
+	std::string s(buf_list[n]->m_buffer);
+	size_t npos = s.find("\r\n\r\n");
+	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
+	std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;*/
 	Request req(buf_list[n]->m_buffer, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();
 	req.handle();
