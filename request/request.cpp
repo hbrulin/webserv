@@ -56,7 +56,7 @@ void		Request::getBody(char *m_buffer) {
 		}
 		m_body = total;
 	}
-	//std::cout << m_body << std::endl;
+	//std::cout << "body" << m_body << std::endl;
 	//std::cout << m_chunk_size << std::endl;
 }
 
@@ -65,12 +65,11 @@ void Request::parse()
 	std::string s(m_buffer);
 	size_t npos = s.find("\r\n\r\n");
 	std::cout << s.substr(0, npos) <<  std::endl << std::endl;
-	//std::cout << s << std::endl;
-	if (s =="\n\n")
+	/*if (s =="\n\n")
 	{
 		m_errorCode = 411; 
 		return;
-	}
+	}*/
 	std::istringstream iss(m_buffer);
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
@@ -90,7 +89,7 @@ void Request::parse()
 			f.close();
 			return;
 		}
-		if (!_loc.check_allowed_method(parsed[0])) // la fonction ne fonctionne pas
+		if (!_loc.check_allowed_method(parsed[0], _head_req.REQUEST_URI))
 		{
 			m_errorCode = 405; // error for method not allowed
 			std::ifstream f(_loc._root + m_not_allowed);
@@ -115,8 +114,6 @@ void Request::parse()
 			m_url.erase(0, _loc._name.size());
 		}
 
-		//std::cout << "!!!!  " << _loc._name << "\n";
-		//std::cout << "!!!!  " << m_url << "\n";
 
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
@@ -185,7 +182,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	std::cout << _head_req.get_meta() << std::endl;
+	//std::cout << "TEST" << std::endl;
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
@@ -206,6 +203,7 @@ int Request::send_to_client() {
 			return -1;
 		return 0;
 	}
+	//std::cout << "good" << std::endl;
 	std::cout << m_output << std::endl;
 	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 		return - 1;
@@ -220,5 +218,9 @@ bool Request::check_if_method_is_allowed(std::string method)
 		if (_loc._methods[i] == method)
 			return (true);
 	}
+	//std::cout << "here" <<  _loc._cgi_type << std::endl;
+	//_loc._cgi_method = "POST";
+	//if (_loc._cgi_method == method && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos)
+	//	return (true);
 	return (false);
 }

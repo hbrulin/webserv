@@ -28,7 +28,7 @@ class Location
 
 	std::string		get_path(); // path = _root + _name
 	std::string		get_file_path(std::string); // to search files inside location
-	bool			check_allowed_method(std::string method);
+	bool			check_allowed_method(std::string method, std::string request_uri);
 	bool			check_allowed_cgi(std::string ext);
 	bool			upload(std::string file);
 
@@ -65,6 +65,7 @@ class Location
 	std::string					_cgi_type;
 	std::string					_cgi_root;
 	std::string					_cgi_file;
+	std::string					_cgi_method;
 
 
 	fmap _map;
