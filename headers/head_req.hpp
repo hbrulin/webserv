@@ -35,7 +35,9 @@ class Head_req
     std::string USER_AGENT; // OS, version, application
     std::string REMOTE_ADDR;
 	std::string DATE; // HH:MM:SS GMT
-    std::string ACCEPT_ENCODING;
+	std::string TRANSFER_ENCODING;
+	std::string ACCEPT_ENCODING;
+
     //META
     std::string str;
     std::string AUTH_TYPE;
@@ -49,8 +51,7 @@ class Head_req
     std::string PATH_TRANSLATED;
     std::string REQUEST_URI;
     std::string SERVER_PORT;
-    std::string SERVER_NAME; //déjà dans le listener
-    std::string TRANSFER_ENCODING;
+    std::string SERVER_NAME;
     // std::string SERVER_SOFTWARE;
     //functions
     std::string getDate();

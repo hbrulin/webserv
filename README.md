@@ -22,7 +22,8 @@ https://www.w3.org/Protocols/rfc2616/rfc2616.html
 Install nginx : https://www.javatpoint.com/installing-nginx-on-mac
 
 CGI :
-http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm
+http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm 
+http://www.wijata.com/cgi/cgispec.html#4.0
 
 General guide : https://beej.us/guide/bgnet/html/
 
