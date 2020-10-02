@@ -33,6 +33,7 @@ int Request::forking()
 		return (-1);
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
+	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
 	std::ifstream f(path);
 	if (!f.good())
 	{
@@ -63,8 +64,7 @@ int Request::forking()
 	char **av;
 	av = (char **)malloc(sizeof(char *) * 3);
 	av[0] = ft_strdup(path);
-	av[1] = ft_strdup(m_body.c_str());
-	av[2] = NULL;
+	//std::cout << "body" << m_body << std::endl;
 	//char *str = ft_strdup(m_body.c_str());
 	//std::cout << av[1] << std::endl;
 	if (pipe(pp))
@@ -76,7 +76,8 @@ int Request::forking()
    		dup2(pp[0], 0);
 		dup2(m_client, 1);
 		//write(pp[1], m_body.c_str(), m_body.size());
-		//std::cout << m_body << std::endl;
+		std::cout << "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
+		//std::cout << m_body << "\r\n\r\n";
 		//std::cout << _head_resp.getBuffer(200, path, _loc._methods, _head_req.REQUEST_METHOD ); // A revoir car renvoie mauvais header si ne fonctionne pas
 		res = execve(av[0], NULL, env);
 		if (res != 0)
@@ -90,22 +91,24 @@ int Request::forking()
 	{
 		close(pp[0]);
 		write(pp[1], m_body.c_str(), m_body.size());
-		int boucle = 1;
-		while (boucle)
-		{
-			int ret = wait(&status);
-			if (WIFSIGNALED(status))
-			{
-				if (WTERMSIG(status) == 2)
-					return -3;
-				else if (WTERMSIG(status) == 3)
-					return -2;
-			}
-			else
-				return WEXITSTATUS(status);
-			if (ret == pid)
-				boucle = 0;
-		}
+		if (waitpid(pid, &status, 0) == -1)
+			perror("wait");
+		//int boucle = 1;
+		// while (boucle)
+		// {
+		// 	int ret = wait(&status);
+		// 	if (WIFSIGNALED(status))
+		// 	{
+		// 		if (WTERMSIG(status) == 2)
+		// 			return -3;
+		// 		else if (WTERMSIG(status) == 3)
+		// 			return -2;
+		// 	}
+		// 	else
+		// 		return WEXITSTATUS(status);
+		// 	if (ret == pid)
+		// 		boucle = 0;
+		// }
 	}
 	else
 	{
