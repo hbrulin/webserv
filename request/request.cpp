@@ -60,9 +60,6 @@ void		Request::getBody() {
 void Request::parse() 
 {
 	//std::cout << m_headers << std::endl;
-	//std::cout << m_body.substr(0, 10) << std::endl;
-	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
-	std::cout << "content length" << _head_req.CONTENT_LENGTH << std::endl;
 	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
@@ -112,9 +109,9 @@ void Request::parse()
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
-		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
-			&& _head_req.TRANSFER_ENCODING == "chunked")
-			getBody();
+		// if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
+		// 	&& _head_req.TRANSFER_ENCODING == "chunked")
+		// 	getBody();
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	else

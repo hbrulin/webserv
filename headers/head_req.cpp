@@ -8,6 +8,8 @@ std::string Head_req::get_meta()
 	//ajouter http_request_method et http_content-type ???
 	str.append("&HTTP_HOST=");
 	str.append(HOST);
+	str.append("&HTTP_REFERER=");
+	str.append("");
 	str.append("&HTTP_USER_AGENT=");
 	str.append(USER_AGENT);
 	str.append("&HTTP_ACCEPT_ENCODING=");

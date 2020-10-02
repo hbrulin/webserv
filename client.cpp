@@ -32,7 +32,7 @@ int main(void)
     }
 
     //	While loop:
-    char buf[4096];
+    char buf[8096];
     string userInput = "POST /directory/youpi.bla HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
@@ -50,8 +50,8 @@ int main(void)
         cout << "Could not send to server! \r\n";
 
     //		Wait for response
-    memset(buf, 0, 4096);
-    int bytesReceived = recv(sock, buf, 4096, 0);
+    memset(buf, 0, 8096);
+    int bytesReceived = recv(sock, buf, 8096, 0);
     if (bytesReceived == -1)
         cout << "There was an error getting response from server\r\n";
     else
