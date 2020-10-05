@@ -49,10 +49,11 @@ void		Request::getBody() {
 		if (!flag)
 			m_chunk_size += strtol(buf.c_str(), NULL, 16);
 		else
-			total += buf;
+			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;
 	}
 	m_body = total;
+	std::cout << m_body.size() << std::endl << std::endl;
 	//std::cout << "body" << m_body << std::endl;
 	//std::cout << m_chunk_size << std::endl;
 }
