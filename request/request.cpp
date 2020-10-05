@@ -66,7 +66,6 @@ void Request::parse()
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
-		
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		//m_method = _head_req.REQUEST_METHOD;

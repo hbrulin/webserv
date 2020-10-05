@@ -75,14 +75,13 @@ int Request::forking()
 	int fd;
 	if ((fd = open(cgi_output.c_str(), O_RDWR | O_CREAT, 0666)) < 0)
 	{
-		if ((fd = open(cgi_output.c_str(), O_CREAT, 666)) < 0)
-			std::cout << strerror(errno) << std::endl;
+		std::cout << strerror(errno) << std::endl;
 	}
 	else
 	{
 		std::cout << fd << std::endl;
 	}
-	
+	std::cout << m_body << std::endl;
 	if (pid == 0)
 	{
 		close(pp[1]);
@@ -132,6 +131,7 @@ int Request::forking()
 	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
 	m_errorCode = std::stoi(code);
 	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
+	std::cout << m_body << std::endl;
 	return 0;
 }
 void Request::get_post_content()
