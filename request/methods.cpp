@@ -70,8 +70,18 @@ int Request::forking()
 	if (pipe(pp))
 		perror("pipe");
 	pid = fork();
-	//std::string s_curr_dir(dir_cgi);
-
+	std::string cgi_output(dir_cgi);
+	cgi_output = cgi_output + "/cgi-bin/cgi_output_" + std::to_string(m_client);
+	int fd;
+	if ((fd = open(cgi_output.c_str(), O_RDWR | O_CREAT, 0666)) < 0)
+	{
+		if ((fd = open(cgi_output.c_str(), O_CREAT, 666)) < 0)
+			std::cout << strerror(errno) << std::endl;
+	}
+	else
+	{
+		std::cout << fd << std::endl;
+	}
 	
 	if (pid == 0)
 	{
