@@ -130,12 +130,12 @@ int Request::forking()
 	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
 	m_errorCode = std::stoi(code);
 	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
-	int n = str_cgi.find("\r\n\r\n");
-	if (n != (int)std::string::npos)
+	//int n = str_cgi.find("\r\n\r\n");
+	/*if (n != (int)std::string::npos)
 	{
         n = n + 4;
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
-	}
+	}*/
 	//std::cout << "size" << m_body.size() << std::endl;
 	return 0;
 }
