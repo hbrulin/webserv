@@ -72,10 +72,13 @@ int Request::forking()
 	pid = fork();
 	//std::string s_curr_dir(dir_cgi);
 	std::string cgi_output(dir_cgi);
-	cgi_output = cgi_output + "/cgi-bin/cgi_output"; 
+	cgi_output = cgi_output + "/cgi-bin/cgi_output_" + std::to_string(m_client);
 	int fd;
-	if ((fd = open(cgi_output.c_str(), O_RDWR)) < 0)
-		std::cout << strerror(errno) << std::endl;
+	if ((fd = open(cgi_output.c_str(), O_RDWR | O_CREAT, 0666)) < 0)
+	{
+		if ((fd = open(cgi_output.c_str(), O_CREAT, 666)) < 0)
+			std::cout << strerror(errno) << std::endl;
+	}
 	else
 	{
 		std::cout << fd << std::endl;
@@ -130,13 +133,14 @@ int Request::forking()
 	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
 	m_errorCode = std::stoi(code);
 	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
-	int n = str_cgi.find("\r\n\r\n");
-	if (n != (int)std::string::npos)
-	{
-        n = n + 4;
-		m_body = str_cgi.substr(n, str_cgi.size() - n);
-	}
-	//std::cout << "size" << m_body.size() << std::endl;
+	// int n = str_cgi.find("\r\n\r\n");
+	// if (n != (int)std::string::npos)
+	// {
+    //     n = n + 4;
+	// 	m_body = str_cgi.substr(n, str_cgi.size() - n);
+	// }
+	std::cout << "size" << m_body.size() << std::endl;
+	std::cout << "body" << m_body << std::endl;
 	return 0;
 }
 void Request::get_post_content()
