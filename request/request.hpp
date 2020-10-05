@@ -39,6 +39,7 @@ class Request
 	unsigned long s_addr;
 	char curr_dir[200];
 	char *dir_cgi;
+	//std::string cgi_output;
 	char *path;
 
 	//std::string m_method;

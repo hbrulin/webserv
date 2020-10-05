@@ -109,9 +109,9 @@ void Request::parse()
 		if (_loc._root != "YoupiBanane/")
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
-		// if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
-		// 	&& _head_req.TRANSFER_ENCODING == "chunked")
-		// 	getBody();
+		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
+			&& _head_req.TRANSFER_ENCODING == "chunked")
+			getBody();
 		//std::cout << _head_req.BODY << std::endl;
 	}
 	else
@@ -181,8 +181,6 @@ int Request::send_to_client() {
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
 	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
 		oss << m_url;
-	if (!is_cgi)
-		m_output = oss.str();
 	if (pid_ret > 0)
 	{
 		std::cout << "error 500" << std::endl;
@@ -191,13 +189,16 @@ int Request::send_to_client() {
 		oss << "Content-Type: text/html" << "\r\n";
 		oss << "Content-Length: 97\r\n\r\n";
 		oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-		m_output = oss.str();
 		if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
 			return -1;
 		return 0;
 	}
-	//std::cout << "good" << std::endl;
-	//std::cout << m_output << std::endl;
+	if (is_cgi)
+	{
+		oss << _head_resp.getBuffer_cgi(m_errorCode);
+		oss << m_body;
+	}
+	m_output = oss.str();
 	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 		return - 1;
 	return 0;

@@ -19,7 +19,7 @@ class Head_resp
     std::string CONTENT_TYPE;
     std::string LOCATION; 
     std::string LAST_MODIFIED; //OK
-    std::string SERVER; //OK
+    std::string SERVER; // OK
     // SI 503
     std::string RETRY_AFTER; // 2 lignes date + delay-second
     std::string TRANSFER_ENCODING;
@@ -30,6 +30,7 @@ class Head_resp
     std::string getDate();
     std::string getBuffer(int code, const char *path, std::vector<std::string> methods, std::string _method);
     std::string getContentLength(const char *path);
+    std::string getBuffer_cgi(int code);
     struct stat st;
 };
 

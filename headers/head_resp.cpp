@@ -75,3 +75,14 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << "\r\n";
     return oss.str();
 }
+
+std::string Head_resp::getBuffer_cgi(int code)
+{
+	//std::cout << "!!!!!" << fichier << std::endl;
+    std::ostringstream oss;
+	oss << "HTTP/1.1 " << code;
+	oss << codeTab.find(code)->second;
+    oss << "Content-Type: " << CONTENT_TYPE << "\r\n";
+	oss << "\r\n";
+    return oss.str();
+}
