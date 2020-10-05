@@ -77,11 +77,14 @@ int Request::forking()
 	{
 		std::cout << strerror(errno) << std::endl;
 	}
+<<<<<<< HEAD
 	else
 	{
 		std::cout << fd << std::endl;
 	}
 	//std::cout << m_body << std::endl;
+=======
+>>>>>>> 072a089b20c16282f4cd40c41041404ab5cc3961
 	if (pid == 0)
 	{
 		close(pp[1]);
