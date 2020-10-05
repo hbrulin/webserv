@@ -81,7 +81,7 @@ int Request::forking()
 	{
 		std::cout << fd << std::endl;
 	}
-	std::cout << m_body << std::endl;
+	//std::cout << m_body << std::endl;
 	if (pid == 0)
 	{
 		close(pp[1]);
@@ -131,7 +131,14 @@ int Request::forking()
 	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
 	m_errorCode = std::stoi(code);
 	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
-	std::cout << m_body << std::endl;
+	int n = str_cgi.find("\r\n\r\n");
+	if (n != (int)std::string::npos)
+	{
+        n = n + 4;
+		m_body = str_cgi.substr(n, str_cgi.size() - n);
+	}
+	//std::cout << "!!!!" << m_body.size() << std::endl << std::endl;
+	//std::cout << m_body << std::endl;
 	return 0;
 }
 void Request::get_post_content()
@@ -159,6 +166,7 @@ void Request::get_post_content()
 
 void Request::exec_cgi(){
 	//_loc._cgi_file = "test.php";
+	//std::cout << "!!!!" << m_body[m_body.size()] << std::endl << std::endl;
 	if (_head_req.REQUEST_METHOD == "POST")
 	{
 		post(); // on recupere les infos dans le body
