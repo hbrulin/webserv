@@ -77,14 +77,11 @@ int Request::forking()
 	{
 		std::cout << strerror(errno) << std::endl;
 	}
-<<<<<<< HEAD
 	else
 	{
 		std::cout << fd << std::endl;
 	}
 	//std::cout << m_body << std::endl;
-=======
->>>>>>> 072a089b20c16282f4cd40c41041404ab5cc3961
 	if (pid == 0)
 	{
 		close(pp[1]);
@@ -140,7 +137,18 @@ int Request::forking()
         n = n + 4;
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
 	}
+	/*int i = 0;
+	while (m_body[i])
+	{
+		if (m_body[i] != 'N')
+			std::cout << i << std::endl; 
+		i++;
+	}*/
+	//std::cout << "!!!!" << n << std::endl << std::endl;
+	//std::cout << "!!!!" << str_cgi.size() << std::endl << std::endl;
 	//std::cout << "!!!!" << m_body.size() << std::endl << std::endl;
+	//std::cout << "BODY : " <<m_body[0] << std::endl << std::endl;
+	//std::cout << "BODY : " <<m_body[m_body.size() - 5] << std::endl << std::endl;
 	//std::cout << m_body << std::endl;
 	return 0;
 }

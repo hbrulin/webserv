@@ -196,8 +196,8 @@ int Request::send_to_client() {
 	if (is_cgi)
 	{
 		oss << _head_resp.getBuffer_cgi(m_errorCode);
-		//std::cout << "!!!!" << m_body.size() << std::endl << std::endl;
-		oss << "\r\n\r\n";
+		std::cout << "!!!!" << m_body.size() << std::endl << std::endl;
+		//oss << "\r\n\r\n";
 		oss << m_body;
 	}
 	m_output = oss.str();

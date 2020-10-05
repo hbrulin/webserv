@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_chunk(0), body_parse_length(0) {
+Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_chunk(0), body_parse_length(0), header_length(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	headers = "";
@@ -338,7 +338,10 @@ void Listener::receive_data(int fd) {
 					}
 				}
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
+				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
+					buf_list[n]->header_length = buf_list[n]->body.size();
+				}
 				//ELSE ERROR SEND AND RETURN
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
@@ -364,12 +367,15 @@ void Listener::receive_data(int fd) {
 			{ //IC IL FAUDRA PRENDRE EN COMPTE LES BODY DEJA RECUP EN MEME TEMPS QUE HEADER
 				buf_list[n]->track_recv++;
 				buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
-				if (buf_list[n]->track_recv != 1)
+				if (buf_list[n]->track_recv == 1)
+					buf_list[n]->track_length += ret - buf_list[n]->header_length;
+				else if (buf_list[n]->track_recv != 1)
 					buf_list[n]->track_length += ret;
 				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
 				{
 					LaunchRequest(n, fd);
 					buf_list[n]->track_recv = 0;
+					buf_list[n]->header_length = 0;
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->headers = "";
 					buf_list[n]->body = "";
