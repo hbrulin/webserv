@@ -5,3 +5,4 @@ webserv.dSYM
 .vscode
 obj
 .DS_Store
+cgi-bin/cgi_output
