@@ -76,13 +76,17 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
     return oss.str();
 }
 
-std::string Head_resp::getBuffer_cgi(int code)
+std::string Head_resp::getBuffer_cgi(int code, std::string m_body)
 {
 	//std::cout << "!!!!!" << fichier << std::endl;
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
 	oss << codeTab.find(code)->second;
+	oss << "Content-Length: " << m_body.size() << "\r\n";
     oss << "Content-Type: " << CONTENT_TYPE << "\r\n";
+	oss << "Date: " << this->getDate() << "\r\n";
+	oss << "Server: " << "webserv" << "\r\n";
+	oss << "http-X-Secret-Header-For-Test: " << "1" << "\r\n";
 	oss << "\r\n";
     return oss.str();
 }

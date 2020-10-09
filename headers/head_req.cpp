@@ -50,6 +50,8 @@ std::string Head_req::get_meta()
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
 	str.append("webserv"); // A modif ?
+	//str.append("&HTTP_SECRET_HEADER_FOR_TEST=1");
+	str.append("&HTTP_X_SECRET_HEADER_FOR_TEST=1");
 	return str;
 }
 
@@ -142,7 +144,7 @@ std::string Head_req::getUserAgent(std::string s)
 	n = s.find("User-Agent: ");
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("User-Agents: ").size();
+        n = n + std::string("User-Agent: ").size();
 		int i = n;
 		while (s[i] != '\r' && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);

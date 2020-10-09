@@ -112,7 +112,7 @@ void Request::parse()
 		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
 			&& _head_req.TRANSFER_ENCODING == "chunked")
 			getBody();
-		//std::cout << _head_req.BODY << std::endl;
+		//std::cout << m_body << std::endl;
 	}
 	else
 	{
@@ -195,12 +195,35 @@ int Request::send_to_client() {
 	}
 	if (is_cgi)
 	{
-		oss << _head_resp.getBuffer_cgi(m_errorCode);
-		oss << m_body;
+		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body);
+		std::cout << "output" << m_output << std::endl;
 	}
-	m_output = oss.str();
-	if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
-		return - 1;
+	else
+		m_output = oss.str();
+	int bytes;
+	if (!is_cgi)
+	{
+		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
+			return - 1;
+	}
+	else
+	{
+		if ((bytes = write(m_client, m_output.c_str(), m_output.size())) <= 0)
+			return - 1;
+		std::cout << "body size" << m_body.size() << std::endl;
+		if ((bytes = write(m_client, m_body.c_str(), m_body.size())) <= 0)
+			return - 1;
+		while (bytes < (int)m_body.size())
+		{
+			m_body.substr(bytes, m_body.size() - bytes);
+			bytes += write(m_client, m_body.c_str(), m_body.size());
+			std::cout << "bytes" << bytes << std::endl;
+		}
+		std::cout << "bytes" << bytes << std::endl;
+	}
+	m_output = "";
+	m_body.clear();
+	bytes = 0;
 	return 0;
 }
 

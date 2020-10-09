@@ -33,14 +33,15 @@ int main(void)
 
     //	While loop:
     char buf[8096];
-    string userInput = "POST /directory/youpa.bla HTTP/1.1\r\n";
+    string userInput = "POST /directory/youpi.bla HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
     userInput += "Transfer-Encoding: chunked\r\n";
     userInput += "Content-Type: test/file\r\n";
+    userInput += "X-Secret-Header-For-Test: 1\r\n";
 	userInput += "Accept-Encoding: gzip\r\n\r\n";
     int k = 0;
-    while (k++ < 1000000)
+    while (k++ < 100000000)
         userInput += "w";
     userInput += "0\r\n\r\n";
 
