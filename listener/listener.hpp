@@ -29,6 +29,7 @@ class Buffers {
 		int					track_recv;
 		bool				body_parse_chunk;
 		bool				body_parse_length;
+		unsigned int 		header_length;
 
 		Buffers(int id);
 		virtual ~Buffers() {

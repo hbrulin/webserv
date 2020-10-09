@@ -6,3 +6,4 @@ webserv.dSYM
 obj
 .DS_Store
 cgi-bin/cgi_output
+cgi-bin/cgi_output_5
