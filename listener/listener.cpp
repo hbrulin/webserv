@@ -401,7 +401,7 @@ void Listener::LaunchRequest(int n, int fd)
 		}
 	}
 
-	std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
+	//std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
 	if (buf_list[n]->body.empty() == 0)
 		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;
 	//std::cout << buf_list[n]->body.size() << std::endl << std::endl;

@@ -53,7 +53,6 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
-	std::cout << m_body.size() << std::endl << std::endl;
 	//std::cout << "body" << m_body << std::endl;
 	//std::cout << m_chunk_size << std::endl;
 }
@@ -126,7 +125,7 @@ void Request::handle() {
 	if (m_errorCode > 400)
 		return;
 	//changing of root so that it includes the language
-	_head_req.REQUEST_URI = m_url;
+	//_head_req.REQUEST_URI = m_url;
 	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
 	_head_req.QUERY_STRING = content_env;
 	/*if (m_url.find("?") != std::string::npos)
@@ -145,8 +144,7 @@ void Request::handle() {
 	{
 		m_path = m_path + m_index;
 	}*/
-	//std::cout << "cgi type" << _loc._cgi_type << std::endl;
-	if (_head_req.REQUEST_METHOD == "POST" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	if (_head_req.REQUEST_METHOD == "POST" && _loc._cgi_type != "" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
 		exec_cgi();
@@ -154,6 +152,7 @@ void Request::handle() {
 	}
 	else if (_head_req.REQUEST_METHOD == "POST")
 	{
+		is_cgi = false;
 		post();
 		return;
 	}
@@ -196,7 +195,6 @@ int Request::send_to_client() {
 	if (is_cgi)
 	{
 		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body);
-		std::cout << "output" << m_output << std::endl;
 	}
 	else
 		m_output = oss.str();
@@ -210,16 +208,15 @@ int Request::send_to_client() {
 	{
 		if ((bytes = write(m_client, m_output.c_str(), m_output.size())) <= 0)
 			return - 1;
-		std::cout << "body size" << m_body.size() << std::endl;
 		if ((bytes = write(m_client, m_body.c_str(), m_body.size())) <= 0)
 			return - 1;
 		while (bytes < (int)m_body.size())
 		{
 			m_body.substr(bytes, m_body.size() - bytes);
 			bytes += write(m_client, m_body.c_str(), m_body.size());
-			std::cout << "bytes" << bytes << std::endl;
+			//std::cout << "bytes" << bytes << std::endl;
 		}
-		std::cout << "bytes" << bytes << std::endl;
+		//std::cout << "bytes" << bytes << std::endl;
 	}
 	m_output = "";
 	m_body.clear();

@@ -59,14 +59,11 @@ int Request::forking()
 		}
 	}
 	std::string _headers = _head_req.get_meta();
-	std::cout << "env" << _headers << std::endl;
+	//std::cout << "env" << _headers << std::endl;
 	char **env = ft_split(_headers.c_str(), '&');
 	char **av;
 	av = (char **)malloc(sizeof(char *) * 3);
 	av[0] = ft_strdup(path);
-	//std::cout << "body" << m_body << std::endl;
-	//char *str = ft_strdup(m_body.c_str());
-	//std::cout << av[1] << std::endl;
 	if (pipe(pp))
 		perror("pipe");
 	pid = fork();
@@ -77,11 +74,6 @@ int Request::forking()
 	{
 		std::cout << strerror(errno) << std::endl;
 	}
-	else
-	{
-		std::cout << fd << std::endl;
-	}
-	//std::cout << m_body << std::endl;
 	if (pid == 0)
 	{
 		close(pp[1]);
@@ -131,15 +123,12 @@ int Request::forking()
 	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
 	m_errorCode = std::stoi(code);
 	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
-	std::cout << "size cgi" << str_cgi.size() << std::endl;
 	int n = str_cgi.find("\r\n\r\n"); //peut etre rajouter un \n
 	if (n != (int)std::string::npos)
 	{
     	n = n + std::string("\r\n\r\n").size();
 		m_body.clear();
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
-		//m_body += "\r\n\r\n";
-		std::cout << "size cgi" << m_body.size() << std::endl;
 	}
 	f_cgi.close();
 	remove(cgi_output.c_str());
@@ -201,13 +190,37 @@ void Request::post() {
 			m_errorCode = 411;
 			return;
 	}
-	get_post_content();
-	//std::ifstream f(_loc._root + "post.html");
-	//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	//m_path = _loc._root + "post.html";
-	//m_url = str;
-			//m_errorCode = 400;
-	//f.close();
+	//get_post_content();
+	if (is_cgi)
+		return;
+	if (m_body.size() == 0)
+	{
+		std::ifstream f("www/post.html");
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_path = "www/post.html";
+		m_url = str;
+		m_errorCode = 200;
+		f.close();
+	}
+	else if (m_body.size() > _loc._body_size)
+	{
+		std::ifstream f("www/post.html");
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_path = "www/post.html";
+		m_url = str;
+		m_errorCode = 413;
+		f.close();
+	}
+	else
+	{
+		std::ifstream f("www/post.html");
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_path = "www/post.html";
+		m_url = str;
+		m_errorCode = 201;
+		f.close();
+	}
+
 }
 
 void Request::put() {

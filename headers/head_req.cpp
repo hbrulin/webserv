@@ -250,6 +250,7 @@ void Head_req::getRemAddr()
 
 void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std::string url) {
 	REQUEST_METHOD = parsed[0];
+	REQUEST_URI = parsed[1];
 	SERVER_PROTOCOL = parsed[2];
 	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
 	if (tab != NULL && tab[0] != NULL)
