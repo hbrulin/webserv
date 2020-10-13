@@ -323,7 +323,6 @@ void Listener::receive_data(int fd) {
 			size_t npos = s.find("\r\n\r\n");
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
-
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
 				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
@@ -402,8 +401,8 @@ void Listener::LaunchRequest(int n, int fd)
 	}
 
 	//std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
-	if (buf_list[n]->body.empty() == 0)
-		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;
+	// if (buf_list[n]->body.empty() == 0)
+	// 	std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;
 	//std::cout << buf_list[n]->body.size() << std::endl << std::endl;
 	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();

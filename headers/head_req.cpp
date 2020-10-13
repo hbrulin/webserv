@@ -115,7 +115,6 @@ std::string Head_req::getStringtoParse(std::string s, std::string toParse)
 		int i = n;
 		while (s[i] != '\n' && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
-		//std::cout << referer << std::endl;
         return referer;
 	}
     return "";
@@ -133,7 +132,6 @@ std::string Head_req::getReferer(std::string s)
 		while (s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
-	//std::cout << "referer" << referer << std::endl;
     return referer;
 }
 
@@ -148,7 +146,6 @@ std::string Head_req::getUserAgent(std::string s)
 		int i = n;
 		while (s[i] != '\r' && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
-		//std::cout << referer << std::endl;
 	}
     return referer;
 }
@@ -194,9 +191,7 @@ std::string Head_req::contentNego(std::string root) {
 		{
 			tmp = tmp.substr(0, i);
 		}
-		//std::cout << tmp << std::endl;
     	std::ifstream f(root + tmp + "/");
-		//std::cout << root + tmp + content << std::endl;
 
 		if (f.good()) {
 			res = root + tmp + "/";
