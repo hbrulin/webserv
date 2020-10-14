@@ -56,11 +56,8 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
-<<<<<<< HEAD
-	std::cout << "body_size request" << m_body.size() << std::endl;
+	//std::cout << "body_size request" << m_body.size() << std::endl;
 	std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
-=======
->>>>>>> 6d74621925150c55fbd6151cdcd69e9f367a306f
 }
 
 void Request::parse() 
@@ -179,11 +176,8 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-<<<<<<< HEAD
 	/*if (_head_req.REQUEST_METHOD == "PUT")
 		std::cout << m_errorCode << std::endl << std::endl;*/
-=======
->>>>>>> 6d74621925150c55fbd6151cdcd69e9f367a306f
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
