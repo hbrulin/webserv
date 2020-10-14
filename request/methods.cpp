@@ -59,7 +59,6 @@ int Request::forking()
 		}
 	}
 	std::string _headers = _head_req.get_meta();
-	//std::cout << "env" << _headers << std::endl;
 	char **env = ft_split(_headers.c_str(), '&');
 	char **av;
 	av = (char **)malloc(sizeof(char *) * 3);
@@ -79,10 +78,6 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(fd, 1);
-		//write(pp[1], m_body.c_str(), m_body.size());
-		//std::cout << "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
-		//std::cout << m_body << "\r\n\r\n";
-		//std::cout << _head_resp.getBuffer(200, path, _loc._methods, _head_req.REQUEST_METHOD ); // A revoir car renvoie mauvais header si ne fonctionne pas
 		res = execve(av[0], NULL, env);
 		if (res != 0)
 		{
@@ -158,15 +153,11 @@ void Request::get_post_content()
 
 
 void Request::exec_cgi(){
-	//_loc._cgi_file = "test.php";
-	//std::cout << "!!!!" << m_body[m_body.size()] << std::endl << std::endl;
 	if (_head_req.REQUEST_METHOD == "POST")
 	{
 		post(); // on recupere les infos dans le body
 	}
 	m_url = _loc._cgi_root + _loc._cgi_file;
-	//std::cout << "cgi size" << m_body.size() << std::endl;
-	//_head_req.CONTENT_LENGTH = m_body.size();
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
 	pid_ret = forking();

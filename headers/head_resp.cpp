@@ -78,7 +78,6 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 
 std::string Head_resp::getBuffer_cgi(int code, std::string m_body)
 {
-	//std::cout << "!!!!!" << fichier << std::endl;
     std::ostringstream oss;
 	oss << "HTTP/1.1 " << code;
 	oss << codeTab.find(code)->second;

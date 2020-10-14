@@ -56,20 +56,23 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
+<<<<<<< HEAD
 	std::cout << "body_size request" << m_body.size() << std::endl;
 	std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
+=======
+>>>>>>> 6d74621925150c55fbd6151cdcd69e9f367a306f
 }
 
 void Request::parse() 
 {
-	//std::cout << m_headers << std::endl;
-	//std::cout << s.substr(npos, npos + 10) <<  std::endl << std::endl;
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
+		if (_head_req.REQUEST_METHOD == "PUT")
+			std::cout << m_headers << std::endl;
 		//m_method = _head_req.REQUEST_METHOD;
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
@@ -114,7 +117,6 @@ void Request::parse()
 		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
 			&& _head_req.TRANSFER_ENCODING == "chunked")
 			getBody();
-		//std::cout << m_body << std::endl;
 	}
 	else
 	{
@@ -177,8 +179,11 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
+<<<<<<< HEAD
 	/*if (_head_req.REQUEST_METHOD == "PUT")
 		std::cout << m_errorCode << std::endl << std::endl;*/
+=======
+>>>>>>> 6d74621925150c55fbd6151cdcd69e9f367a306f
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
@@ -220,7 +225,6 @@ int Request::send_to_client() {
 		{
 			m_body.substr(bytes, m_body.size() - bytes);
 			bytes += write(m_client, m_body.c_str(), m_body.size());
-			//std::cout << "bytes" << bytes << std::endl;
 		}
 	}
 	m_output = "";
@@ -235,13 +239,8 @@ bool Request::check_if_method_is_allowed(std::string method)
 {
 	for (std::vector<std::string>::size_type i = 0; i < _loc._methods.size(); i++)
 	{
-		//std::cout << _conf._methods[i] << std::endl;
 		if (_loc._methods[i] == method)
 			return (true);
 	}
-	//std::cout << "here" <<  _loc._cgi_type << std::endl;
-	//_loc._cgi_method = "POST";
-	//if (_loc._cgi_method == method && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos)
-	//	return (true);
 	return (false);
 }

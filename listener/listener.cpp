@@ -323,7 +323,6 @@ void Listener::receive_data(int fd) {
 			size_t npos = s.find("\r\n\r\n");
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
-
 			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
 			{
 				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)

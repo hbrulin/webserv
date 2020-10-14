@@ -7,3 +7,6 @@ obj
 .DS_Store
 cgi-bin/cgi_output
 cgi-bin/cgi_output_5
+multiple_same
+output.txt
+file_should_exit_after
