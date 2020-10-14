@@ -198,7 +198,7 @@ int Listener::run() {
 						accept_incoming_connections(ret.first);
 						m_nbConf = ret.second;
 						buf_list.push_back(new Buffers(j));
-						//std::cout << "ACCEPT" << std::endl;
+						std::cout << "+ 1 BUFFER" << std::endl;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
 						m_close = false;
@@ -388,6 +388,12 @@ void Listener::receive_data(int fd) {
 
 void Listener::LaunchRequest(int n, int fd)
 {
+	if (strstr(buf_list[n]->m_buffer, "PUT") != NULL)
+	{
+		std::cout << "+1 requête : Buffer " << n << std::endl;
+		std::cout << buf_list[n]->headers << std::endl;
+		std::cout << "body_size listener" << buf_list[n]->body.size() << std::endl;
+	}
 	//choose config according to server name
 	std::string host = getHost(buf_list[n]->headers, "Host: ");
 	size_t m = host.find(":");
@@ -402,8 +408,8 @@ void Listener::LaunchRequest(int n, int fd)
 	}
 
 	//std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
-	if (buf_list[n]->body.empty() == 0)
-		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;
+	/*if (buf_list[n]->body.empty() == 0)
+		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;*/
 	//std::cout << buf_list[n]->body.size() << std::endl << std::endl;
 	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
 	req.parse();

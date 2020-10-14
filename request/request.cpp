@@ -47,14 +47,17 @@ void		Request::getBody() {
 	while (std::getline(f, buf))
 	{
 		if (!flag)
+		{
+			//std::cout << buf << std::endl;
 			m_chunk_size += strtol(buf.c_str(), NULL, 16);
+		}
 		else
 			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;
 	}
 	m_body = total;
-	//std::cout << "body" << m_body << std::endl;
-	//std::cout << m_chunk_size << std::endl;
+	std::cout << "body_size request" << m_body.size() << std::endl;
+	std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
 }
 
 void Request::parse() 
@@ -174,7 +177,8 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	//std::cout << "TEST" << std::endl;
+	/*if (_head_req.REQUEST_METHOD == "PUT")
+		std::cout << m_errorCode << std::endl << std::endl;*/
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
@@ -201,6 +205,8 @@ int Request::send_to_client() {
 	int bytes;
 	if (!is_cgi)
 	{
+		if (_head_req.REQUEST_METHOD == "PUT")
+			std::cout << std::endl << m_output << std::endl;
 		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 			return - 1;
 	}
@@ -216,11 +222,12 @@ int Request::send_to_client() {
 			bytes += write(m_client, m_body.c_str(), m_body.size());
 			//std::cout << "bytes" << bytes << std::endl;
 		}
-		//std::cout << "bytes" << bytes << std::endl;
 	}
 	m_output = "";
 	m_body.clear();
+	m_chunk_size = 0;
 	bytes = 0;
+	std::cout << "- - - - - - - - - - " << std::endl;
 	return 0;
 }
 

@@ -224,7 +224,8 @@ void Request::post() {
 }
 
 void Request::put() {
-	//_conf._body_size = 20; //JUSTE POUR TESTER - EN ATTENTE FIX
+	/*std::cout << m_body.size() << std::endl;
+	std::cout << m_chunk_size << std::endl << std::endl;*/
 	unsigned int n;
 	if (_head_req.TRANSFER_ENCODING == "chunked")
 		n = m_chunk_size;

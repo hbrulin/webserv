@@ -113,7 +113,7 @@ std::string Head_req::getStringtoParse(std::string s, std::string toParse)
 	{
         n = n + std::string(toParse).size();
 		int i = n;
-		while (s[i] != '\n' && s[i] != '\r') { i++;}
+		while (s[i] && s[i] != '\n' && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 		//std::cout << referer << std::endl;
         return referer;
