@@ -7,6 +7,55 @@ Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_c
 	body = "";
 	}
 
+/*int Listener::reparse_body(int n, int fd) {
+	//if (strstr(buf_list[n]->headers.c_str(), "PUT") != NULL)
+	//	std::cout << buf_list[n]->body << std::endl << std::endl << std::endl;
+	//return 0;
+
+	std::string method;
+	if (strstr(buf_list[n]->body.c_str(), "PUT") != NULL)
+		method = "PUT";
+	else if (strstr(buf_list[n]->body.c_str(), "POST") != NULL)
+		method = "POST";
+	else
+		return 0;
+
+	std::cout << "ENTERING" << std::endl;
+	//std::cout << method << std::endl;
+
+	std::string tmp = buf_list[n]->body;
+	int p;
+	int ph = 0;
+	p = tmp.find(method);
+	std::cout << "P is " << p << std::endl;
+
+	while (p != (int)std::string::npos)
+	{
+		if (buf_list[n]->headers.empty())
+		{
+			ph = tmp.find("\r\n\r\n");
+			if (ph != (int)std::string::npos)
+			{
+				ph = ph + std::string("\r\n\r\n").size();
+				buf_list[n]->headers = tmp.substr(0, ph);
+			}
+		}
+		buf_list[n]->body = tmp.substr(ph, p - 1 - ph); // -1??
+		buf_list[n]->body + "0/r/n";
+
+		tmp = tmp.substr(p, tmp.size() - p - 1 - ph); // -1??
+		std::cout << "HEAD : " << buf_list[n]->headers << std::endl << std::endl;
+		std::cout << "BODY : " << buf_list[n]->body.substr(0, 20) << std::endl << std::endl;
+		LaunchRequest(n, fd);
+		buf_list[n]->body = "";
+		buf_list[n]->headers = "";
+		p = tmp.find(method);
+	}  
+	std::cout << "IS TMP EMPTY" << tmp.empty() << std::endl << std::endl;
+	return 1;
+}*/
+
+
 std::string Listener::getHost(std::string buffer, std::string toParse)
 {
     int n;
@@ -153,10 +202,6 @@ int Listener::run() {
 	int sock_count;
 	std::pair<int, int> ret;
 
-	//IL FAUDRA VOIR SI ON NE DOIT PAS BOUGER CA APRES, QUAND LE TESTEUR REPREND
-	//m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-
 	while (m_run) {
 		/* Copy the master fd_set over to the working fd_set.
 		Important because the call to select() is destructive. The copy
@@ -197,16 +242,25 @@ int Listener::run() {
 						//std::cout << ret.first << std::endl;
 						accept_incoming_connections(ret.first);
 						m_nbConf = ret.second;
-						buf_list.push_back(new Buffers(j));
-						std::cout << "+ 1 BUFFER" << std::endl;
+						//buf_list.push_back(new Buffers(ret.first));
+						//std::cout << "+ 1 BUFFER - size is : " << buf_list.size() << "new_id is " << j << std::endl;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
 						m_close = false;
+						if (buf_list.empty())
+							buf_list.push_back(new Buffers(j));
+						else
+							{
+								std::vector<Buffers*>::iterator it = buf_list.begin();
+								std::vector<Buffers*>::iterator ite = buf_list.end();
+								while (it != ite && (*it)->m_id != j)
+									it++;
+								if (it == ite)
+									buf_list.push_back(new Buffers(j));
+							}
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
 						//m_close = true;
 						close_conn(j);
-						//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-						//std::cout << "STOP" << std::endl;
 					}
 
 				}
@@ -293,10 +347,13 @@ void Listener::receive_data(int fd) {
 	std::vector<Buffers*>::iterator it = buf_list.begin();
 	std::vector<Buffers*>::iterator ite = buf_list.end();
 	
+	//std::cout << "FD" << fd << std::endl;
+
 	while (it != ite && (*it)->m_id != fd)
 		it++;
-	int n = it - 1 - buf_list.begin();
-	//std::cout << n << std::endl;
+	int n = it - buf_list.begin();
+
+	//std::cout << "BUFFER ID " << buf_list[n]->m_id << "is n° " << n << " over " << buf_list.size() << " buffers" << std::endl;
 
 	bytes = strlen(buf_list[n]->m_buffer);
 
@@ -320,6 +377,7 @@ void Listener::receive_data(int fd) {
 		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
+			//std::cout << "M_BUFFER : " << s.substr(0, 20) << std::endl << std::endl;
 			size_t npos = s.find("\r\n\r\n");
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
@@ -349,6 +407,7 @@ void Listener::receive_data(int fd) {
 				LaunchRequest(n, fd);
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 				buf_list[n]->headers = "";
+				buf_list[n]->body = "";
 			}
 		}
 		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
@@ -357,13 +416,17 @@ void Listener::receive_data(int fd) {
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 			{
-				LaunchRequest(n, fd);
+				//if (!reparse_body(n, fd))
+				//{
+					LaunchRequest(n, fd);
+					//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk; // RESET THIS ANYWAY
+					buf_list[n]->headers = "";
+					buf_list[n]->body = "";
+				//}
 				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-				buf_list[n]->headers = "";
-				buf_list[n]->body = "";
 			}
 			else if (buf_list[n]->body_parse_length)
-			{ //IC IL FAUDRA PRENDRE EN COMPTE LES BODY DEJA RECUP EN MEME TEMPS QUE HEADER
+			{
 				buf_list[n]->track_recv++;
 				buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
 				if (buf_list[n]->track_recv == 1)
@@ -387,12 +450,9 @@ void Listener::receive_data(int fd) {
 
 void Listener::LaunchRequest(int n, int fd)
 {
-	if (strstr(buf_list[n]->m_buffer, "PUT") != NULL)
-	{
-		std::cout << "+1 requête : Buffer " << n << std::endl;
-		std::cout << buf_list[n]->headers << std::endl;
-		std::cout << "body_size listener" << buf_list[n]->body.size() << std::endl;
-	}
+	//std::cout << "fd :" << fd << ", Buffer id : " << buf_list[n]->m_id << " Buffer n value : " << n << std::endl;
+	//std::cout << "body_size listener " << buf_list[n]->body.size() << std::endl;
+	
 	//choose config according to server name
 	std::string host = getHost(buf_list[n]->headers, "Host: ");
 	size_t m = host.find(":");

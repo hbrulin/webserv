@@ -57,7 +57,7 @@ void		Request::getBody() {
 	}
 	m_body = total;
 	//std::cout << "body_size request" << m_body.size() << std::endl;
-	std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
+	//std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
 }
 
 void Request::parse() 
@@ -68,9 +68,8 @@ void Request::parse()
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
-		if (_head_req.REQUEST_METHOD == "PUT")
-			std::cout << m_headers << std::endl;
-		//m_method = _head_req.REQUEST_METHOD;
+		/*if (_head_req.REQUEST_METHOD == "PUT")
+			std::cout << m_headers << std::endl;*/
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
 		{
@@ -204,8 +203,9 @@ int Request::send_to_client() {
 	int bytes;
 	if (!is_cgi)
 	{
-		if (_head_req.REQUEST_METHOD == "PUT")
-			std::cout << std::endl << m_output << std::endl;
+		/*if (_head_req.REQUEST_METHOD == "PUT")
+			std::cout << std::endl << m_output << std::endl;*/
+		//std::cout << "- - - - - - - - - - " << std::endl;
 		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 			return - 1;
 	}
@@ -225,7 +225,6 @@ int Request::send_to_client() {
 	m_body.clear();
 	m_chunk_size = 0;
 	bytes = 0;
-	std::cout << "- - - - - - - - - - " << std::endl;
 	return 0;
 }
 

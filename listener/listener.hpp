@@ -56,6 +56,7 @@ class Listener {
 		std::pair<int, int>	look_for_sock(int j);
 		std::string getHost(std::string buffer, std::string toParse);
 		int checkpast(int i);
+		int reparse_body(int n, int fd);
 
 	private:
 		/*META VAR*/

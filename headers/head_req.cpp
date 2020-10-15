@@ -90,7 +90,7 @@ std::string Head_req::getMetatoParse(std::string s, std::string toParse, std::st
 		while (s[i] != '\0') 
 		{ 
 			int j = 0;
-			while(s[i] != c_sep[j] && c_sep[j] != '\0')
+			while(s[i] && s[i] != c_sep[j] && c_sep[j] != '\0')
 			{
 				j++;
 			}
@@ -129,7 +129,7 @@ std::string Head_req::getReferer(std::string s)
 	{
         n = n + std::string("Referer: ").size();
 		int i = n;
-		while (s[i] != '\n') { i++;}
+		while (s[i] && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
@@ -144,7 +144,7 @@ std::string Head_req::getUserAgent(std::string s)
 	{
         n = n + std::string("User-Agent: ").size();
 		int i = n;
-		while (s[i] != '\r' && s[i] != '\n') { i++;}
+		while (s[i] && s[i] != '\r' && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
@@ -159,7 +159,7 @@ std::string Head_req::getAcceptLangage(std::string s)
 	{
         n = n + std::string("Accept-Langage: ").size();
 		int i = n;
-		while (s[i] != '\r') { i++;}
+		while (s[i] && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
@@ -174,7 +174,7 @@ std::string Head_req::getTransferEncoding(std:: string s)
 	{
         n = n + std::string("Transfer-Encoding: ").size();
 		int i = n;
-		while (s[i] != '\r') { i++;}
+		while (s[i] && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
 	}
     return referer;
