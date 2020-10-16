@@ -2,10 +2,10 @@
 # define LISTENER_HPP
 
 #include <iostream>
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-#include <netinet/in.h>
+//#include <netinet/in.h>
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>

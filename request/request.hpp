@@ -2,22 +2,22 @@
 # define REQUEST_HPP
 
 #include <string>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <sys/socket.h>
-#include <sstream>
-#include <fstream>
-#include <iostream>
-#include <vector>
+//#include <sstream>
+//#include <fstream>
+//#include <iostream>
+//#include <vector>
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
 #include "../utils/libft/libft.h"
 #include "../headers/head_req.hpp"
 #include "../headers/head_resp.hpp"
-#include <algorithm>
-#include <sys/stat.h>
+//#include <algorithm>
+//#include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/types.h>
-#include <dirent.h>
+//#include <sys/types.h>
+//#include <dirent.h>
 #include "../utils/definitions.hpp"
 
 

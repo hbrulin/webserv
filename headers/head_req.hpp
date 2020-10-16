@@ -2,28 +2,24 @@
 #define HEAD_REQ_HPP
 
 #include <iostream>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <vector>
+//#include <sys/stat.h>
+//#include <sys/time.h>
+//#include <vector>
 #include <string>
-#include <iterator>
+//#include <iterator>
 #include "../utils/libft/libft.h"
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
 #include <sstream>
-#include <fstream>
-#include <iostream>
-#include <cctype>
+//#include <fstream>
+//#include <iostream>
+//#include <cctype>
 #include "../utils/definitions.hpp"
 
 class Head_req
 {
     public:
     Head_req() : HOST(LOCALHOST) { 
-        // char str[3] = "da";
-        //ACCEPT_LANGUAGE = NULL;
-        // char accp_char_def[2] = "*";
-        // ACCEPT_CHARSET[0] = accp_char_def; 
     }
     // response
     //request 
