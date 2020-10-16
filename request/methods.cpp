@@ -86,6 +86,8 @@ int Request::forking()
 		write(pp[1], m_body.c_str(), m_body.size());
 		if (waitpid(pid, &status, 0) == -1)
 			perror(WAIT_ERR);
+		close(pp[1]);
+		close(fd);
 		//int boucle = 1;
 		// while (boucle)
 		// {
