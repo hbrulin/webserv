@@ -1,6 +1,6 @@
 #include "Location.hpp"
 
-const char* Location::_SUPPORTED_CGI[] = {"php", "other", "bla", NULL};
+const char* Location::_SUPPORTED_CGI[] = {"php", "bla", NULL};
 const char* Location::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
 // Faire une loc par defaut
@@ -21,6 +21,7 @@ Location::Location()
 	_cgi_file = "";
 	_directory_listing = false;
 	_directory_answer_file = "";
+	_errors = "";
 
 	_methods.push_back("GET");
 	//_methods.push_back("HEAD");
@@ -42,6 +43,7 @@ void Location::initiate_map()
 	_map["body_size"] = &Location::parse_body_size;
 	_map["send_files"] = &Location::parse_send_files;
 	_map["uploaded_files_root"] = &Location::parse_uploaded_files_root;
+	_map["errors"] = &Location::parse_errors;
 }
 
 Location::~Location()
@@ -64,6 +66,7 @@ Location::Location(const Location& l)
 	_uploaded_files_root = l._uploaded_files_root;
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
+	_errors = l._errors;
 	initiate_map();
 }
 
@@ -84,6 +87,7 @@ void Location::operator = (const Location& l)
 	_uploaded_files_root = l._uploaded_files_root;
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
+	_errors = l._errors;
 	initiate_map();
 }
 
@@ -328,6 +332,12 @@ void Location::parse_cgi_file(std::string b)
 	_cgi_file = b;
 }
 
+void Location::parse_errors(std::string b)
+{
+	remove_whitespace(b);
+	_errors = b;
+}
+
 // checks :
 
 void Location::check_methods_validity()
@@ -347,17 +357,17 @@ void Location::check_methods_validity()
 		}
 	}
 	j = 0;
-	while (1 && !_cgi_type.empty())
+/*	while (1 && !_cgi_type.empty())
 	{
 		if (Location::_SUPPORTED_CGI[j] == NULL)
 			throw(std::logic_error("Bad location Block: Unsupported cgi type: " + _cgi_type));
 		if (_cgi_type == Location::_SUPPORTED_CGI[j])
 			break ;
 		j++;
-	}
+	}*/
 }
 
-bool Location::check_allowed_method(std::string method, std::string request_uri) 
+bool Location::check_allowed_method(std::string method, std::string request_uri)
 {
 	//std::cout << _methods.size() <<  std::endl;
 	for (unsigned long i = 0; i < _methods.size(); i++)

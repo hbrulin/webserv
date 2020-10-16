@@ -93,7 +93,7 @@ Location& Locations::get_loc_by_url(std::string url)
 
 	std::string last = urls.top();
 
-	if (last.find('.') != last.npos) // if true, we got a file
+/*	if (last.find('.') != last.npos) // if true, we got a file
 	{
 		last = last.substr(last.find('.'));
 		//std::cout << "llaaa: " << last << std::endl;
@@ -102,7 +102,7 @@ Location& Locations::get_loc_by_url(std::string url)
 			if (last == _v[i].get_name())
 				return (_v[i]);
 		}
-	}
+	}*/
 
 	while (urls.size())
 	{
