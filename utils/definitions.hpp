@@ -13,6 +13,7 @@
 
 //ENDL
 #define ENDCHARS "\r\n\r\n"
+#define ENDCHARS_BOD "0\r\n\r\n"
 
 //sizes
 #define INT_MIN_STR "-2147483648"
@@ -43,6 +44,8 @@
 //HEADERS
 #define CHUNKED "chunked"
 #define CONTENT_T "Content-Type: "
+#define CONTENT_L "Content-Length: "
+#define HOST_STR "Host: "
 
 //HEADERS CGI
 #define STATUS "Status: "

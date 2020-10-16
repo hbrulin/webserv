@@ -255,7 +255,7 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 	if (strstr(m_buffer.c_str(), "Content-Length: ") != NULL)
 		CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
-	getScriptName((char *)url.c_str());
+	getScriptName(url);
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
 	if (getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "")
 		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";

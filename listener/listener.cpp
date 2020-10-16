@@ -321,20 +321,20 @@ void Listener::receive_data(int fd) {
 	if (ret > 0)
 	{
 		buf_list[n]->m_buffer[bytes] = '\0';
-		if (strstr(buf_list[n]->m_buffer, "\r\n\r\n") != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
+		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
 			//std::cout << "M_BUFFER : " << s.substr(0, 20) << std::endl << std::endl;
-			size_t npos = s.find("\r\n\r\n");
+			size_t npos = s.find(ENDCHARS);
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (strstr(buf_list[n]->headers.c_str(), "POST") != NULL || strstr(buf_list[n]->headers.c_str(), "PUT") != NULL)
+			if (strstr(buf_list[n]->headers.c_str(), POST) != NULL || strstr(buf_list[n]->headers.c_str(), PUT) != NULL)
 			{
-				if (strstr(buf_list[n]->headers.c_str(), "chunked") != NULL)
+				if (strstr(buf_list[n]->headers.c_str(), CHUNKED) != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 					{
 						LaunchRequest(n, fd);
 						//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
@@ -342,11 +342,11 @@ void Listener::receive_data(int fd) {
 						buf_list.erase(it);
 					}
 				}
-				else if (strstr(buf_list[n]->headers.c_str(), "Content-Length") != NULL)
+				else if (strstr(buf_list[n]->headers.c_str(), CONTENT_L) != NULL)
 				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
-					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
+					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, CONTENT_L);
 					buf_list[n]->track_length += ret - buf_list[n]->header_length;
 
 					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
@@ -383,7 +383,7 @@ void Listener::receive_data(int fd) {
 		{
 			buf_list[n]->body += buf_list[n]->m_buffer;
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
+			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 			{
 				LaunchRequest(n, fd);
 				//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
@@ -417,7 +417,7 @@ void Listener::LaunchRequest(int n, int fd)
 	//std::cout << "body_size listener " << buf_list[n]->body.size() << std::endl;
 	
 	//choose config according to server name
-	std::string host = getHost(buf_list[n]->headers, "Host: ");
+	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
 	host = host.substr(0, m);
 	for (int j = 0; j < _size ; j++)
