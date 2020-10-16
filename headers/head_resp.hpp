@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include "../utils/returnCodes.hpp"
+#include "../utils/definitions.hpp"
 
 class Head_resp
 {

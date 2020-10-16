@@ -1,4 +1,6 @@
 #include "libft/libft.h"
+#include <limits.h>
+#include "definitions.hpp"
 
 static unsigned int		ft_len(int nb)
 {
@@ -29,8 +31,8 @@ char					*ft_itoa(int n)
 
 	nb = (unsigned int)n;
 	size = ft_len(n);
-	if (n == -2147483648)
-		return (ft_strdup("-2147483648"));
+	if (n == INT_MIN)
+		return (ft_strdup(INT_MIN_STR));
 	if (!(tab = (unsigned char*)malloc(size + 1)))
 		return (NULL);
 	nb = n < 0 ? n * -1 : n * 1;

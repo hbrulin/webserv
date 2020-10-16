@@ -5,10 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-
-#define LOCEXCEPTION "Bad location block: "
-#define END_INSTRUCTION_CHAR " \t\n\r;}"
-#define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+#include "../utils/definitions.hpp"
 
 
 class Location

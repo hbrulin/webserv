@@ -14,11 +14,12 @@
 #include <fstream>
 #include <iostream>
 #include <cctype>
+#include "../utils/definitions.hpp"
 
 class Head_req
 {
     public:
-    Head_req() : HOST("127.0.0.1") { //CHANGER SELON CONFIG
+    Head_req() : HOST(LOCALHOST) { 
         // char str[3] = "da";
         //ACCEPT_LANGUAGE = NULL;
         // char accp_char_def[2] = "*";

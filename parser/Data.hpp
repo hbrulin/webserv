@@ -7,8 +7,8 @@
 #include <fstream>
 #include "Config.hpp"
 #include "ConfigParser.hpp"
+#include "../utils/definitions.hpp"
 
-#define DEFAULT_CONFIG_PATH "./config/default.conf"
 
 /*
 ** Initialiser as Data(av[1])

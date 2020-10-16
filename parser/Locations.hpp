@@ -3,6 +3,7 @@
 
 #include "Location.hpp"
 #include <vector>
+#include "../utils/definitions.hpp"
 
 class Locations
 {

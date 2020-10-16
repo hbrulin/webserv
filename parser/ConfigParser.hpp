@@ -6,11 +6,8 @@
 #include <iostream>
 #include <map>
 #include "Config.hpp"
+#include "../utils/definitions.hpp"
 
-#define ALPHACHAR "ABCEDFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" // Degueulasse
-#define END_INSTRUCTION_CHAR " \t\n\r;}"
-#define WHITESPACE " \t\n\r "
-#define NUMBER_OF_PARAMETERS 13
 
 /*
 ** this class should serve to parse a config struct listed in Data

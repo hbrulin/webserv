@@ -7,9 +7,7 @@
 #include <sys/stat.h>
 
 #include "Locations.hpp"
-
-#define LOCALHOST "127.0.0.1"
-#define DEFAULT_ERROR_PAGES "www/"
+#include "../utils/definitions.hpp"
 
 struct Config
 {

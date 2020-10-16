@@ -18,9 +18,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include "../utils/definitions.hpp"
 
-
-/*Faire deux classes : une pour reception, une pour envoi?*/
 
 class Request
 {
