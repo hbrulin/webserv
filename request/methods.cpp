@@ -104,14 +104,12 @@ int Request::forking()
 		// }
 	}
 	else
-	{
 		perror(FORK_ERR);
-	}
 	std::ifstream f_cgi(cgi_output);
 	std::string str_cgi((std::istreambuf_iterator<char>(f_cgi)), std::istreambuf_iterator<char>());
-	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), STATUS);
+	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), STATUS_STR);
 	m_errorCode = std::stoi(code);
-	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), CONTENT_T);
+	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), CONTENT_T_STR);
 	int n = str_cgi.find(ENDCHARS); //peut etre rajouter un \n
 	if (n != (int)std::string::npos)
 	{
@@ -169,27 +167,27 @@ void Request::post() {
 		return;
 	if (m_body.size() == 0)
 	{
-		std::ifstream f("www/post.html");
+		std::ifstream f(POST_HTML);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = "www/post.html";
+		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 200;
 		f.close();
 	}
 	else if (m_body.size() > _loc._body_size)
 	{
-		std::ifstream f("www/post.html");
+		std::ifstream f(POST_HTML);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = "www/post.html";
+		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 413;
 		f.close();
 	}
 	else
 	{
-		std::ifstream f("www/post.html");
+		std::ifstream f(POST_HTML);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = "www/post.html";
+		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 201;
 		f.close();
@@ -201,7 +199,7 @@ void Request::put() {
 	/*std::cout << m_body.size() << std::endl;
 	std::cout << m_chunk_size << std::endl << std::endl;*/
 	unsigned int n;
-	if (_head_req.TRANSFER_ENCODING == "chunked")
+	if (_head_req.TRANSFER_ENCODING == CHUNKED_STR)
 		n = m_chunk_size;
 	else if (_head_req.CONTENT_LENGTH.empty() == 0)
 		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
@@ -254,7 +252,7 @@ void Request::get() {
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
 	{
-		m_path = m_path + "/youpi.bad_extension";
+		m_path = m_path + YOUPI_BAD;
 	}
 
 	std::ifstream f(m_path);

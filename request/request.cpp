@@ -87,7 +87,7 @@ void Request::parse()
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
 		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
-			&& _head_req.TRANSFER_ENCODING == CHUNKED)
+			&& _head_req.TRANSFER_ENCODING == CHUNKED_STR)
 			getBody();
 	}
 	else

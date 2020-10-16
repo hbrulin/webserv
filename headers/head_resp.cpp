@@ -7,8 +7,8 @@ std::string Head_resp::getLastModified(const char *path) {
 	{
 		char time[200];
 		struct tm *tm =  localtime(&st.st_mtime);	
-		if (strftime(time, sizeof(time), "%Y-%m-%d %H:%M", tm) != 0)
-			LAST_MODIFIED = std::string(time) + " GMT";	
+		if (strftime(time, sizeof(time), TIME_FORMAT, tm) != 0)
+			LAST_MODIFIED = std::string(time) + GMT;	
 	}
     return LAST_MODIFIED;
 }
@@ -22,8 +22,8 @@ std::string Head_resp::getDate()
 			time_t t = tv.tv_sec;
 			struct tm *tm =  localtime(&t);
 			char time[200];
-			if (strftime(time, sizeof(time), "%Y-%m-%d %H:%M:%S", tm) != 0)
-				DATE = std::string(time) + " GMT";
+			if (strftime(time, sizeof(time), TIME_FORMAT, tm) != 0)
+				DATE = std::string(time) + GMT;
 		}
         return DATE;
 }
@@ -43,30 +43,28 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 {
 	//std::cout << "!!!!!" << fichier << std::endl;
     std::ostringstream oss;
-	oss << "HTTP/1.1 " << code;
+	oss << DEF_PROTOCOL << " " << code;
 	oss << codeTab.find(code)->second;
-	oss << "Cache-Control: no-cache, private\r\n";
-    oss << "Content-Type: text/html" << "\r\n";
-	oss << "Content-Langage: " << CONTENT_LANGUAGE << "\r\n";
-	if (_method != "PUT")
-    	oss << "Content-Length: " << getContentLength(fichier) << "\r\n";
+	oss << CACHE_STR;
+    oss << CONTENT_T_STR << "text/html" << "\r\n";
+	oss << CONTENT_LANG_STR << CONTENT_LANGUAGE << "\r\n";
+	if (_method != PUT)
+    	oss << CONTENT_L_STR << getContentLength(fichier) << "\r\n";
 	else
-	{
-		oss << "Content-Length: 0" << "\r\n";
-	}
+		oss << CONTENT_L_STR << "0" << "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
-	oss << "Content-Location: " << fichier << "\r\n";
+	oss << CONTENT_LOC_STR << fichier << "\r\n";
 	/*if (WWW_AUTHENTICATE != NULL)
 		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";*/
-    oss << "Date: " << this->getDate() << "\r\n";
-    oss << "Server: " << SERVER << "\r\n";
-    oss << "Last-Modified: " << this->getLastModified(fichier) << "\r\n";
+    oss << DATE_STR << this->getDate() << "\r\n";
+    oss << SERVER_STR << SERVER << "\r\n";
+    oss << LAST_MOD_STR << this->getLastModified(fichier) << "\r\n";
     if (code == 503) // Not available
-        oss << "Retry-after: " << RETRY_AFTER << "\r\n";
+        oss << RETRY_STR << RETRY_AFTER << "\r\n";
 	if (code == 405)
 	{
-		oss << "Allow: " << ALLOW << std::endl;
-		oss << "Server methods: ";
+		oss << ALLOW_STR << ALLOW << std::endl;
+		oss << SERVER_METHODS_STR;
 		 for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++)
 		 	oss << *it << ", ";
 		oss << "\r\n";
@@ -78,13 +76,13 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 std::string Head_resp::getBuffer_cgi(int code, std::string m_body)
 {
     std::ostringstream oss;
-	oss << "HTTP/1.1 " << code;
+	oss << DEF_PROTOCOL << " " << code;
 	oss << codeTab.find(code)->second;
-	oss << "Content-Length: " << m_body.size() << "\r\n";
-    oss << "Content-Type: " << CONTENT_TYPE << "\r\n";
-	oss << "Date: " << this->getDate() << "\r\n";
-	oss << "Server: " << "webserv" << "\r\n";
-	oss << "http-X-Secret-Header-For-Test: " << "1" << "\r\n";
+	oss << CONTENT_L_STR << m_body.size() << "\r\n";
+    oss << CONTENT_T_STR << CONTENT_TYPE << "\r\n";
+	oss << DATE_STR << this->getDate() << "\r\n";
+	oss << SERVER_STR << SERVER << "\r\n";
+	oss << SECRET_STR << "1" << "\r\n";
 	oss << "\r\n";
     return oss.str();
 }

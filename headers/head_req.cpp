@@ -62,7 +62,7 @@ void Head_req::getScriptName(std::string s) // remplacer par cgi extension
 	REQUEST_URI = s;
 	int len, i = 0;
 	//SCRIPT_NAME
-	int n = s.find(".cgi");
+	int n = s.find(CGI);
 	if (n != (int)std::string::npos)
 	{
 		n = n + 4;
@@ -124,10 +124,10 @@ std::string Head_req::getReferer(std::string s)
 {
     int n;
     std::string referer;
-	n = s.find("Referer: ");
+	n = s.find(REFERER_STR);
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("Referer: ").size();
+        n = n + std::string(REFERER_STR).size();
 		int i = n;
 		while (s[i] && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
@@ -139,10 +139,10 @@ std::string Head_req::getUserAgent(std::string s)
 {
     int n;
     std::string referer;
-	n = s.find("User-Agent: ");
+	n = s.find(USER_AGENT_STR);
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("User-Agent: ").size();
+        n = n + std::string(USER_AGENT_STR).size();
 		int i = n;
 		while (s[i] && s[i] != '\r' && s[i] != '\n') { i++;}
 		referer = s.substr(n, i - n);
@@ -154,10 +154,10 @@ std::string Head_req::getAcceptLangage(std::string s)
 {
     int n;
     std::string referer;
-	n = s.find("Accept-Langage: ");
+	n = s.find(ACCEPT_LAN_STR);
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("Accept-Langage: ").size();
+        n = n + std::string(ACCEPT_LAN_STR).size();
 		int i = n;
 		while (s[i] && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
@@ -169,10 +169,10 @@ std::string Head_req::getTransferEncoding(std:: string s)
 {
     int n;
     std::string referer;
-	n = s.find("Transfer-Encoding: ");
+	n = s.find(TRANSFER_EN_STR);
 	if (n != (int)std::string::npos)
 	{
-        n = n + std::string("Transfer-Encoding: ").size();
+        n = n + std::string(TRANSFER_EN_STR).size();
 		int i = n;
 		while (s[i] && s[i] != '\r') { i++;}
 		referer = s.substr(n, i - n);
@@ -247,13 +247,13 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 	REQUEST_METHOD = parsed[0];
 	REQUEST_URI = parsed[1];
 	SERVER_PROTOCOL = parsed[2];
-	char **tab = ft_split(getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
+	char **tab = ft_split(getStringtoParse(m_buffer, AUTH_STR).c_str(), ' ');
 	if (tab != NULL && tab[0] != NULL)
 	AUTH_TYPE = tab[0];
-	ACCEPT_ENCODING = getStringtoParse(m_buffer, "Accept-Encoding: ");
-	CONTENT_TYPE = getStringtoParse(m_buffer, "Content-Type: ");
-	if (strstr(m_buffer.c_str(), "Content-Length: ") != NULL)
-		CONTENT_LENGTH = getStringtoParse(m_buffer, "Content-Length: ");
+	ACCEPT_ENCODING = getStringtoParse(m_buffer, ACCEPT_EN_STR);
+	CONTENT_TYPE = getStringtoParse(m_buffer, CONTENT_T_STR);
+	if (strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
+		CONTENT_LENGTH = getStringtoParse(m_buffer, CONTENT_L_STR);
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
 	getScriptName(url);
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
@@ -264,21 +264,19 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 	USER_AGENT = getUserAgent(m_buffer);
 	getRemAddr();
 	//rest of parsing
-	if (getStringtoParse(m_buffer, "Accept-Charset: ") != "")
-		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, "Accept-Charset: ").c_str(), ',');
-	if (strstr(m_buffer.c_str(), "Transfer-Encoding: ") != NULL)
+	if (getStringtoParse(m_buffer, ACCEPT_CHAR_STR) != "")
+		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, ACCEPT_CHAR_STR).c_str(), ',');
+	if (strstr(m_buffer.c_str(), TRANSFER_EN_STR) != NULL)
 		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
-	DATE = getStringtoParse(m_buffer, "Date: ");	
+	DATE = getStringtoParse(m_buffer, DATE_STR);	
 	//parsing languages into vector
-	std::string lg = getStringtoParse(m_buffer, "Accept-Language: ");
+	std::string lg = getStringtoParse(m_buffer, ACCEPT_LAN_STR);
 	if (lg != "")
 	{
 		std::stringstream s(lg);
 		std::string segment;
 		while(std::getline(s, segment, ','))
-		{
 			ACCEPT_LANGUAGE.push_back(segment);
-		}
 	}
 
 }

@@ -331,7 +331,7 @@ void Listener::receive_data(int fd) {
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (strstr(buf_list[n]->headers.c_str(), POST) != NULL || strstr(buf_list[n]->headers.c_str(), PUT) != NULL)
 			{
-				if (strstr(buf_list[n]->headers.c_str(), CHUNKED) != NULL)
+				if (strstr(buf_list[n]->headers.c_str(), CHUNKED_STR) != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
@@ -342,11 +342,11 @@ void Listener::receive_data(int fd) {
 						buf_list.erase(it);
 					}
 				}
-				else if (strstr(buf_list[n]->headers.c_str(), CONTENT_L) != NULL)
+				else if (strstr(buf_list[n]->headers.c_str(), CONTENT_L_STR) != NULL)
 				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
-					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, CONTENT_L);
+					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, CONTENT_L_STR);
 					buf_list[n]->track_length += ret - buf_list[n]->header_length;
 
 					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
