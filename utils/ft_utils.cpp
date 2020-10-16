@@ -1,4 +1,4 @@
-#include "libft/libft.h"
+#include "libft.h"
 #include <limits.h>
 #include "definitions.hpp"
 

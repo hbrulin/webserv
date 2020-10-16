@@ -7,7 +7,7 @@
 //#include <vector>
 #include <string>
 //#include <iterator>
-#include "../utils/libft/libft.h"
+#include "../utils/libft.h"
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
 #include <sstream>
