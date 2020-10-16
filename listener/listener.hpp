@@ -14,6 +14,7 @@
 #include "../request/request.hpp"
 #include "../parser/Config.hpp"
 #include <vector>
+#include "../headers/returnCodes.hpp"
 
 #define BUFFER_SIZE 100000000
 

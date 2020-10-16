@@ -25,7 +25,7 @@
 
 class Request
 {
-	private:
+	public:
 	Request(){};
 	Config _conf;
 	Location _loc;
