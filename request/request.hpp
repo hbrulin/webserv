@@ -13,7 +13,6 @@
 #include "../utils/libft/libft.h"
 #include "../headers/head_req.hpp"
 #include "../headers/head_resp.hpp"
-#include "../headers/meta_var.hpp"
 #include <algorithm>
 #include <sys/stat.h>
 #include <fcntl.h>
