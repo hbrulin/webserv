@@ -25,7 +25,6 @@ class Buffers {
 		int		m_id;
 		long int			m_content_length;
 		long int			track_length;
-		int					track_recv;
 		bool				body_parse_chunk;
 		bool				body_parse_length;
 		unsigned int 		header_length;
@@ -58,13 +57,8 @@ class Listener {
 		int reparse_body(int n, int fd);
 
 	private:
-		/*META VAR*/
 		std::vector<Config> _conf;
-		std::string SERVER_PROTOCOL;
-		std::string SERVER_SOFTWARE;
-		std::string GATEWAY_INTERFACE;;
 
-		/*Other var*/
 		int _size;
 		struct sockaddr_in *m_address; // /* bind info structure */ need to have IP defined? see with config
 		int			*m_port;

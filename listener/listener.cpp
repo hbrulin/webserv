@@ -1,6 +1,6 @@
 #include "listener.hpp"
 
-Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_chunk(0), body_parse_length(0), header_length(0) {
+Buffers::Buffers(int id): m_id(id), track_length(0), body_parse_chunk(0), body_parse_length(0), header_length(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	headers = "";
@@ -37,10 +37,6 @@ Listener::Listener(std::vector<Config> conf, int size) {
 
 	_size = size;
 	_conf = conf;
-
-	SERVER_PROTOCOL = "HTTP/1.1";
-	SERVER_SOFTWARE = "webserv/1.1";
-	GATEWAY_INTERFACE = "CGI/1.1";
 
 	//SECU
 	m_port = (int *)malloc(sizeof(int) * size + 1);
@@ -332,9 +328,10 @@ void Listener::receive_data(int fd) {
 			size_t npos = s.find("\r\n\r\n");
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
-			if (strstr(buf_list[n]->m_buffer, "POST") != NULL || strstr(buf_list[n]->m_buffer, "PUT") != NULL)
+			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+			if (strstr(buf_list[n]->headers.c_str(), "POST") != NULL || strstr(buf_list[n]->headers.c_str(), "PUT") != NULL)
 			{
-				if (strstr(buf_list[n]->m_buffer, "chunked") != NULL)
+				if (strstr(buf_list[n]->headers.c_str(), "chunked") != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
 					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
@@ -345,7 +342,7 @@ void Listener::receive_data(int fd) {
 						buf_list.erase(it);
 					}
 				}
-				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
+				else if (strstr(buf_list[n]->headers.c_str(), "Content-Length") != NULL)
 				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
@@ -370,7 +367,7 @@ void Listener::receive_data(int fd) {
 					buf_list.erase(it);
 				}
 				
-				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+				//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 			else
 			{
