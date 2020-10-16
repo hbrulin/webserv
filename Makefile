@@ -2,7 +2,7 @@ NAME = webserv
 
 CC = clang++
 
-SRCS = main.cpp parser/ConfigParser.cpp parser/Data.cpp listener/listener.cpp request/request.cpp request/error_handling.cpp request/ft_utils.cpp request/methods.cpp parser/Config.cpp headers/head_resp.cpp headers/head_req.cpp parser/Location.cpp parser/Locations.cpp
+SRCS = main.cpp parser/ConfigParser.cpp parser/Data.cpp listener/listener.cpp request/request.cpp request/error_handling.cpp utils/ft_utils.cpp request/methods.cpp parser/Config.cpp headers/head_resp.cpp headers/head_req.cpp parser/Location.cpp parser/Locations.cpp
 BUILD_DIR = obj
 CFLAGS = -Wall -Wextra -Werror -MMD -g
 
@@ -20,7 +20,7 @@ $(NAME): $(OBJ)
 	@echo "$(NAME) created"
 
 $(BUILD_DIR)/%.o: %.cpp Makefile
-	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/parser $(BUILD_DIR)/listener $(BUILD_DIR)/request $(BUILD_DIR)/headers
+	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/parser $(BUILD_DIR)/listener $(BUILD_DIR)/request $(BUILD_DIR)/headers $(BUILD_DIR)/utils
 	$(CC) $(CFLAGS) -o $@ -c $< -g
 
 clean:

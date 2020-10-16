@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <sstream>
 #include <vector>
+#include "../utils/returnCodes.hpp"
 
 class Head_resp
 {

@@ -1,3 +1,6 @@
+#ifndef RETURNCODES_HPP
+# define RETURNCODES_HPP
+
 #include <map>
 #include <utility>
 #include <string>
@@ -96,3 +99,5 @@ static std::pair<int, std::string> codes[] = {
 };
 
 static std::map<int, std::string > codeTab(codes, codes + 83);
+
+#endif

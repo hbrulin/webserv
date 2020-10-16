@@ -7,7 +7,6 @@ Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_c
 	body = "";
 	}
 
-
 std::string Listener::getHost(std::string buffer, std::string toParse)
 {
     int n;
