@@ -42,21 +42,17 @@ int Request::forking()
 	struct stat buf;
 	int ret;
 	if ((ret = stat((const char *)path, &buf)) < 0)
-		std::cout << "erreur stat" << strerror(errno) << std::endl;
+		std::cout << ERR_STAT << strerror(errno) << std::endl;
 	else 
 	{
 		const char chars[] = "rwxrwxrwx";
 		char mode[10];
   		for (size_t i = 0; i < 9; i++) 
-		{
     		mode[i] = (buf.st_mode & (1 << (8-i))) ? chars[i] : '-';
-		}
 		mode[9] = '\0';
   		//std::cout << "mode: " << mode << std::endl;
 		if (mode[2] != 'x' || mode[5] != 'x' || mode[8] != 'x')
-		{
 			return (127);
-		}
 	}
 	std::string _headers = _head_req.get_meta();
 	char **env = ft_split(_headers.c_str(), '&');
@@ -64,15 +60,13 @@ int Request::forking()
 	av = (char **)malloc(sizeof(char *) * 3);
 	av[0] = ft_strdup(path);
 	if (pipe(pp))
-		perror("pipe");
+		perror(PIPE_ERR);
 	pid = fork();
 	std::string cgi_output(dir_cgi);
-	cgi_output = cgi_output + "/cgi-bin/cgi_output_" + std::to_string(m_client);
+	cgi_output = cgi_output + OUTPUT_CGI + std::to_string(m_client);
 	int fd;
 	if ((fd = open(cgi_output.c_str(), O_RDWR | O_CREAT, 0666)) < 0)
-	{
 		std::cout << strerror(errno) << std::endl;
-	}
 	if (pid == 0)
 	{
 		close(pp[1]);
@@ -91,7 +85,7 @@ int Request::forking()
 		close(pp[0]);
 		write(pp[1], m_body.c_str(), m_body.size());
 		if (waitpid(pid, &status, 0) == -1)
-			perror("wait");
+			perror(WAIT_ERR);
 		//int boucle = 1;
 		// while (boucle)
 		// {
@@ -111,17 +105,17 @@ int Request::forking()
 	}
 	else
 	{
-		perror("fork");
+		perror(FORK_ERR);
 	}
 	std::ifstream f_cgi(cgi_output);
 	std::string str_cgi((std::istreambuf_iterator<char>(f_cgi)), std::istreambuf_iterator<char>());
-	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), "Status: ");
+	std::string code = _head_req.getStringtoParse(str_cgi.c_str(), STATUS);
 	m_errorCode = std::stoi(code);
-	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), "Content-Type: ");
-	int n = str_cgi.find("\r\n\r\n"); //peut etre rajouter un \n
+	_head_resp.CONTENT_TYPE = _head_req.getStringtoParse(str_cgi.c_str(), CONTENT_T);
+	int n = str_cgi.find(ENDCHARS); //peut etre rajouter un \n
 	if (n != (int)std::string::npos)
 	{
-    	n = n + std::string("\r\n\r\n").size();
+    	n = n + std::string(ENDCHARS).size();
 		m_body.clear();
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
 	}
@@ -129,14 +123,14 @@ int Request::forking()
 	remove(cgi_output.c_str());
 	return 0;
 }
-void Request::get_post_content()
+/*void Request::get_post_content()
 {
 	int n;
-	std::string s(m_headers + "\r\n\r\n" + m_body);
+	std::string s(m_headers + ENDCHARS + m_body);
 	n = s.find("\r\n\r"); //peut etre rajouter un \n
 	if (n != (int)std::string::npos)
 	{
-    	n = n + std::string("\r\n\r\n").size();
+    	n = n + std::string(ENDCHARS).size();
 		content_env = s.substr(n, s.size() - n);
 	}
 	else
@@ -149,11 +143,11 @@ void Request::get_post_content()
 		}
 	}
 	m_output = "";
-}
+}*/
 
 
 void Request::exec_cgi(){
-	if (_head_req.REQUEST_METHOD == "POST")
+	if (_head_req.REQUEST_METHOD == POST)
 	{
 		post(); // on recupere les infos dans le body
 	}
@@ -166,22 +160,11 @@ void Request::exec_cgi(){
 }
 
 void Request::post() {
-	/*if (m_body.empty())
-	{
-		m_errorCode = 405;
-		m_url = "";
-		return;
-	}*/
 	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == "")
 	{
-			std::ifstream f(_loc._root + m_length_required);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_length_required;
-			m_url = str;
 			m_errorCode = 411;
 			return;
 	}
-	//get_post_content();
 	if (is_cgi)
 		return;
 	if (m_body.size() == 0)
@@ -250,17 +233,8 @@ void Request::put() {
 	ff.close();
 }
 
-/*void Request::patch()
-{
-	//open file and check existance
-	//check_content
-	std::string content = m_url.substr(m_url.find('{'), m_url.find('}'));
-	while ()
-}*/
-
 void Request::delete_m()
 {
-	/* a tester sur nginx pour voir les erreurs et tout*/
 	//m_path = _conf._root + m_url;
 	std::ifstream f(m_path);
 	if (f.good())
@@ -294,9 +268,9 @@ void Request::get() {
 		if (m_errorCode == 400)
 		{
 			f.close();
-			std::ifstream f(_loc._root + m_bad_request);
+			std::ifstream f(_loc._root + BAD_REQUEST);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_bad_request;
+			m_path = _loc._root + BAD_REQUEST;
 			m_url = str;
 			//m_errorCode = 400;
 			f.close();
@@ -304,9 +278,9 @@ void Request::get() {
 		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
-			std::ifstream f(_loc._root + m_not_allowed);
+			std::ifstream f(_loc._root + NOT_ALLOWED);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_not_allowed;
+			m_path = _loc._root + NOT_ALLOWED;
 			m_url = str;
 			m_errorCode = 405;
 			f.close();

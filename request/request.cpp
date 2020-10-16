@@ -5,41 +5,20 @@
 Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
 	{
 		_conf = conf;
-		//memset((char *) &m_buffer, 0, sizeof(m_buffer));
 		m_headers = headers;
 		m_body = body;
 		m_client = fd;
 		m_not_found = "404.html";
-		m_not_allowed = "405.html"; // tester avant
-		m_not_acceptable = "406.html";
-		m_bad_request = "400.html";
-		m_unauthorized = "401.html";
-		m_not_supported = "505.html"; //tester avant 
-		m_length_required = "411.html";
-		m_errorCode = 200; //define other error codes
+		m_errorCode = DEFAULT_CODE;
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;
 		s_addr = addr;
 		pid_ret = 0;
 		m_chunk_size = 0;
-		//std::cout << "adresse IP" << s_addr << std::endl;
-
 	};
 
 
 void		Request::getBody() {
-	/*int n;
-	int i = 0;
-	std::string s(m_buffer);
-	n = s.find("\r\n\r\n");
-	if (n != (int)std::string::npos)
-	{
-        n = n + std::string("\r\n\r\n").size();
-		i = n;
-		while (m_buffer[i] != '\0') { i++;}
-		m_body = s.substr(n, i - n);
-	}*/
-
 	std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
@@ -47,10 +26,7 @@ void		Request::getBody() {
 	while (std::getline(f, buf))
 	{
 		if (!flag)
-		{
-			//std::cout << buf << std::endl;
 			m_chunk_size += strtol(buf.c_str(), NULL, 16);
-		}
 		else
 			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;
@@ -64,19 +40,19 @@ void Request::parse()
 {
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-	if (parsed[0] == "GET" || parsed[0] == "POST" || parsed[0] == "HEAD" || parsed[0] == "PUT" || parsed[0] == "DELETE")
+	if (parsed[0] == GET || parsed[0] == POST || parsed[0] == HEAD || parsed[0] == PUT || parsed[0] == DELETE)
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		/*if (_head_req.REQUEST_METHOD == "POST")
 			std::cout << m_headers << std::endl;*/
 		_loc = _conf._locations.get_loc_by_url(m_url);
-		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
+		if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
 		{
 			m_errorCode = 505;
-			std::ifstream f(_loc._root + m_not_supported);
+			std::ifstream f(_loc._root + NOT_SUPPORTED);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_not_supported;
+			m_path = _loc._root + NOT_SUPPORTED;
 			m_url = str;
 			f.close();
 			return;
@@ -84,9 +60,9 @@ void Request::parse()
 		if (!_loc.check_allowed_method(parsed[0], _head_req.REQUEST_URI))
 		{
 			m_errorCode = 405; // error for method not allowed
-			std::ifstream f(_loc._root + m_not_allowed);
+			std::ifstream f(_loc._root + NOT_ALLOWED);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_not_allowed;
+			m_path = _loc._root + NOT_ALLOWED;
 			m_url = str;
 			f.close();
 			return;
@@ -107,11 +83,11 @@ void Request::parse()
 		}
 
 
-		if (_loc._root != "YoupiBanane/" && strstr(m_url.c_str(), "uploaded") == NULL)
+		if (_loc._root != YOUPIBANANE && strstr(m_url.c_str(), UPLOADED) == NULL)
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
-		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 
-			&& _head_req.TRANSFER_ENCODING == "chunked")
+		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
+			&& _head_req.TRANSFER_ENCODING == CHUNKED)
 			getBody();
 	}
 	else
@@ -145,23 +121,23 @@ void Request::handle() {
 	{
 		m_path = m_path + m_index;
 	}*/
-	if (_head_req.REQUEST_METHOD == "POST" && _loc._cgi_type != "" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
+	if (_head_req.REQUEST_METHOD == POST && _loc._cgi_type != "" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
 		exec_cgi();
 		return ;
 	}
-	else if (_head_req.REQUEST_METHOD == "POST")
+	else if (_head_req.REQUEST_METHOD == POST)
 	{
 		is_cgi = false;
 		post();
 		return;
 	}
-	else if (_head_req.REQUEST_METHOD == "PUT") {
+	else if (_head_req.REQUEST_METHOD == PUT) {
 		put();
 		return;
 	}
-	else if (_head_req.REQUEST_METHOD == "DELETE")
+	else if (_head_req.REQUEST_METHOD == DELETE)
 	{
 		delete_m();
 		return ;
@@ -180,7 +156,7 @@ int Request::send_to_client() {
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
-	if (_head_req.REQUEST_METHOD != "HEAD" && _head_req.REQUEST_METHOD != "PUT" && !is_cgi)
+	if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
 		oss << m_url;
 	if (pid_ret > 0)
 	{
@@ -195,9 +171,7 @@ int Request::send_to_client() {
 		return 0;
 	}
 	if (is_cgi)
-	{
 		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body);
-	}
 	else
 		m_output = oss.str();
 	int bytes;
@@ -221,15 +195,11 @@ int Request::send_to_client() {
 			bytes += write(m_client, m_body.c_str(), m_body.size());
 		}
 	}
-	if (_head_req.REQUEST_METHOD == "POST")
+	if (_head_req.REQUEST_METHOD == POST)
 	{
 		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
 	}
-	m_output = "";
-	m_body.clear();
-	m_chunk_size = 0;
-	bytes = 0;
 	return 0;
 }
 

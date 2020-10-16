@@ -50,12 +50,12 @@
 
 int Request::isAllowed(std::string path)
 {
-    if ((_head_req.REQUEST_METHOD == "POST" || _head_req.REQUEST_METHOD == "DELETE") && path.find(_loc._root) != std::string::npos)
+    if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
     {
-        _head_resp.ALLOW = "GET";
+        _head_resp.ALLOW = GET;
         return 0;
     }
-    if (_head_req.REQUEST_METHOD == "GET" && path.find(".php") != std::string::npos)
+    if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
         return 0;
     return 1;
 }
