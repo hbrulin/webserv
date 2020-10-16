@@ -107,7 +107,7 @@ void Request::parse()
 		}
 
 
-		if (_loc._root != "YoupiBanane/")
+		if (_loc._root != "YoupiBanane/" && strstr(m_url.c_str(), "uploaded") == NULL)
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
 		if ((_head_req.REQUEST_METHOD == "PUT" || _head_req.REQUEST_METHOD == "POST") 

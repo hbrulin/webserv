@@ -45,7 +45,7 @@ int main(void)
         userInput += "w";
     userInput += "0\r\n\r\n";*/
 
-	string userInput = "PUT /put_test/test HTTP/1.1\r\n";
+	/*string userInput = "PUT /put_test/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
     //userInput += "Content-Length: 100\r\n";
@@ -53,11 +53,11 @@ int main(void)
 	userInput += "Accept-Encoding: gzip\r\n\r\n";
     int k = 0;
     while (k++ < 1000)
-        userInput += "w";
+        userInput += "w";*/
 
-	/*string userInput = "GET /uploaded/test HTTP/1.1\r\n";
+	string userInput = "GET /uploaded/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
-	userInput += "User-Agent: personal_client/1.1\r\n\r\n";*/
+	userInput += "User-Agent: personal_client/1.1\r\n\r\n";
 	
     //		Send to server
     int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);
