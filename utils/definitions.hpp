@@ -17,7 +17,7 @@
 
 //sizes and formats
 #define INT_MIN_STR "-2147483648"
-#define BUFFER_SIZE 32768
+#define BUFFER_SIZE 1000000
 #define TIME_FORMAT "%Y-%m-%d %H:%M"
 #define GMT " GMT"
 
