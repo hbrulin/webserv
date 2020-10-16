@@ -7,54 +7,6 @@ Buffers::Buffers(int id): m_id(id), track_length(0), track_recv(0), body_parse_c
 	body = "";
 	}
 
-/*int Listener::reparse_body(int n, int fd) {
-	//if (strstr(buf_list[n]->headers.c_str(), "PUT") != NULL)
-	//	std::cout << buf_list[n]->body << std::endl << std::endl << std::endl;
-	//return 0;
-
-	std::string method;
-	if (strstr(buf_list[n]->body.c_str(), "PUT") != NULL)
-		method = "PUT";
-	else if (strstr(buf_list[n]->body.c_str(), "POST") != NULL)
-		method = "POST";
-	else
-		return 0;
-
-	std::cout << "ENTERING" << std::endl;
-	//std::cout << method << std::endl;
-
-	std::string tmp = buf_list[n]->body;
-	int p;
-	int ph = 0;
-	p = tmp.find(method);
-	std::cout << "P is " << p << std::endl;
-
-	while (p != (int)std::string::npos)
-	{
-		if (buf_list[n]->headers.empty())
-		{
-			ph = tmp.find("\r\n\r\n");
-			if (ph != (int)std::string::npos)
-			{
-				ph = ph + std::string("\r\n\r\n").size();
-				buf_list[n]->headers = tmp.substr(0, ph);
-			}
-		}
-		buf_list[n]->body = tmp.substr(ph, p - 1 - ph); // -1??
-		buf_list[n]->body + "0/r/n";
-
-		tmp = tmp.substr(p, tmp.size() - p - 1 - ph); // -1??
-		std::cout << "HEAD : " << buf_list[n]->headers << std::endl << std::endl;
-		std::cout << "BODY : " << buf_list[n]->body.substr(0, 20) << std::endl << std::endl;
-		LaunchRequest(n, fd);
-		buf_list[n]->body = "";
-		buf_list[n]->headers = "";
-		p = tmp.find(method);
-	}  
-	std::cout << "IS TMP EMPTY" << tmp.empty() << std::endl << std::endl;
-	return 1;
-}*/
-
 
 std::string Listener::getHost(std::string buffer, std::string toParse)
 {
@@ -389,9 +341,9 @@ void Listener::receive_data(int fd) {
 					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 					{
 						LaunchRequest(n, fd);
-						buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-						buf_list[n]->headers = "";
-						buf_list[n]->body = "";
+						//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+						delete *it;
+						buf_list.erase(it);
 					}
 				}
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
@@ -406,8 +358,10 @@ void Listener::receive_data(int fd) {
 			{
 				LaunchRequest(n, fd);
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				buf_list[n]->headers = "";
-				buf_list[n]->body = "";
+				//buf_list[n]->headers = "";
+				//buf_list[n]->body = "";
+				delete *it;
+				buf_list.erase(it);
 			}
 		}
 		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
@@ -416,14 +370,12 @@ void Listener::receive_data(int fd) {
 			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), "0\r\n\r\n") != NULL)
 			{
-				//if (!reparse_body(n, fd))
-				//{
-					LaunchRequest(n, fd);
-					//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk; // RESET THIS ANYWAY
-					buf_list[n]->headers = "";
-					buf_list[n]->body = "";
-				//}
-				buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+				LaunchRequest(n, fd);
+				//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
+				//buf_list[n]->headers = "";
+				//buf_list[n]->body = "";
+				delete *it;
+				buf_list.erase(it);
 			}
 			else if (buf_list[n]->body_parse_length)
 			{
@@ -436,11 +388,13 @@ void Listener::receive_data(int fd) {
 				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
 				{
 					LaunchRequest(n, fd);
-					buf_list[n]->track_recv = 0;
+					/*buf_list[n]->track_recv = 0;
 					buf_list[n]->header_length = 0;
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->headers = "";
-					buf_list[n]->body = "";
+					buf_list[n]->body = "";*/
+					delete *it;
+					buf_list.erase(it);
 				}
 			}
 
@@ -492,12 +446,12 @@ based on the bits that are still turned on in
 the master set.  */
 void Listener::close_conn(int fd) {
 	
-	std::vector<Buffers*>::iterator it = buf_list.begin();
-	std::vector<Buffers*>::iterator ite = buf_list.end();
+	//std::vector<Buffers*>::iterator it = buf_list.begin();
+	//std::vector<Buffers*>::iterator ite = buf_list.end();
 	
-	while (it != ite && (*it)->m_id != fd)
+	/*while (it != ite && (*it)->m_id != fd)
 		it++;
-	it--;
+	it--;*/
 
 	if (m_close) {
 		close(fd);
@@ -505,8 +459,8 @@ void Listener::close_conn(int fd) {
 		if (fd == m_highsock) {
 			while (!(FD_ISSET(m_highsock, &m_set)))
 				m_highsock -= 1;
-		delete *it;
-		buf_list.erase(it);
+		//delete *it;
+		//buf_list.erase(it);
 		}
 	}
 }

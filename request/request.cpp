@@ -68,7 +68,7 @@ void Request::parse()
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
-		/*if (_head_req.REQUEST_METHOD == "PUT")
+		/*if (_head_req.REQUEST_METHOD == "POST")
 			std::cout << m_headers << std::endl;*/
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		if (_head_req.SERVER_PROTOCOL != "HTTP/1.1")
@@ -203,9 +203,9 @@ int Request::send_to_client() {
 	int bytes;
 	if (!is_cgi)
 	{
-		/*if (_head_req.REQUEST_METHOD == "PUT")
-			std::cout << std::endl << m_output << std::endl;*/
-		//std::cout << "- - - - - - - - - - " << std::endl;
+		/*if (_head_req.REQUEST_METHOD == "POST")
+			std::cout << std::endl << m_output << std::endl;
+		std::cout << "- - - - - - - - - - " << std::endl;*/
 		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 			return - 1;
 	}
@@ -220,6 +220,11 @@ int Request::send_to_client() {
 			m_body.substr(bytes, m_body.size() - bytes);
 			bytes += write(m_client, m_body.c_str(), m_body.size());
 		}
+	}
+	if (_head_req.REQUEST_METHOD == "POST")
+	{
+		std::cout << std::endl << m_output << std::endl;
+		std::cout << "- - - - - - - - - - " << std::endl;
 	}
 	m_output = "";
 	m_body.clear();
