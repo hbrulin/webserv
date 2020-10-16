@@ -349,7 +349,20 @@ void Listener::receive_data(int fd) {
 				else if (strstr(buf_list[n]->m_buffer, "Content-Length") != NULL)
 				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
-					buf_list[n]->header_length = buf_list[n]->body.size();
+					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
+					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
+					buf_list[n]->track_length += ret - buf_list[n]->header_length;
+
+					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
+					{
+						LaunchRequest(n, fd);
+						/*buf_list[n]->header_length = 0;
+						buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
+						buf_list[n]->headers = "";
+						buf_list[n]->body = "";*/
+						delete *it;
+						buf_list.erase(it);
+					}
 				}
 				//ELSE ERROR SEND AND RETURN
 				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
@@ -379,17 +392,11 @@ void Listener::receive_data(int fd) {
 			}
 			else if (buf_list[n]->body_parse_length)
 			{
-				buf_list[n]->track_recv++;
-				buf_list[n]->m_content_length = getLength(buf_list[n]->headers, "Content-Length: ");
-				if (buf_list[n]->track_recv == 1)
-					buf_list[n]->track_length += ret - buf_list[n]->header_length;
-				else if (buf_list[n]->track_recv != 1)
-					buf_list[n]->track_length += ret;
-				if (buf_list[n]->track_length == buf_list[n]->m_content_length)
+				buf_list[n]->track_length += ret;
+				if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
 				{
 					LaunchRequest(n, fd);
-					/*buf_list[n]->track_recv = 0;
-					buf_list[n]->header_length = 0;
+					/*buf_list[n]->header_length = 0;
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->headers = "";
 					buf_list[n]->body = "";*/
@@ -420,7 +427,7 @@ void Listener::LaunchRequest(int n, int fd)
 		}
 	}
 
-	//std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
+	std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
 	/*if (buf_list[n]->body.empty() == 0)
 		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;*/
 	//std::cout << buf_list[n]->body.size() << std::endl << std::endl;

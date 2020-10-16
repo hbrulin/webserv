@@ -33,11 +33,7 @@ int main(void)
 
     //	While loop:
     char buf[8096];
-<<<<<<< HEAD
-    string userInput = "POST /directory/youpi.bla HTTP/1.1\r\n";
-=======
-    /*string userInput = "POST /directory/youpa.bla HTTP/1.1\r\n";
->>>>>>> 4bef8f4eb587f22822e39bf7a77fc1b331b608ae
+    /*string userInput = "POST /directory/youpi.bla HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
     userInput += "Transfer-Encoding: chunked\r\n";
@@ -49,20 +45,19 @@ int main(void)
         userInput += "w";
     userInput += "0\r\n\r\n";*/
 
-	/*string userInput = "PUT /put_test/test HTTP/1.1\r\n";
+	string userInput = "PUT /put_test/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
-    userInput += "Transfer-Encoding: chunked\r\n";
+    userInput += "Content-Length: 100\r\n";
     userInput += "Content-Type: test/file\r\n";
 	userInput += "Accept-Encoding: gzip\r\n\r\n";
     int k = 0;
-    while (k++ < 10)
+    while (k++ < 1000)
         userInput += "w";
-    userInput += "0\r\n\r\n";*/
 
-	string userInput = "GET /uploaded/test HTTP/1.1\r\n";
+	/*string userInput = "GET /uploaded/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
-	userInput += "User-Agent: personal_client/1.1\r\n\r\n";
+	userInput += "User-Agent: personal_client/1.1\r\n\r\n";*/
 	
     //		Send to server
     int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);
