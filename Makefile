@@ -16,12 +16,12 @@ opti :
 all : $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -g
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -g -O3
 	@echo "$(NAME) created"
 
 $(BUILD_DIR)/%.o: %.cpp Makefile
 	@mkdir -p $(BUILD_DIR) $(BUILD_DIR)/parser $(BUILD_DIR)/listener $(BUILD_DIR)/request $(BUILD_DIR)/headers $(BUILD_DIR)/utils
-	$(CC) $(CFLAGS) -o $@ -c $< -g
+	$(CC) $(CFLAGS) -o $@ -c $< -g -O3
 
 clean:
 	@/bin/rm -rf $(BUILD_DIR)
