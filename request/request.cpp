@@ -45,38 +45,33 @@ void Request::parse()
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
-		//_loc.print();
+		m_index = _loc._index;
+		if (!_loc._errors.empty())
+			m_not_found = _loc._errors;
 		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())
 			return;
 
-		m_index = _loc._index;
-		if (!_loc._errors.empty())
-			m_not_found = _loc._errors;
-
 		if (m_url.find("?") != std::string::npos)
 			m_url.replace(m_url.find("?"),m_url.size(), "");
 
+		/*build the right path*/
 		_loc._name.pop_back();
 		if (m_url == "/" || _loc._name == m_url)
 			m_url = m_index;
 		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 			m_url.erase(0, _loc._name.size());
-
 		if (_loc._root != YOUPIBANANE && strstr(m_url.c_str(), UPLOADED) == NULL)
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
+
 		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
 			&& _head_req.TRANSFER_ENCODING == CHUNKED_STR)
 			getBody();
 	}
 	else
-	{
-		m_errorCode = 400;
-		return;
-	}
-
+		return badRequest();
 }
 
 void Request::handle() {
@@ -105,10 +100,8 @@ void Request::handle() {
 		delete_m();
 		return ;
 	}
-	else
-	{	//also works for HEAD, change is in sendToClient()                                                                                                                                                                                                                                                                                                                               
-		get();
-	}
+	else                                                                                                                                                                                                                                                                                                                          
+		get(); //also works for HEAD, change is in sendToClient()     
 
 }
 

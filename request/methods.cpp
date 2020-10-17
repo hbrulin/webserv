@@ -265,20 +265,10 @@ void Request::get() {
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
 		m_header = m_url;
-		if (m_errorCode == 400)
+		if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
-			std::ifstream f(_loc._root + BAD_REQUEST);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + BAD_REQUEST;
-			m_url = str;
-			//m_errorCode = 400;
-			f.close();
-		}
-		else if (!isAllowed(m_path) || m_errorCode == 405)
-		{
-			f.close();
-			if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
+			if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
 				_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
 			m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
 			std::ifstream f(m_path);
@@ -303,18 +293,12 @@ void Request::get() {
 			//m_url = str;
 			m_errorCode = 200;
 			f.close();
+			return;
 		}
 	}
 	else
 	{
 		f.close();
-		if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
-		m_path = _loc._root + ERROR_FOLDER + m_not_found;
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		m_errorCode = 404;
-		f.close();
+		notFound();
 	}
 }
