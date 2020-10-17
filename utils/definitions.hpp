@@ -77,6 +77,7 @@
 #define OUTPUT_CGI "/cgi-bin/cgi_output_"
 #define POST_HTML "www/post.html"
 #define YOUPI_BAD "/youpi.bad_extension"
+#define ERROR_FOLDER "error_pages/"
 
 //EXTENSIONS
 #define PHP ".php"

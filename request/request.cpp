@@ -44,44 +44,25 @@ void Request::parse()
 	{
 		m_url = parsed[1];
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
-		/*if (_head_req.REQUEST_METHOD == "POST")
-			std::cout << m_headers << std::endl;*/
 		_loc = _conf._locations.get_loc_by_url(m_url);
-		if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
-		{
-			m_errorCode = 505;
-			std::ifstream f(_loc._root + NOT_SUPPORTED);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + NOT_SUPPORTED;
-			m_url = str;
-			f.close();
-			return;
-		}
-		if (!_loc.check_allowed_method(parsed[0], _head_req.REQUEST_URI))
-		{
-			m_errorCode = 405; // error for method not allowed
-			std::ifstream f(_loc._root + NOT_ALLOWED);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + NOT_ALLOWED;
-			m_url = str;
-			f.close();
-			return;
-		}
-		m_index = _loc._index;
 		//_loc.print();
+		//std::cout << "!!!" << _loc._errors << std::endl;
+
+		if (preChecks())
+			return;
+
+		m_index = _loc._index;
+		if (!_loc._errors.empty())
+			m_not_found = _loc._errors;
+
 		if (m_url.find("?") != std::string::npos)
 			m_url.replace(m_url.find("?"),m_url.size(), "");
 
 		_loc._name.pop_back();
 		if (m_url == "/" || _loc._name == m_url)
-		{
 			m_url = m_index;
-		}
 		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
-		{
 			m_url.erase(0, _loc._name.size());
-		}
-
 
 		if (_loc._root != YOUPIBANANE && strstr(m_url.c_str(), UPLOADED) == NULL)
 			_loc._root =  _head_req.contentNego(_loc._root);
@@ -101,26 +82,8 @@ void Request::parse()
 void Request::handle() {
 	if (m_errorCode > 400)
 		return;
-	//changing of root so that it includes the language
-	//_head_req.REQUEST_URI = m_url;
 	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
 	_head_req.QUERY_STRING = content_env;
-	/*if (m_url.find("?") != std::string::npos)
-		m_url.replace(m_url.find("?"),m_url.size(), "");*/ //on retire le query string de l'url
-	/*if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL) //|| !strncmp(m_url.c_str(), _loc._name.c_str(), _loc._name.size() -1)
-	{
-		m_url.replace(m_url.find(_loc._name.c_str()),_loc._name.size(), _loc._root); // changer 0 par m_url.find(_loc._name.c_str())
-		m_path = m_url;
-	}
-	else
-	{
-		_loc._root =  _head_req.contentNego(_loc._root);
-		m_path = _loc._root + m_url;
-	}
-	if (m_url.back() == '/' || !strcmp(m_url.c_str(), _loc._name.c_str())) //GET / HTTP/1.1
-	{
-		m_path = m_path + m_index;
-	}*/
 	if (_head_req.REQUEST_METHOD == POST && _loc._cgi_type != "" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
 		is_cgi = true;
@@ -177,9 +140,6 @@ int Request::send_to_client() {
 	int bytes;
 	if (!is_cgi)
 	{
-		/*if (_head_req.REQUEST_METHOD == "POST")
-			std::cout << std::endl << m_output << std::endl;
-		std::cout << "- - - - - - - - - - " << std::endl;*/
 		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
 			return - 1;
 	}
@@ -195,20 +155,10 @@ int Request::send_to_client() {
 			bytes += write(m_client, m_body.c_str(), m_body.size());
 		}
 	}
-	if (_head_req.REQUEST_METHOD == POST)
+	/*if (_head_req.REQUEST_METHOD == POST)
 	{
 		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}
+	}*/
 	return 0;
-}
-
-bool Request::check_if_method_is_allowed(std::string method)
-{
-	for (std::vector<std::string>::size_type i = 0; i < _loc._methods.size(); i++)
-	{
-		if (_loc._methods[i] == method)
-			return (true);
-	}
-	return (false);
 }

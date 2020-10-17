@@ -1,5 +1,49 @@
 #include "request.hpp"
 
+int Request::preChecks()
+{
+	if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
+	{
+		m_errorCode = 505;
+		if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
+			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+		m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
+		std::ifstream f(m_path);
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_url = str;
+		f.close();
+		return 1;
+	}
+	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
+	{	
+		m_errorCode = 405;
+		if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
+			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+		m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+		std::ifstream f(m_path);
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_url = str;
+		f.close();
+		return 1;
+	}
+	return 0;
+}
+
+int Request::isAllowed(std::string path)
+{
+    if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
+    {
+        _head_resp.ALLOW = GET;
+        return 0;
+    }
+    if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
+        return 0;
+    return 1;
+}
+
+
+
+
 /*int Request::isAuthorized(std::string str)
 {
 	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
@@ -47,15 +91,3 @@
 	}
 	return 0;
 }*/
-
-int Request::isAllowed(std::string path)
-{
-    if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
-    {
-        _head_resp.ALLOW = GET;
-        return 0;
-    }
-    if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
-        return 0;
-    return 1;
-}

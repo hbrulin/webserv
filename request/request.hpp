@@ -75,6 +75,7 @@ class Request
 	void get_post_content();
 	void get_query_string();
 	void exec_cgi();
+	int preChecks();
 	
 };
 

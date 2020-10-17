@@ -278,9 +278,11 @@ void Request::get() {
 		else if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
-			std::ifstream f(_loc._root + NOT_ALLOWED);
+			if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
+				_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+			m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+			std::ifstream f(m_path);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + NOT_ALLOWED;
 			m_url = str;
 			m_errorCode = 405;
 			f.close();
@@ -306,14 +308,13 @@ void Request::get() {
 	else
 	{
 		f.close();
-		//std::cout << "loc root" << _loc._root << std::endl;
-		m_path = _loc._root + m_not_found;
-		std::ifstream f("www/404.html");
+		if (_loc._root.find("fr") || _loc._root.find("en") || _loc._root.find("es") || _loc._root.find("de"))
+			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+		m_path = _loc._root + ERROR_FOLDER + m_not_found;
+		std::ifstream f(m_path);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
 		m_errorCode = 404;
-		//std::cout << "url" << m_url << std::endl;
-		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
 		f.close();
 	}
 }
