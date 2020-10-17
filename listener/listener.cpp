@@ -7,31 +7,6 @@ Buffers::Buffers(int id): m_id(id), track_length(0), body_parse_chunk(0), body_p
 	body = "";
 	}
 
-std::string Listener::getHost(std::string buffer, std::string toParse)
-{
-    int n;
-    std::string referer;
-	n = buffer.find(toParse);
-	if (n != (int)std::string::npos)
-	{
-        n = n + std::string(toParse).size();
-		int i = n;
-		while (buffer[i] != '\n' && buffer[i] != '\r') { i++;}
-		referer = buffer.substr(n, i - n);
-        return referer;
-	}
-    return "";
-}
-
-int Listener::checkpast(int i)
-{
-	for (int j = 0; j < i ; j++) {
-		if (m_address[j].sin_addr.s_addr == m_address[i].sin_addr.s_addr && m_port[j] == m_port[i] && i != j)
-			return(1);		
-	}
-	return(0);
-}
-
 
 Listener::Listener(std::vector<Config> conf, int size) {
 
@@ -203,7 +178,15 @@ int Listener::run() {
 								while (it != ite && (*it)->m_id != j)
 									it++;
 								if (it == ite)
-									buf_list.push_back(new Buffers(j));
+								{
+									it = buf_list.begin();
+									while (it != ite && (*it)->m_id != 0)
+										it++;
+									if (it == ite)
+										buf_list.push_back(new Buffers(j));
+									else
+										(*it)->m_id = j;
+								}
 							}
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
 						//m_close = true;
@@ -216,17 +199,6 @@ int Listener::run() {
 	}
 
 	return 0;
-}
-
-std::pair<int, int>	Listener::look_for_sock(int j)
-{
-	//std::cout << "J is " << j << std::endl;
-	for (int i = 0; i < _size ; i++) {
-		//std::cout << "sock is" <<  m_sock[i] << std::endl;
-		if (j == m_sock[i])
-			return std::pair<int, int>(j, i);
-	}
-	return std::pair<int, int>(0, 0);
 }
 
 /*void Listener::clean() {
@@ -337,9 +309,9 @@ void Listener::receive_data(int fd) {
 					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 					{
 						LaunchRequest(n, fd);
-						//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-						delete *it;
-						buf_list.erase(it);
+						buf_list[n]->clean_buf();
+						//delete *it;
+						//buf_list.erase(it);
 					}
 				}
 				else if (strstr(buf_list[n]->headers.c_str(), CONTENT_L_STR) != NULL)
@@ -352,31 +324,25 @@ void Listener::receive_data(int fd) {
 					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
 					{
 						LaunchRequest(n, fd);
-						/*buf_list[n]->header_length = 0;
-						buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
-						buf_list[n]->headers = "";
-						buf_list[n]->body = "";*/
-						delete *it;
-						buf_list.erase(it);
+						buf_list[n]->clean_buf();
+						/*delete *it;
+						buf_list.erase(it);*/
 					}
 				}
 				else
 				{
 					LaunchRequest(n, fd);
-					delete *it;
-					buf_list.erase(it);
+					buf_list[n]->clean_buf();
+					//delete *it;
+					//buf_list.erase(it);
 				}
-				
-				//memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			}
 			else
 			{
 				LaunchRequest(n, fd);
-				memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-				//buf_list[n]->headers = "";
-				//buf_list[n]->body = "";
-				delete *it;
-				buf_list.erase(it);
+				buf_list[n]->clean_buf();
+				//delete *it;
+				//buf_list.erase(it);
 			}
 		}
 		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
@@ -386,11 +352,9 @@ void Listener::receive_data(int fd) {
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 			{
 				LaunchRequest(n, fd);
-				//buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-				//buf_list[n]->headers = "";
-				//buf_list[n]->body = "";
-				delete *it;
-				buf_list.erase(it);
+				buf_list[n]->clean_buf();
+				//delete *it;
+				//buf_list.erase(it);
 			}
 			else if (buf_list[n]->body_parse_length)
 			{
@@ -398,15 +362,11 @@ void Listener::receive_data(int fd) {
 				if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
 				{
 					LaunchRequest(n, fd);
-					/*buf_list[n]->header_length = 0;
-					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
-					buf_list[n]->headers = "";
-					buf_list[n]->body = "";*/
-					delete *it;
-					buf_list.erase(it);
+					buf_list[n]->clean_buf();
+					//delete *it;
+					//buf_list.erase(it);
 				}
 			}
-
 		}
 	}
 }
@@ -474,20 +434,3 @@ void Listener::close_conn(int fd) {
 	}
 }
 
-
-int Listener::getLength(std::string body, std::string toParse)
-{
-    int n;
-    std::string referer;
-	n = body.find(toParse);
-	if (n != (int)std::string::npos)
-	{
-        n = n + std::string(toParse).size();
-		int i = n;
-		while (body[i] != '\n' && body[i] != '\r') { i++;}
-		referer = body.substr(n, i - n);
-		//std::cout << referer << std::endl;
-        return strtol(referer.c_str(), NULL, 10);
-	}
-    return 0;
-}

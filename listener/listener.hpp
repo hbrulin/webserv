@@ -30,6 +30,7 @@ class Buffers {
 		unsigned int 		header_length;
 
 		Buffers(int id);
+		void clean_buf();
 		virtual ~Buffers() {
 			free(m_buffer);
 		}
