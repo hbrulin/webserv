@@ -71,11 +71,15 @@ void Request::parse()
 			getBody();
 	}
 	else
-		return badRequest();
+	{
+		badRequest();
+		return;
+	}
 }
 
 void Request::handle() {
-	if (m_errorCode > 400)
+	//std::cout << m_errorCode << std::endl << std::endl;
+	if (m_errorCode >= 400)
 		return;
 	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
 	_head_req.QUERY_STRING = content_env;
@@ -107,8 +111,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	/*if (_head_req.REQUEST_METHOD == "PUT")
-		std::cout << m_errorCode << std::endl << std::endl;*/
+	//std::cout << m_errorCode << std::endl << std::endl;
 	std::ostringstream oss;
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);

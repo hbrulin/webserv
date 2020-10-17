@@ -123,28 +123,6 @@ int Request::forking()
 	remove(cgi_output.c_str());
 	return 0;
 }
-/*void Request::get_post_content()
-{
-	int n;
-	std::string s(m_headers + ENDCHARS + m_body);
-	n = s.find("\r\n\r"); //peut etre rajouter un \n
-	if (n != (int)std::string::npos)
-	{
-    	n = n + std::string(ENDCHARS).size();
-		content_env = s.substr(n, s.size() - n);
-	}
-	else
-	{
-		n = s.find("\n\n");
-		if (n != (int)std::string::npos)
-		{
-        	n = n + std::string("\n\n").size();
-			content_env = s.substr(n, s.size() - n);
-		}
-	}
-	m_output = "";
-}*/
-
 
 void Request::exec_cgi(){
 	if (_head_req.REQUEST_METHOD == POST)
@@ -194,7 +172,6 @@ void Request::post() {
 		m_errorCode = 201;
 		f.close();
 	}
-
 }
 
 void Request::put() {
@@ -253,19 +230,19 @@ void Request::get() {
 	fstat(fd, &buf);
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
-	{
 		m_path = m_path + YOUPI_BAD;
-	}
 
 	std::ifstream f(m_path);
-
 	if (f.good())
 	{
 		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
 		m_header = m_url;
-		if (!isAllowed(m_path) || m_errorCode == 405)
+		m_errorCode = 200;
+		f.close();
+		return;
+		/*if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
 			if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
@@ -276,7 +253,7 @@ void Request::get() {
 			m_url = str;
 			m_errorCode = 405;
 			f.close();
-		}
+		}*/
 		/*else if (!isAuthorized(m_header))
 		{
 			f.close();
@@ -286,15 +263,15 @@ void Request::get() {
 			m_url = str;
 			m_errorCode = 401;
 			f.close();
-		}*/
-		else
+		}
+		//else
 		{
 			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			//m_url = str;
 			m_errorCode = 200;
 			f.close();
 			return;
-		}
+		}*/
 	}
 	else
 	{

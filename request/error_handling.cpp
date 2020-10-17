@@ -41,8 +41,8 @@ void Request::notFound() {
 }
 
 void Request::badRequest() {
-	if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+	//if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
+	_loc._root = "www/";
 	m_path = _loc._root + ERROR_FOLDER + BAD_REQUEST;
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
