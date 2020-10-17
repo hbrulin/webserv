@@ -14,7 +14,7 @@ int Request::preChecks()
 		f.close();
 		return 1;
 	}
-	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
+	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI) || !isAllowed(m_path))
 	{	
 		m_errorCode = 405;
 		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
@@ -49,6 +49,18 @@ void Request::badRequest() {
 	m_url = str;
 	m_errorCode = 400;
 	f.close();
+}
+
+int Request::internalError() {
+	std::ostringstream oss;
+	oss << "HTTP/1.1 " << 500;
+	oss << " Internal Server Error\r\n";
+	oss << "Content-Type: text/html" << "\r\n";
+	oss << "Content-Length: 97\r\n\r\n";
+	oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
+	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
+		return -1;
+	return 0;
 }
 
 int Request::isAllowed(std::string path)

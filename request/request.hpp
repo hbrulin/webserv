@@ -56,7 +56,6 @@ class Request
 	std::string m_path;
 	std::string m_url;
 	std::string m_body;
-	std::string m_header;
 	unsigned int m_chunk_size;
 
 	/*Output*/
@@ -93,6 +92,7 @@ class Request
 	int isAllowed(std::string path);
 	void notFound();
 	void badRequest();
+	int internalError();
 	
 };
 

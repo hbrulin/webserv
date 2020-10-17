@@ -8,7 +8,6 @@ void Request::split_resp(char *buffer)
 	int n = s.find("'\n'");
 	if (n != (int)std::string::npos)
 	{
-		m_header.append(buffer, n);
 		n = n + 3;
 		i = n;
 		m_url.append(&buffer[n], strlen(buffer) - n);
@@ -238,7 +237,6 @@ void Request::get() {
 		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
-		m_header = m_url;
 		m_errorCode = 200;
 		f.close();
 		return;

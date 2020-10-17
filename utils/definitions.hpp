@@ -78,6 +78,7 @@
 #define POST_HTML "www/post.html"
 #define YOUPI_BAD "/youpi.bad_extension"
 #define ERROR_FOLDER "error_pages/"
+#define DEF_ERR_PAGE "404.html";
 
 //EXTENSIONS
 #define PHP ".php"

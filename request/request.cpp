@@ -8,7 +8,7 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		m_headers = headers;
 		m_body = body;
 		m_client = fd;
-		m_not_found = "404.html";
+		m_not_found = DEF_ERR_PAGE;
 		m_errorCode = DEFAULT_CODE;
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;
@@ -78,7 +78,6 @@ void Request::parse()
 }
 
 void Request::handle() {
-	//std::cout << m_errorCode << std::endl << std::endl;
 	if (m_errorCode >= 400)
 		return;
 	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
@@ -111,24 +110,15 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	//std::cout << m_errorCode << std::endl << std::endl;
 	std::ostringstream oss;
+	
+	if (pid_ret > 0)
+		return internalError();
+	
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
 	if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
 		oss << m_url;
-	if (pid_ret > 0)
-	{
-		std::cout << "error 500" << std::endl;
-		oss << "HTTP/1.1 " << 500;
-		oss << " Internal Server Error\r\n";
-		oss << "Content-Type: text/html" << "\r\n";
-		oss << "Content-Length: 97\r\n\r\n";
-		oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-		if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
-			return -1;
-		return 0;
-	}
 	if (is_cgi)
 		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body);
 	else
@@ -151,10 +141,10 @@ int Request::send_to_client() {
 			bytes += write(m_client, m_body.c_str(), m_body.size());
 		}
 	}
-	/*if (_head_req.REQUEST_METHOD == POST)
+	if (_head_req.REQUEST_METHOD == POST)
 	{
 		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}*/
+	}
 	return 0;
 }
