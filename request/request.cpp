@@ -194,7 +194,6 @@ int Request::send_to_client() {
 			if (bytes != -1)
 				m_body = m_body.substr(bytes);
 			bytes = write(m_client, m_body.c_str(), m_body.size());
-			std::cout << "bytes" << bytes << std::endl;
 		}
 	}
 	if (_head_req.REQUEST_METHOD == POST)
