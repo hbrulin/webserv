@@ -15,6 +15,7 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		s_addr = addr;
 		pid_ret = 0;
 		m_chunk_size = 0;
+		bytes_left = 1;
 	};
 
 
@@ -121,29 +122,33 @@ int Request::send_to_client() {
 		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
 	else
 		m_output = oss.str();
-	int bytes;
+	size_t bytes;
 	if (!is_cgi)
 	{
-		if (send(m_client, m_output.c_str(), m_output.size(), 0) <= 0)
+		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
+		if (bytes < m_output.size())
+			m_output = m_output.substr(0, bytes);
+		else
+			bytes_left = !bytes_left;
 	}
 	else
 	{
-		if ((bytes = write(m_client, m_output.c_str(), m_output.size())) <= 0)
+		m_output = m_output + m_body;
+		std::cout << m_output.size() << std::endl;
+		if ((bytes = write(m_client, m_output.c_str(), m_output.size())) < 0)
 			return - 1;
-		if ((bytes = write(m_client, m_body.c_str(), m_body.size())) <= 0)
-			return - 1;
-		while (bytes < (long)m_body.size())
-		{
-			if (bytes != -1)
-				m_body = m_body.substr(bytes);
-			bytes = write(m_client, m_body.c_str(), m_body.size());
-		}
+		if (bytes < m_output.size())
+			m_output = m_output.substr(0, bytes);
+		else
+			bytes_left = !bytes_left;
+		std::cout << bytes << std::endl;
+		std::cout << bytes_left << std::endl << std::endl;
 	}
-	if (_head_req.REQUEST_METHOD == POST)
+	/*if (_head_req.REQUEST_METHOD == POST)
 	{
 		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}
+	}*/
 	return 0;
 }

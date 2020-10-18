@@ -20,7 +20,6 @@
 //#include <dirent.h>
 #include "../utils/definitions.hpp"
 
-
 class Request
 {
 	private:
@@ -29,6 +28,7 @@ class Request
 /*Attributes*/
 
 	public:
+
 	/*Conf*/
 	Config _conf;
 	Location _loc;
@@ -60,7 +60,8 @@ class Request
 
 	/*Output*/
 	int m_errorCode;
-	std::string m_output; 
+	std::string m_output;
+	bool bytes_left;
 
 
 /*Methods*/

@@ -237,3 +237,16 @@ int	ft_isprint(int c)
 		return (1);
 	return (0);
 }
+
+void	ft_tabdel(void **tab)
+{
+	int i;
+
+	i = 0;
+	if (tab)
+	{
+		while (tab[i])
+			free(tab[i++]);
+		free(tab);
+	}
+}

@@ -26,7 +26,7 @@ class Head_req
     //to check if ok ??? How to implement
     char        **ACCEPT_CHARSET;
     std::vector<std::string> ACCEPT_LANGUAGE;
-    char **AUTHORIZATION;
+    //char **AUTHORIZATION;
     std::string HOST; //OK + Add PORT according to config_file -> déjà dans la requete
     std::string REFERER; // How to get that > Link ???
     std::string USER_AGENT; // OS, version, application

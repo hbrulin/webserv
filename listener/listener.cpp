@@ -2,13 +2,6 @@
 
 bool		m_run = true;
 
-Buffers::Buffers(int id): m_id(id), track_length(0), body_parse_chunk(0), body_parse_length(0), header_length(0) {
-	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-	headers = "";
-	body = "";
-	}
-
 Listener::Listener(std::vector<Config> conf, int size) {
 
 	_size = size;
@@ -20,8 +13,10 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	m_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in) * size + 1);
 	//m_run = true;
 	m_highsock = 0;
-	memset((char *) &m_set, 0, sizeof(m_set));
-	memset((char *) &m_working_set, 0, sizeof(m_working_set));
+	memset((char *) &m_r_set, 0, sizeof(m_r_set));
+	memset((char *) &m_w_set, 0, sizeof(m_w_set));
+	memset((char *) &m_read_set, 0, sizeof(m_read_set));
+	memset((char *) &m_write_set, 0, sizeof(m_write_set));
 
 	for (int i = 0; i < size; i++)
 	{
@@ -38,6 +33,28 @@ void Listener::exiting(int n) {
 	m_run = false;
 
 }
+
+/*prepare fd_set : sock variable for connections coming in + other sockets already accepted*/
+void Listener::build_fd_set() {
+	FD_ZERO(&m_r_set); //clear out so no fd inside
+	for (int i = 0; i < _size ; i++) {
+		FD_SET(m_sock[i], &m_r_set); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
+
+		/* Since we start with only one socket, the listening socket,
+		it is the highest socket so far. */
+		m_highsock = m_sock[i];
+	}
+
+	FD_ZERO(&m_w_set); //clear out so no fd inside
+	for (int i = 0; i < _size ; i++) {
+		FD_SET(m_sock[i], &m_w_set); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
+
+		/* Since we start with only one socket, the listening socket,
+		it is the highest socket so far. */
+		m_highsock = m_sock[i];
+	}
+}
+
 
 int Listener::init() {
 	signal(SIGINT, &Listener::exiting);
@@ -128,7 +145,7 @@ int Listener::run() {
 	std::pair<int, int> ret;
 
 	while (m_run) {
-		/* Copy the master fd_set over to the working fd_set.
+		/* Copy the master fd_set over to the read fd_set.
 		Important because the call to select() is destructive. The copy
 		only contains the sockets that are accepting inbound connection requests OR messages.
 		E.g. You have a server and it's master file descriptor set contains 5 items;
@@ -137,7 +154,8 @@ int Listener::run() {
 		only one client is sending a message at that time. The contents of 'copy' will
 		be one socket. You will have LOST all the other sockets.*/
 		//for (int i = 0; i < _size ; i++) {
-			memcpy(&m_working_set, &m_set, sizeof(m_set));
+			memcpy(&m_read_set, &m_r_set, sizeof(m_r_set));
+			memcpy(&m_write_set, &m_w_set, sizeof(m_w_set));
 
 			/*calling select()*/
 			/* The first argument to select is the highest file
@@ -145,7 +163,7 @@ int Listener::run() {
 			The second argument to select() is the address of
 				the fd_set that contains sockets we're waiting
 				to be readable (including the listening socket).*/
-			sock_count = select(m_highsock + 1, &m_working_set, NULL, NULL, NULL);
+			sock_count = select(m_highsock + 1, &m_read_set, &m_write_set, NULL, NULL);
 			if (sock_count < 0) {
 				strerror(errno);
 				//exit(EXIT_FAILURE); //FAUT-IL EXIT SI SELECT FAIL? non
@@ -153,7 +171,7 @@ int Listener::run() {
 
 			/*Descriptors are available*/
 			for (int j = 0; j <= m_highsock && sock_count > 0; j++) {
-				if (FD_ISSET(j, &m_working_set)) {//if descriptor is ready, is in working_set
+				if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
 					//std::cout << "test" << std::endl;
 					//Fd is already readable - we have one less to look for. So that we can eventually stop looking
 					sock_count -= 1;
@@ -170,7 +188,7 @@ int Listener::run() {
 						//buf_list.push_back(new Buffers(ret.first));
 						//std::cout << "+ 1 BUFFER - size is : " << buf_list.size() << "new_id is " << j << std::endl;
 					}
-					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into working set
+					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into read set
 						m_close = false;
 						if (buf_list.empty())
 							buf_list.push_back(new Buffers(j));
@@ -196,9 +214,19 @@ int Listener::run() {
 						close_conn(j);
 					}
 				}
+				if (FD_ISSET(j, &m_write_set))
+				{
+					std::vector<Request*>::iterator it = req_list.begin();
+					std::vector<Request*>::iterator ite = req_list.end();
+					while (it != ite && (*it)->m_client != j)
+						it++;
+					if (it != ite)
+						send_data(j);
+					close_conn(j);
+				}
 			}
 	}
-	clean();
+	//clean();
 	return 0;
 }
 
@@ -208,19 +236,6 @@ void Listener::set_non_blocking(int sock) {
 		//std::cout << errno << std::endl;
 		strerror(errno);
 		//exit(EXIT_FAILURE); //check if exit if only one fails
-	}
-}
-
-/*prepare fd_set : sock variable for connections coming in + other sockets already accepted*/
-void Listener::build_fd_set() {
-	FD_ZERO(&m_set); //clear out so no fd inside
-	for (int i = 0; i < _size ; i++) {
-		//FD_ZERO(&m_set);
-		FD_SET(m_sock[i], &m_set); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
-
-		/* Since we start with only one socket, the listening socket,
-		it is the highest socket so far. */
-		m_highsock = m_sock[i];
 	}
 }
 
@@ -242,11 +257,11 @@ void Listener::accept_incoming_connections(int i) {
 			break;
 		}
 		/*Add new incoming connection to master fd_set*/
-		FD_SET(new_sock, &m_set);
+		FD_SET(new_sock, &m_r_set);
+		FD_SET(new_sock, &m_w_set);
 		if (new_sock > m_highsock)
 			m_highsock = new_sock;
 	}
-	//memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 }
 
 /* Receive data on this connection until the
@@ -364,9 +379,6 @@ void Listener::receive_data(int fd) {
 
 void Listener::LaunchRequest(int n, int fd)
 {
-	//std::cout << "fd :" << fd << ", Buffer id : " << buf_list[n]->m_id << " Buffer n value : " << n << std::endl;
-	//std::cout << "body_size listener " << buf_list[n]->body.size() << std::endl;
-	
 	//choose config according to server name
 	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
@@ -380,22 +392,40 @@ void Listener::LaunchRequest(int n, int fd)
 		}
 	}
 
-	//std::cout << "HEADERS : " << buf_list[n]->headers << std::endl << std::endl;
-	/*if (buf_list[n]->body.empty() == 0)
-		std::cout << "BODY : " << buf_list[n]->body.substr(0, 10) << std::endl << std::endl;*/
-	//std::cout << buf_list[n]->body.size() << std::endl << std::endl;
-	Request req(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr); //changer le i if server_name
-	req.parse();
-	req.handle();
-	//error checking to comply with correction : if error, client will be removed
-	if (req.send_to_client() == -1)
-	{
-		m_close = true; //client removed
-		return;
-	}
-	//m_close = true;
+	req_list.push_back(new Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr));
+	std::vector<Request*>::iterator it = req_list.begin();
+	std::vector<Request*>::iterator ite = req_list.end();
+	while (it != ite && (*it)->m_client != fd)
+		it++;
+	(*it)->parse();
+	(*it)->handle();
+	//ADD TO WRITE_SET
 
 }
+
+void Listener::send_data(int fd)
+{
+	std::vector<Request*>::iterator it = req_list.begin();
+	std::vector<Request*>::iterator ite = req_list.end();
+	while (it != ite && (*it)->m_client != fd)
+		it++;
+	
+	//error checking to comply with correction : if error, client will be removed
+	if ((*it)->send_to_client() == -1)
+	{
+		m_close = true; //client removed
+		delete *it;
+		req_list.erase(it);
+		return;
+	}
+	if (!(*it)->bytes_left)
+	{
+		//retirer du WRITE_SET
+		delete *it;
+		req_list.erase(it);
+	}
+}
+
 
 /*If the m_close flag was turned on, we need
 to clean up this active connection.  This
@@ -415,9 +445,10 @@ void Listener::close_conn(int fd) {
 
 	if (m_close) {
 		close(fd);
-		FD_CLR(fd, &m_set);
+		FD_CLR(fd, &m_r_set);
+		FD_CLR(fd, &m_w_set);
 		if (fd == m_highsock) {
-			while (!(FD_ISSET(m_highsock, &m_set)))
+			while (!(FD_ISSET(m_highsock, &m_r_set)) && !(FD_ISSET(m_highsock, &m_w_set))) 
 				m_highsock -= 1;
 		//delete *it;
 		//buf_list.erase(it);

@@ -16,26 +16,7 @@
 #include <vector>
 #include "../utils/definitions.hpp"
 #include <signal.h>
-
-class Buffers {
-	
-	public:
-		std::string headers;
-		std::string body;
-		char *m_buffer;
-		int		m_id;
-		long int			m_content_length;
-		long int			track_length;
-		bool				body_parse_chunk;
-		bool				body_parse_length;
-		unsigned int 		header_length;
-
-		Buffers(int id);
-		void clean_buf();
-		virtual ~Buffers() {
-			free(m_buffer);
-		}
-};
+#include "Buffers.hpp"
 
 class Listener {
 
@@ -53,6 +34,7 @@ class Listener {
 		void build_fd_set();
 		void accept_incoming_connections(int i);
 		void receive_data(int fd);
+		void send_data(int fd);
 		void close_conn(int fd);
 		std::pair<int, int>	look_for_sock(int j);
 		std::string getHost(const std::string buffer, const std::string toParse);
@@ -66,13 +48,16 @@ class Listener {
 		struct sockaddr_in *m_address; // /* bind info structure */ need to have IP defined? see with config
 		int			*m_port;
 		int			*m_sock; /* The socket file descriptor for our "listening" socket */
-		fd_set		m_set; /* Socket file descriptors we want to wake up for, using select() */
-		fd_set		m_working_set;
+		fd_set		m_r_set; /* Socket file descriptors we want to wake up for, using select() */
+		fd_set		m_w_set; /* Socket file descriptors we want to wake up for, using select() */
+		fd_set		m_read_set;
+		fd_set		m_write_set;
 		int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 		int			m_nbConf;
 		std::vector<Buffers*> buf_list;
+		std::vector<Request*> req_list;
 	
 		Listener() {};
 

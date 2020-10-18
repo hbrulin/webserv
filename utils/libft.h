@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bothilie <bothilie@stduent.42.fr>          +#+  +:+       +#+        */
+/*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/07/01 17:50:30 by bothilie         ###   ########.fr       */
+/*   Updated: 2020/10/18 17:17:08 by hbrulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,6 @@ char			*ft_strjoin(char const *s1, char const *s2);
 char			*ft_substr(char const *s, unsigned int start, size_t len);
 char			*ft_strtrim(char const *s1, char const *set);
 void			*ft_calloc(size_t count, size_t size);
+void			ft_tabdel(void **tab);
 
 #endif

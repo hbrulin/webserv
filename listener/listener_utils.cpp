@@ -52,23 +52,12 @@ int Listener::getLength(const std::string body, const std::string toParse)
     return 0;
 }
 
-void Buffers::clean_buf() {
-	m_id = 0;
-	track_length = 0;
-	body_parse_chunk = 0;
-	body_parse_length = 0;
-	header_length = 0;
-	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
-	headers = "";
-	body = "";
-}
-
 void Listener::clean()
 {
 	for (int i=0; i <= m_highsock; ++i)
    	{
-    	if (FD_ISSET(i, &m_set))
-        close(i);
+    	if (FD_ISSET(i, &m_r_set))
+        	close(i);
    }
    	std::vector<Buffers*>::iterator it = buf_list.begin();
 	std::vector<Buffers*>::iterator ite = buf_list.end();
