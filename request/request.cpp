@@ -137,8 +137,7 @@ int Request::send_to_client() {
 		{
 			if (bytes != -1)
 				m_body = m_body.substr(bytes);
-			if ((bytes = write(m_client, m_body.c_str(), m_body.size())) <= 0)
-				return -1;
+			bytes = write(m_client, m_body.c_str(), m_body.size());
 		}
 	}
 	if (_head_req.REQUEST_METHOD == POST)

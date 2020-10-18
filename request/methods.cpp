@@ -131,8 +131,6 @@ int Request::forking()
 	dir_cgi = NULL;
 	free(path);
 	path = NULL;
-	//free(curr_dir);
-	//curr_dir = NULL;
 	return 0;
 }
 
