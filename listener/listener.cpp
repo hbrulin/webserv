@@ -171,7 +171,16 @@ int Listener::run() {
 
 			/*Descriptors are available*/
 			for (int j = 0; j <= m_highsock && sock_count > 0; j++) {
-				if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
+				std::vector<Request*>::iterator it = req_list.begin();
+				std::vector<Request*>::iterator ite = req_list.end();
+				while (it != ite && (*it)->m_client != j)
+					it++;
+				if (FD_ISSET(j, &m_write_set) && it != ite)
+				{
+					send_data(j);
+					close_conn(j);
+				}
+				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
 					//std::cout << "test" << std::endl;
 					//Fd is already readable - we have one less to look for. So that we can eventually stop looking
 					sock_count -= 1;
@@ -214,7 +223,7 @@ int Listener::run() {
 						close_conn(j);
 					}
 				}
-				if (FD_ISSET(j, &m_write_set))
+				/*if (FD_ISSET(j, &m_write_set))
 				{
 					std::vector<Request*>::iterator it = req_list.begin();
 					std::vector<Request*>::iterator ite = req_list.end();
@@ -223,7 +232,7 @@ int Listener::run() {
 					if (it != ite)
 						send_data(j);
 					close_conn(j);
-				}
+				}*/
 			}
 	}
 	//clean();
