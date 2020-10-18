@@ -277,10 +277,10 @@ void Listener::receive_data(int fd) {
 	}
 
 	/*Check if connection was closed by client*/
-	if (ret == 0)
+	else if (ret == 0)
 		return;
 
-	if (ret > 0)
+	else
 	{
 		bytes += ret;
 		buf_list[n]->m_buffer[bytes] = '\0';
@@ -390,7 +390,7 @@ void Listener::LaunchRequest(int n, int fd)
 	//error checking to comply with correction : if error, client will be removed
 	if (req.send_to_client() == -1)
 	{
-		m_close = true;
+		m_close = true; //client removed
 		return;
 	}
 	//m_close = true;
