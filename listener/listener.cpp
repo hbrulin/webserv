@@ -270,7 +270,6 @@ void Listener::receive_data(int fd) {
 	bytes = strlen(buf_list[n]->m_buffer);
 
 	ret = read(fd, buf_list[n]->m_buffer + bytes, BUFFER_SIZE - bytes);
-	bytes += ret;
 
 	if (ret < 0) {
 		m_close = true; //client will be removed if error
@@ -278,13 +277,12 @@ void Listener::receive_data(int fd) {
 	}
 
 	/*Check if connection was closed by client*/
-	/*if (ret == 0)
+	else if (ret == 0)
+		return;
+
+	else
 	{
-		m_close = true; //client will be removed
-		//return;
-	}*/
-	if (ret > 0)
-	{
+		bytes += ret;
 		buf_list[n]->m_buffer[bytes] = '\0';
 		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
@@ -392,7 +390,7 @@ void Listener::LaunchRequest(int n, int fd)
 	//error checking to comply with correction : if error, client will be removed
 	if (req.send_to_client() == -1)
 	{
-		m_close = true;
+		m_close = true; //client removed
 		return;
 	}
 	//m_close = true;
