@@ -34,6 +34,7 @@ class Head_req
 	std::string DATE; // HH:MM:SS GMT
 	std::string TRANSFER_ENCODING;
 	std::string ACCEPT_ENCODING;
+     std::string X_headers;
 
     //META
     std::string str;
@@ -63,6 +64,7 @@ class Head_req
     void        getScriptName(std::string s);
 	std::string contentNego(std::string root);
 	void		parse(std::vector<std::string> parsed, std::string s, std::string url);
+    std::string getXtoparse(std::string s, std::string toParse);
     struct stat st;
 };
 

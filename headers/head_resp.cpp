@@ -73,7 +73,7 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
     return oss.str();
 }
 
-std::string Head_resp::getBuffer_cgi(int code, std::string m_body)
+std::string Head_resp::getBuffer_cgi(int code, std::string m_body, std::string X_head)
 {
     std::ostringstream oss;
 	oss << DEF_PROTOCOL << " " << code;
@@ -82,7 +82,8 @@ std::string Head_resp::getBuffer_cgi(int code, std::string m_body)
     oss << CONTENT_T_STR << CONTENT_TYPE << "\r\n";
 	oss << DATE_STR << this->getDate() << "\r\n";
 	oss << SERVER_STR << SERVER << "\r\n";
-	oss << SECRET_STR << "1" << "\r\n";
+	if (X_head != "")
+ 	 	oss << "http-" << X_head << "\r\n";
 	oss << "\r\n";
     return oss.str();
 }

@@ -31,7 +31,7 @@ class Head_resp
     std::string getDate();
     std::string getBuffer(int code, const char *path, std::vector<std::string> methods, std::string _method);
     std::string getContentLength(const char *path);
-    std::string getBuffer_cgi(int code, std::string m_body);
+    std::string getBuffer_cgi(int code, std::string m_body, std::string X_headers);
     struct stat st;
 };
 

@@ -120,7 +120,7 @@ int Request::send_to_client() {
 	if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
 		oss << m_url;
 	if (is_cgi)
-		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body);
+		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
 	else
 		m_output = oss.str();
 	int bytes;
