@@ -16,6 +16,7 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		pid_ret = 0;
 		m_chunk_size = 0;
 		bytes_left = 1;
+		first_send = 1;
 	};
 
 
@@ -111,36 +112,47 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	std::ostringstream oss;
-	if (pid_ret > 0)
-		return internalError();
-	if (!is_cgi)
-		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
-	if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
-		oss << m_url;
-	if (is_cgi)
-		m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
-	else
-		m_output = oss.str();
+	
+	if (first_send)
+	{
+		first_send = !first_send;
+		std::ostringstream oss;
+		if (pid_ret > 0)
+			return internalError();
+		if (!is_cgi)
+			oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
+		if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
+			oss << m_url;
+		if (is_cgi)
+		{
+			m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
+			m_output = m_output + m_body;
+		}
+		else
+			m_output = oss.str();
+	}
+
 	size_t bytes;
 	if (!is_cgi)
 	{
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
 		if (bytes < m_output.size())
-			m_output = m_output.substr(0, bytes);
-		else
+			m_output = m_output.substr(bytes);
+		else if (bytes == m_output.size())
 			bytes_left = !bytes_left;
 	}
 	else
 	{
-		m_output = m_output + m_body;
 		std::cout << m_output.size() << std::endl;
-		if ((bytes = write(m_client, m_output.c_str(), m_output.size())) < 0)
+		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
 		if (bytes < m_output.size())
-			m_output = m_output.substr(0, bytes);
-		else
+		{
+			std::cout << "IN" << std::endl;
+			m_output = m_output.substr(bytes);
+		}
+		else if (bytes == m_output.size())
 			bytes_left = !bytes_left;
 		std::cout << bytes << std::endl;
 		std::cout << bytes_left << std::endl << std::endl;

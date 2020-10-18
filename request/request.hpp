@@ -62,6 +62,7 @@ class Request
 	int m_errorCode;
 	std::string m_output;
 	bool bytes_left;
+	bool first_send;
 
 
 /*Methods*/
