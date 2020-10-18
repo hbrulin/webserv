@@ -55,7 +55,7 @@ int main(void)
     while (k++ < 1000)
         userInput += "w";*/
 
-	string userInput = "GET /uploaded/test HTTP/1.1\r\n";
+	string userInput = " GET /uploaded/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n\r\n";
 	

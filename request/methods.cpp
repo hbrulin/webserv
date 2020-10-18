@@ -8,7 +8,6 @@ void Request::split_resp(char *buffer)
 	int n = s.find("'\n'");
 	if (n != (int)std::string::npos)
 	{
-		m_header.append(buffer, n);
 		n = n + 3;
 		i = n;
 		m_url.append(&buffer[n], strlen(buffer) - n);
@@ -123,28 +122,6 @@ int Request::forking()
 	remove(cgi_output.c_str());
 	return 0;
 }
-/*void Request::get_post_content()
-{
-	int n;
-	std::string s(m_headers + ENDCHARS + m_body);
-	n = s.find("\r\n\r"); //peut etre rajouter un \n
-	if (n != (int)std::string::npos)
-	{
-    	n = n + std::string(ENDCHARS).size();
-		content_env = s.substr(n, s.size() - n);
-	}
-	else
-	{
-		n = s.find("\n\n");
-		if (n != (int)std::string::npos)
-		{
-        	n = n + std::string("\n\n").size();
-			content_env = s.substr(n, s.size() - n);
-		}
-	}
-	m_output = "";
-}*/
-
 
 void Request::exec_cgi(){
 	if (_head_req.REQUEST_METHOD == POST)
@@ -194,7 +171,6 @@ void Request::post() {
 		m_errorCode = 201;
 		f.close();
 	}
-
 }
 
 void Request::put() {
@@ -253,38 +229,29 @@ void Request::get() {
 	fstat(fd, &buf);
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
-	{
 		m_path = m_path + YOUPI_BAD;
-	}
 
 	std::ifstream f(m_path);
-
 	if (f.good())
 	{
 		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		split_resp((char *)str.c_str());
-		m_header = m_url;
-		if (m_errorCode == 400)
+		m_errorCode = 200;
+		f.close();
+		return;
+		/*if (!isAllowed(m_path) || m_errorCode == 405)
 		{
 			f.close();
-			std::ifstream f(_loc._root + BAD_REQUEST);
+			if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
+				_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+			m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+			std::ifstream f(m_path);
 			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + BAD_REQUEST;
-			m_url = str;
-			//m_errorCode = 400;
-			f.close();
-		}
-		else if (!isAllowed(m_path) || m_errorCode == 405)
-		{
-			f.close();
-			std::ifstream f(_loc._root + NOT_ALLOWED);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + NOT_ALLOWED;
 			m_url = str;
 			m_errorCode = 405;
 			f.close();
-		}
+		}*/
 		/*else if (!isAuthorized(m_header))
 		{
 			f.close();
@@ -294,26 +261,19 @@ void Request::get() {
 			m_url = str;
 			m_errorCode = 401;
 			f.close();
-		}*/
-		else
+		}
+		//else
 		{
 			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 			//m_url = str;
 			m_errorCode = 200;
 			f.close();
-		}
+			return;
+		}*/
 	}
 	else
 	{
 		f.close();
-		//std::cout << "loc root" << _loc._root << std::endl;
-		m_path = _loc._root + m_not_found;
-		std::ifstream f("www/404.html");
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		m_errorCode = 404;
-		//std::cout << "url" << m_url << std::endl;
-		//error code par défaut à 404, à revoir pour autres erreurs, genre manque de header par exemple
-		f.close();
+		notFound();
 	}
 }

@@ -15,6 +15,7 @@
 #include "../parser/Config.hpp"
 #include <vector>
 #include "../utils/definitions.hpp"
+#include <signal.h>
 
 class Buffers {
 	
@@ -43,8 +44,9 @@ class Listener {
 		int init();
 		int run();
 		void LaunchRequest(int n, int fd);
-		int getLength(std::string body, std::string toParse);
-		//void clean();
+		int getLength(const std::string body, const std::string toParse);
+		static void exiting(int n);
+		void clean();
 	
 	protected:
 		void set_non_blocking(int sock);
@@ -53,7 +55,7 @@ class Listener {
 		void receive_data(int fd);
 		void close_conn(int fd);
 		std::pair<int, int>	look_for_sock(int j);
-		std::string getHost(std::string buffer, std::string toParse);
+		std::string getHost(const std::string buffer, const std::string toParse);
 		int checkpast(int i);
 		int reparse_body(int n, int fd);
 
@@ -66,7 +68,6 @@ class Listener {
 		int			*m_sock; /* The socket file descriptor for our "listening" socket */
 		fd_set		m_set; /* Socket file descriptors we want to wake up for, using select() */
 		fd_set		m_working_set;
-		bool		m_run;
 		int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
@@ -75,7 +76,6 @@ class Listener {
 	
 		Listener() {};
 
-		//Mettre ici un objet request??
 };
 
 #endif

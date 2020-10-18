@@ -10,7 +10,7 @@ int Listener::checkpast(int i)
 	return(0);
 }
 
-std::string Listener::getHost(std::string buffer, std::string toParse)
+std::string Listener::getHost(const std::string buffer, const std::string toParse)
 {
     int n;
     std::string referer;
@@ -28,16 +28,14 @@ std::string Listener::getHost(std::string buffer, std::string toParse)
 
 std::pair<int, int>	Listener::look_for_sock(int j)
 {
-	//std::cout << "J is " << j << std::endl;
 	for (int i = 0; i < _size ; i++) {
-		//std::cout << "sock is" <<  m_sock[i] << std::endl;
 		if (j == m_sock[i])
 			return std::pair<int, int>(j, i);
 	}
 	return std::pair<int, int>(0, 0);
 }
 
-int Listener::getLength(std::string body, std::string toParse)
+int Listener::getLength(const std::string body, const std::string toParse)
 {
     int n;
     std::string referer;
@@ -63,4 +61,21 @@ void Buffers::clean_buf() {
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	headers = "";
 	body = "";
+}
+
+void Listener::clean()
+{
+	for (int i=0; i <= m_highsock; ++i)
+   	{
+    	if (FD_ISSET(i, &m_set))
+        close(i);
+   }
+   	std::vector<Buffers*>::iterator it = buf_list.begin();
+	std::vector<Buffers*>::iterator ite = buf_list.end();
+	while (it != ite)
+	{
+		delete *it;
+		buf_list.erase(it);
+		it++;
+	}
 }

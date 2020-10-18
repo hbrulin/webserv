@@ -1,12 +1,13 @@
 #include "listener.hpp"
 
+bool		m_run = true;
+
 Buffers::Buffers(int id): m_id(id), track_length(0), body_parse_chunk(0), body_parse_length(0), header_length(0) {
 	m_buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	memset((void *)m_buffer, 0, BUFFER_SIZE + 1);
 	headers = "";
 	body = "";
 	}
-
 
 Listener::Listener(std::vector<Config> conf, int size) {
 
@@ -17,10 +18,7 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	m_port = (int *)malloc(sizeof(int) * size + 1);
 	m_sock = (int *)malloc(sizeof(int) * size + 1);
 	m_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in) * size + 1);
-	m_run = true;
-	//m_set = (fd_set *)malloc(sizeof(fd_set) * size + 1);
-	//m_working_set = (fd_set *)malloc(sizeof(fd_set) * size + 1);
-	//m_highsock = (int *)malloc(sizeof(int) * size + 1);
+	//m_run = true;
 	m_highsock = 0;
 	memset((char *) &m_set, 0, sizeof(m_set));
 	memset((char *) &m_working_set, 0, sizeof(m_working_set));
@@ -29,15 +27,21 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	{
 		memset((int *) &m_port[i], 0, sizeof(m_port[i]));
 		memset((int *) &m_sock[i], 0, sizeof(m_sock[i]));
-		//memset((int *) &m_highsock[i], 0, sizeof(m_highsock));
 		memset((char *) &m_address[i], 0, sizeof(m_address[i]));
-		//memset((char *) &m_set[i], 0, sizeof(m_set));
-		//memset((char *) &m_working_set[i], 0, sizeof(m_working_set));
 	}
 }
 
-/*Change things according to META VARIABLES*/
+void Listener::exiting(int n) {
+	(void)n;
+
+	std::cout << "\n" << "exiting...\n";
+	m_run = false;
+
+}
+
 int Listener::init() {
+	signal(SIGINT, &Listener::exiting);
+
 	int reuse_addr = 1;  /* Used so we can re-bind to our port
 				while a previous connection is still
 				in TIME_WAIT state : TIME_WAIT indicates that server
@@ -98,7 +102,6 @@ int Listener::init() {
 			}
 		}
 	}
-	//std::cout << "test" << std::endl;
 
 	/* This socket will be for listening */
 	/*marque la socket référencée par sockfd comme une socket passive,
@@ -192,22 +195,12 @@ int Listener::run() {
 						//m_close = true;
 						close_conn(j);
 					}
-
 				}
 			}
-		//}
 	}
-
+	clean();
 	return 0;
 }
-
-/*void Listener::clean() {
-	for (int i=0; i <= m_highsock; ++i)
-   	{
-    	if (FD_ISSET(i, &m_set))
-        close(i);
-   }
-}*/
 
 void Listener::set_non_blocking(int sock) {
 	//std::cout << m_sock << std::endl;

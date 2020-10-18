@@ -23,58 +23,76 @@
 
 class Request
 {
-	public:
+	private:
 	Request(){};
+
+/*Attributes*/
+
+	public:
+	/*Conf*/
 	Config _conf;
 	Location _loc;
-	//HEADERS
-	Head_req _head_req;
-	Head_resp _head_resp;
-	//meta_var _meta_var;
-	char *m_buffer;
-	std::string content_env; //env que l'on recup dans requete POST pour les cgi
-	int m_client;
-	unsigned long s_addr;
-	char curr_dir[200];
-	char *dir_cgi;
-	//std::string cgi_output;
-	char *path;
-
-	//std::string m_method;
-	std::string m_url;
-	std::string m_body;
-	std::string m_headers;
-	std::string m_header;
 	std::string m_not_found;
 	std::string m_index;
-	std::string m_path;
-	int m_errorCode;
+
+	/*Client*/
+	int m_client;
+	unsigned long s_addr;
+
+	/*For cgi*/
+	char curr_dir[200];
+	char *dir_cgi;
+	char *path;
+	std::string content_env; //env que l'on recup dans requete POST pour les cgi
 	int pid_ret;
 	bool is_cgi;
+
+	/*Headers*/
+	std::string m_headers;
+	Head_req _head_req;
+	Head_resp _head_resp;
+
+	/*Request*/
+	std::string m_path;
+	std::string m_url;
+	std::string m_body;
 	unsigned int m_chunk_size;
 
-	//output
+	/*Output*/
+	int m_errorCode;
 	std::string m_output; 
-	//memset m_content et m_output
-	public:
+
+
+/*Methods*/
 	Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr);
+	
+	/*parsing*/
 	void parse();
 	void getBody();
+
+	/*methods*/
 	void handle();
-	int send_to_client();
 	void post();
-	void get();
-	void put();
-	void delete_m();
 	int forking();
-	//int isAcceptable();
-	int isAuthorized(std::string str);
-	void split_resp(char *buffer);
-	int isAllowed(std::string path);
-	bool check_if_method_is_allowed(std::string);
 	void get_post_content();
 	void get_query_string();
 	void exec_cgi();
+	void get();
+	void put();
+	void delete_m();
+
+	/*response*/
+	void split_resp(char *buffer);
+	int send_to_client();
+
+	/*errors*/
+	int preChecks();
+	//int isAcceptable();
+	int isAuthorized(std::string str);
+	int isAllowed(std::string path);
+	void notFound();
+	void badRequest();
+	int internalError();
 	
 };
 
