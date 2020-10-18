@@ -51,7 +51,33 @@ std::string Head_req::get_meta()
 	str.append("&SERVER_SOFTWARE=");
 	str.append("webserv"); // A modif ?
 	//str.append("&HTTP_SECRET_HEADER_FOR_TEST=1");
-	str.append("&HTTP_X_SECRET_HEADER_FOR_TEST=1");
+	//str.append("&HTTP_X_SECRET_HEADER_FOR_TEST=1");
+	std::string tmp = "";
+	for (size_t i = 0; i != X_headers.size(); i++)
+	{
+		if (X_headers.at(i) == ':')
+			tmp+= '=';
+		else if (X_headers.at(i) == 'X' && X_headers.at(i+1) == '-')
+		{
+			tmp += '&';
+			i++;
+		}
+		else if (X_headers.at(i) == '-')
+			tmp += '_';
+		else if (X_headers.at(i) != ' ')
+			tmp += std::toupper(X_headers.at(i));
+	}
+	std::cout << "X_headers transfermed: " << tmp << std::endl;
+	char **head_split = ft_split(tmp.c_str(), '&');
+	int j = 0;
+	while (head_split && head_split[j])
+	{
+		std::cout << "head_split" << head_split[j] << std::endl;
+			str.append("&HTTP_X_");
+			str.append(head_split[j]);
+			j++;
+	}
+
 	return str;
 }
 
@@ -203,6 +229,22 @@ std::string Head_req::contentNego(std::string root) {
 	return res;
 }
 
+std::string Head_req::getXtoparse(std::string s, std::string toParse)
+{
+    int n;
+	std::string tmp(s);
+    std::string referer = "";
+	n = tmp.find(toParse);
+	while (n != (int)std::string::npos)
+	{
+		int i = n;
+		while (tmp[i] != '\n' && tmp[i] != '\r') { i++;}
+		referer += tmp.substr(n, i - n);
+		tmp = tmp.substr(i, tmp.size() - i);
+        n = tmp.find(toParse);
+	}
+    return referer;
+}
 
 void Head_req::getRemAddr()
 {	
@@ -247,6 +289,10 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 	REQUEST_METHOD = parsed[0];
 	REQUEST_URI = parsed[1];
 	SERVER_PROTOCOL = parsed[2];
+	if (strstr(m_buffer.c_str(), "X-") != NULL)
+ 	{
+ 		X_headers = getXtoparse(m_buffer, "X-");
+ 	}
 	char **tab = ft_split(getStringtoParse(m_buffer, AUTH_STR).c_str(), ' ');
 	if (tab != NULL && tab[0] != NULL)
 	AUTH_TYPE = tab[0];
