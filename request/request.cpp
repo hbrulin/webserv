@@ -111,10 +111,8 @@ void Request::handle() {
 
 int Request::send_to_client() {
 	std::ostringstream oss;
-	
 	if (pid_ret > 0)
 		return internalError();
-	
 	if (!is_cgi)
 		oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
 	if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)

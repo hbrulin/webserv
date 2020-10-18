@@ -67,17 +67,21 @@ std::string Head_req::get_meta()
 		else if (X_headers.at(i) != ' ')
 			tmp += std::toupper(X_headers.at(i));
 	}
-	std::cout << "X_headers transfermed: " << tmp << std::endl;
 	char **head_split = ft_split(tmp.c_str(), '&');
 	int j = 0;
 	while (head_split && head_split[j])
 	{
-		std::cout << "head_split" << head_split[j] << std::endl;
 			str.append("&HTTP_X_");
 			str.append(head_split[j]);
 			j++;
 	}
-
+	j = 0;
+	while (head_split[j])
+	{
+		free(head_split[j]);
+		j++;
+	}
+	free(head_split);
 	return str;
 }
 
@@ -324,5 +328,14 @@ void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std
 		while(std::getline(s, segment, ','))
 			ACCEPT_LANGUAGE.push_back(segment);
 	}
-
+	int i = 0;
+	if (tab != NULL && tab[0] != NULL)
+	{
+		while (tab[i])
+		{
+			free(tab[i]);
+			i++;
+		}
+	}
+	free(tab);
 }

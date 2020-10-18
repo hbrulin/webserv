@@ -30,6 +30,7 @@ int Request::forking()
 		return (-1);
 	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
 		return (-1);
+	//free(dir_cgi);
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
 	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
@@ -52,12 +53,11 @@ int Request::forking()
   		//std::cout << "mode: " << mode << std::endl;
 		if (mode[2] != 'x' || mode[5] != 'x' || mode[8] != 'x')
 			return (127);
+		free(mode);
+		//free(chars);
 	}
 	std::string _headers = _head_req.get_meta();
 	char **env = ft_split(_headers.c_str(), '&');
-	char **av;
-	av = (char **)malloc(sizeof(char *) * 3);
-	av[0] = ft_strdup(path);
 	if (pipe(pp))
 		perror(PIPE_ERR);
 	pid = fork();
@@ -71,7 +71,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(fd, 1);
-		res = execve(av[0], NULL, env);
+		res = execve(path, NULL, env);
 		if (res != 0)
 		{
 			exit(127);
@@ -120,6 +120,19 @@ int Request::forking()
 	}
 	f_cgi.close();
 	remove(cgi_output.c_str());
+	int k = 0;
+	while (env[k])
+	{
+		free(env[k]);
+		k++;
+	}
+	free(env);
+	free(dir_cgi);
+	dir_cgi = NULL;
+	free(path);
+	path = NULL;
+	//free(curr_dir);
+	//curr_dir = NULL;
 	return 0;
 }
 
@@ -132,8 +145,7 @@ void Request::exec_cgi(){
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
 	pid_ret = forking();
-	
-
+	sleep(5);
 }
 
 void Request::post() {

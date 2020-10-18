@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <sstream>
 #include <vector>
+#include <unistd.h>
 #include "../utils/returnCodes.hpp"
 #include "../utils/definitions.hpp"
 
