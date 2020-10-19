@@ -58,7 +58,7 @@ int Request::internalError() {
 	oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Length: 97\r\n\r\n";
 	oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) <= 0)
+	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) < 0)
 		return -1;
 	return 0;
 }

@@ -149,10 +149,7 @@ int Request::send_to_client() {
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
 		if (bytes < m_output.size())
-		{
-			//std::cout << "IN" << std::endl;
 			m_output = m_output.substr(bytes);
-		}
 		else if (bytes == m_output.size())
 			bytes_left = !bytes_left;
 		//std::cout << bytes << std::endl;

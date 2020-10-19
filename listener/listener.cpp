@@ -145,6 +145,7 @@ int Listener::run() {
 	std::pair<int, int> ret;
 
 	while (m_run) {
+		//std::cout << req_list.size() << std::endl;
 		/* Copy the master fd_set over to the read fd_set.
 		Important because the call to select() is destructive. The copy
 		only contains the sockets that are accepting inbound connection requests OR messages.
