@@ -35,7 +35,7 @@ class Listener {
 		void build_fd_set();
 		void accept_incoming_connections(int i);
 		void receive_data(int fd);
-		void send_data(int fd);
+		void send_data();
 		void close_conn(int fd);
 		std::pair<int, int>	look_for_sock(int j);
 		std::string getHost(const std::string buffer, const std::string toParse);
@@ -58,7 +58,8 @@ class Listener {
 		bool		m_close;
 		int			m_nbConf;
 		std::vector<Buffers*> buf_list;
-		std::vector<Request*> req_list;
+		//std::vector<Request*> req_list;
+		Request req;
 	
 		Listener() {};
 

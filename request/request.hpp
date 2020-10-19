@@ -22,12 +22,13 @@
 
 class Request
 {
-	private:
-	Request(){};
+	//private:
+	//Request(){};
 
 /*Attributes*/
 
 	public:
+	Request(){};
 
 	/*Conf*/
 	Config _conf;
