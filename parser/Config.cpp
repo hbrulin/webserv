@@ -11,6 +11,7 @@ Config::Config()
 	//_ports.push_back(80);
 }
 
+
 Config::Config(const Config& b)
 {
 	_server_name = b._server_name;
@@ -33,7 +34,25 @@ Config::Config(const Config& b)
 void Config::set_blank()
 {
 	_locations._blank._body_size = _body_size;
+	_locations._blank._errors = _errors;
 	_locations._blank._root = _root;
 	_locations._blank._cgi_root = _cgi_root;
 	_locations._blank._cgi_type = _cgi_type;
 }
+
+void Config::set_default_locations()
+{
+	for (unsigned long i = 0; i < _locations.size(); i++)
+	{
+		if (_locations[i]._errors.empty())
+			_locations[i]._errors = _errors;
+		if (_locations[i]._body_size == 0)
+			_locations[i]._body_size = _body_size;
+	}
+}
+
+
+
+/* mettre dans les loc:
+body size, errors, (cgi type?)
+*/
