@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <sys/stat.h>
 #include "../utils/definitions.hpp"
 
 
@@ -65,6 +66,7 @@ class Location
 	std::string					_cgi_method;
 
 	std::string 				_errors;
+	std::map<int,std::string> _error;
 
 
 	fmap _map;
@@ -86,10 +88,14 @@ class Location
 	void parse_body_size(std::string b);
 	void parse_cgi_file(std::string);
 	void parse_errors(std::string);
+	void parse_error(std::string);
 
 
 	void remove_whitespace(std::string&);
 	bool check_mode();
+
+	void set_default_errors();
+	std::string get_error_path(int code);
 
 	void check_path_validity();
 	void check_methods_validity();

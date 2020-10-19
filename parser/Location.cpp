@@ -5,6 +5,34 @@ const char* Location::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "P
 
 // Faire une loc par defaut
 
+static bool path_exists(std::string& s)
+{
+	struct stat buffer;
+	return (stat (s.c_str(), &buffer) == 0);
+}
+
+void Location::check_path_validity()
+{
+	std::string error = "Error on location: " + _name + ": path ";
+
+/*	if (!path_exists(_root))
+		throw (std::logic_error(error + _root + " is invalid"));*/
+	//if (!path_exists(_errors))
+	//	throw (std::logic_error(error + _errors + " is invalid"));
+
+	for (std::map<int,std::string>::iterator it = _error.begin(); it != _error.end(); it++)
+	{
+		if (!path_exists(it->second))
+			throw (std::logic_error(error + _errors + " is invalid"));
+	}
+	//if (!path_exists(config._cgi_root))
+	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
+	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
+	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
+	//if (config._send_files && !path_exists(config._files_root))
+	//	throw (std::logic_error(error + config._files_root + " is invalid"));
+}
+
 Location::Location()
 {
 	_name = "";
@@ -24,7 +52,9 @@ Location::Location()
 	_errors = "";
 
 	_methods.push_back("GET");
+	//set_default_errors();
 	//_methods.push_back("HEAD");
+	set_default_errors();
 	initiate_map();
 }
 
@@ -44,6 +74,7 @@ void Location::initiate_map()
 	_map["send_files"] = &Location::parse_send_files;
 	_map["uploaded_files_root"] = &Location::parse_uploaded_files_root;
 	_map["errors"] = &Location::parse_errors;
+	_map["error"] = &Location::parse_error;
 }
 
 Location::~Location()
@@ -67,6 +98,7 @@ Location::Location(const Location& l)
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
 	_errors = l._errors;
+	_error = l._error;
 	initiate_map();
 }
 
@@ -88,6 +120,7 @@ void Location::operator = (const Location& l)
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
 	_errors = l._errors;
+	_error = l._error;
 	initiate_map();
 }
 
@@ -257,7 +290,9 @@ void Location::print()
 	"\ndefault_directory_answer_file: " << _directory_answer_file;
 
 	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type
-	<< "\nCGI_FILE: " << _cgi_file << "\nErrors: " << _errors;
+	<< "\nCGI_FILE: " << _cgi_file << "\nErrors: " << _errors << std::endl;;
+	for (std::map<int,std::string>::iterator it = _error.begin(); it != _error.end(); it++)
+		std::cout << it->first << ": " << it->second << std::endl;
 
 	std::cout << std::endl;
 }
@@ -422,6 +457,69 @@ std::string		Location::get_listing()
 	// return a string with all files in location
 	return ("directory listing on");
 }
+
+void Location::parse_error(std::string b)
+{
+	std::string code = "";
+	std::string path = "";
+
+	while (b.size())
+	{
+		code = b.substr(
+		b.find_first_of("0123456789"),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")));
+		//std::cout << s << std::endl;
+		remove_whitespace(code);
+
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << "Code: " << code;
+		path = b.substr(
+		b.find_first_of(ALPHACHAR),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << " Path: " << path << std::endl;
+
+
+		_error[std::stoi(code)] = path;
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+
+		//std::cout << "b: " << b << std::endl;
+	}
+}
+
+
+void Location::set_default_errors()
+{
+	if (_error.find(405) == _error.end() || (_error.find(405) == _error.end()
+	&& _error.find(405)->second == NOT_ALLOWED))
+		_error[405] = NOT_ALLOWED;
+	if (_error.find(406) == _error.end() || (_error.find(406) == _error.end()
+	&& _error.find(406)->second == NOT_ACCEPTABLE))
+		_error[406] = NOT_ACCEPTABLE;
+	if (_error.find(400) == _error.end() || (_error.find(400) == _error.end()
+	&& _error.find(400)->second == BAD_REQUEST))
+		_error[400] = BAD_REQUEST;
+	if (_error.find(401) == _error.end() || (_error.find(401) == _error.end()
+	&& _error.find(401)->second == UNAUTHORIZED))
+		_error[401] = UNAUTHORIZED;
+	if (_error.find(505) == _error.end() || (_error.find(505) == _error.end()
+	&& _error.find(505)->second == NOT_SUPPORTED))
+		_error[505] = NOT_SUPPORTED;
+	if (_error.find(404) == _error.end() || (_error.find(404) == _error.end()
+	&& _error.find(404)->second == DEF_ERR_PAGE))
+		_error[404] = DEF_ERR_PAGE;
+}
+
+std::string Location::get_error_path(int code)
+{
+	if (_error.find(code) != _error.end())
+		return (_error[code]);
+	return ("");
+}
+
 /*
 boolcheck_allowed_cgi(std::string ext)
 {

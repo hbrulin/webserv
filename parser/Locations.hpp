@@ -24,6 +24,8 @@ class Locations
 
 	Location& get_loc_by_url(std::string url);
 
+	void check_path_validity();
+
 	void 	print();
 
 	public:

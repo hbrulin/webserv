@@ -67,6 +67,8 @@ class ConfigParser
 	void parse_cgi_type(std::string b);
 	void parse_body_size(std::string b);
 
+	void parse_error(std::string);
+
 	void remove_whitespace(std::string&);
 
 };

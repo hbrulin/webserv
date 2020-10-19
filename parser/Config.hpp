@@ -21,10 +21,12 @@ struct Config
 
 	void set_blank();
 	void set_default_locations();
+	void set_default_errors();
 
 	std::string _server_name;
 	std::string _root; //-> root path of the server like www/
 	std::string _errors; // ->root of default errors directory
+	std::map<int,std::string> _error;
 
 
 	//routing

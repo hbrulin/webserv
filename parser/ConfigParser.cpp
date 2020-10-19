@@ -35,6 +35,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 
 	_config = config;
 	//std::cout << s << std::endl;
+	_config->set_default_errors();
 	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;
@@ -80,14 +81,10 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
 		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler*/
 
-/*	_config->_locations.get_loc_by_url("");
-	_config->_locations.get_loc_by_url("/bonjour/aurevoir/salut/");
-	_config->_locations.get_loc_by_url("/");*/
 	_config->set_blank();
 	_config->set_default_locations();
-	/*std::cout << "\nBLANK\n\n";
-	_config->_locations._blank.print();*/
-	//print_data(_config);
+
+//	_config->_locations.check_path_validity(); -> a travailler pour voir si on check les paths
 	return (true);
 }
 
@@ -100,6 +97,7 @@ void ConfigParser::initiate_map()
 	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["errors"] = &ConfigParser::parse_errors;
+	_map["error"] = &ConfigParser::parse_error;
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
@@ -243,6 +241,39 @@ void ConfigParser::parse_method(std::string b)
 	}
 }
 
+void ConfigParser::parse_error(std::string b)
+{
+	std::string code = "";
+	std::string path = "";
+
+	while (b.size())
+	{
+		code = "";
+		path = "";
+		code = b.substr(
+		b.find_first_of("0123456789"),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")));
+		//std::cout << s << std::endl;
+		remove_whitespace(code);
+
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << "Code: " << code;
+		path = b.substr(
+		b.find_first_of(ALPHACHAR),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << " Path: " << path << std::endl;
+
+		_config->_error[std::stoi(code)] = path;
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+
+		//std::cout << "b: " << b << std::endl;
+	}
+}
+
 void ConfigParser::remove_whitespace(std::string& s)
 {
 	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
@@ -258,9 +289,6 @@ void ConfigParser::remove_whitespace(std::string& s)
 }
 
 
-
-
-
 void ConfigParser::print_data(Config* config)
 {
 //	if (!config)
@@ -269,5 +297,7 @@ void ConfigParser::print_data(Config* config)
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
 	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors << std::endl;
 	config->_locations.print();
-	std::cout << std::endl;
+	std::cout << "Error pages:\n";
+	for (std::map<int,std::string>::iterator it = config->_error.begin(); it != config->_error.end(); it++)
+		std::cout << it->first << ": " << it->second << std::endl;
 }

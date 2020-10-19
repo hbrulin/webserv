@@ -118,3 +118,11 @@ Location& Locations::get_loc_by_url(std::string url)
 	//std::cout << "blank" << std::endl;
 	return (_blank);
 }
+
+void Locations::check_path_validity()
+{
+	for (unsigned long i = 0; i < size(); i++)
+	{
+		_v[i].check_path_validity();
+	}
+}
