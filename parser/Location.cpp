@@ -13,7 +13,7 @@ Location::Location()
 	_try_files = "";
 	_index = "";
 	_allow = "";
-	_body_size = 120000000;
+	_body_size = 0;
 	_uploaded_files_root = "";
 	_send_files = false;
 	_cgi_type = "";
@@ -257,7 +257,8 @@ void Location::print()
 	"\ndefault_directory_answer_file: " << _directory_answer_file;
 
 	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type
-	<< "\nCGI_FILE: " << _cgi_file;
+	<< "\nCGI_FILE: " << _cgi_file << "\nErrors: " << _errors;
+
 	std::cout << std::endl;
 }
 

@@ -20,6 +20,7 @@ struct Config
 	Config(const Config&);
 
 	void set_blank();
+	void set_default_locations();
 
 	std::string _server_name;
 	std::string _root; //-> root path of the server like www/

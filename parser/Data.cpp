@@ -78,6 +78,8 @@ Data::Data(const char* file_name)
 
 	check_multiple_ports();
 	check_validity();
+	/*for (unsigned long i = 0; i < _configList.size(); i++)
+		_configParser.print_data(&_configList[i]);*/
 //	std::cout << _configList.back()._listen << std::endl;
 //	std::cout << _configList.front()._listen << std::endl;
 //	std::cout << _configList.size() << std::endl;
