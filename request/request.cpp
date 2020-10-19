@@ -28,7 +28,8 @@ void		Request::getBody() {
 	while (std::getline(f, buf))
 	{
 		if (!flag)
-			m_chunk_size += strtol(buf.c_str(), NULL, 16);
+			m_chunk_size += ft_atoi_base(buf, "0123456789abcdef");
+			//m_chunk_size += strtol(buf.c_str(), NULL, 16);
 		else
 			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;

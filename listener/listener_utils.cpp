@@ -46,8 +46,8 @@ int Listener::getLength(const std::string body, const std::string toParse)
 		int i = n;
 		while (body[i] != '\n' && body[i] != '\r') { i++;}
 		referer = body.substr(n, i - n);
-		//std::cout << referer << std::endl;
-        return strtol(referer.c_str(), NULL, 10);
+		return ft_atoi_base(referer, "0123456789");
+        //return strtol(referer.c_str(), NULL, 10);
 	}
     return 0;
 }

@@ -14,6 +14,7 @@
 #include "../request/request.hpp"
 #include "../parser/Config.hpp"
 #include <vector>
+#include "../utils/libft.h"
 #include "../utils/definitions.hpp"
 #include <signal.h>
 #include "Buffers.hpp"

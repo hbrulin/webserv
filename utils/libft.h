@@ -6,7 +6,7 @@
 /*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/18 17:17:08 by hbrulin          ###   ########.fr       */
+/*   Updated: 2020/10/19 00:10:07 by hbrulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # include <string.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <string>
+
 
 typedef struct	s_list
 {
@@ -76,5 +78,6 @@ char			*ft_substr(char const *s, unsigned int start, size_t len);
 char			*ft_strtrim(char const *s1, char const *set);
 void			*ft_calloc(size_t count, size_t size);
 void			ft_tabdel(void **tab);
+long int		ft_atoi_base(std::string str, std::string base);
 
 #endif

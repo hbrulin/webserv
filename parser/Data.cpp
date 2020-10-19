@@ -157,7 +157,9 @@ static void check_rooting_validity(Config& config)
 	{
 		try
 		{
-			byte = std::atoi(&config._host[j]);
+			byte = ft_atoi_base(&config._host[j], "0123456789");
+			//byte = std::atoi(&config._host[j]);
+			//std::cout << byte << std::endl;
 		}
 		catch (...)
 		{
