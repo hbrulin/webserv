@@ -493,18 +493,6 @@ void Location::parse_error(std::string b)
 
 void Location::set_default_errors(std::map<int,std::string> error)
 {
-	/*if (_error.find(405) == _error.end())
-		_error[405] = error[405];
-	if (_error.find(406) == _error.end())
-		_error[406] = error[406];
-	if (_error.find(400) == _error.end())
-		_error[400] = error[400];
-	if (_error.find(401) == _error.end())
-		_error[401] = error[401];
-	if (_error.find(505) == _error.end())
-		_error[505] = error[505];
-	if (_error.find(404) == _error.end())
-		_error[404] = error[404];*/
 	for (std::map<int,std::string>::iterator it = error.begin(); it != error.end(); it++)
 	{
 		if (_error.find(it->first) == _error.end() ||
