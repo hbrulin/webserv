@@ -30,9 +30,10 @@ int Request::preChecks()
 }
 
 void Request::notFound() {
-	if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+	/*if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
+			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);*/
 	m_path = m_not_found;
+	//std::cout << m_path << std::endl;
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 	m_url = str;
@@ -53,13 +54,16 @@ void Request::badRequest() {
 
 int Request::internalError() {
 	std::ostringstream oss;
+	int ret;
 	oss << "HTTP/1.1 " << 500;
 	oss << " Internal Server Error\r\n";
 	oss << "Content-Type: text/html" << "\r\n";
 	oss << "Content-Length: 97\r\n\r\n";
 	oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-	if (send(m_client, m_output.c_str(), m_output.size() + 1, 0) < 0)
+	if ((ret = send(m_client, m_output.c_str(), m_output.size() + 1, 0)) < 0)
 		return -1;
+	else if (ret == 0)
+			return 0;
 	return 0;
 }
 

@@ -49,9 +49,9 @@ void Request::parse()
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
+		//std::cout << _loc._errors << std::endl;
 		if (!_loc._errors.empty())
 			m_not_found = _loc._errors;
-		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())
 			return;
@@ -65,8 +65,17 @@ void Request::parse()
 			m_url = m_index;
 		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 			m_url.erase(0, _loc._name.size());
-		if (_loc._root != YOUPIBANANE && strstr(m_url.c_str(), UPLOADED) == NULL)
-			_loc._root =  _head_req.contentNego(_loc._root);
+
+		if (!_loc._uploaded_files_root.empty() && strstr(m_url.c_str(), _loc._uploaded_files_root.c_str()) != NULL)
+		{
+			m_path = m_url;
+			return;
+		}
+
+		if (strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
+		{
+			_loc._root = _head_req.contentNego(_loc._root);
+		}
 		m_path = _loc._root + m_url;
 
 		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
@@ -138,6 +147,8 @@ int Request::send_to_client() {
 	{
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
+		else if (bytes == 0)
+			return 0;
 		if (bytes < m_output.size())
 			m_output = m_output.substr(bytes);
 		else if (bytes == m_output.size())
@@ -148,6 +159,8 @@ int Request::send_to_client() {
 		//std::cout << m_output.size() << std::endl;
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
+		else if (bytes == 0)
+			return 0;
 		if (bytes < m_output.size())
 			m_output = m_output.substr(bytes);
 		else if (bytes == m_output.size())
@@ -155,7 +168,7 @@ int Request::send_to_client() {
 		//std::cout << bytes << std::endl;
 		//std::cout << bytes_left << std::endl << std::endl;
 	}
-	/*if (_head_req.REQUEST_METHOD == POST)
+	/*if (_head_req.REQUEST_METHOD == GET)
 	{
 		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;

@@ -72,13 +72,11 @@
 #define STATUS_STR "Status: "
 
 //FOLDERS AND FILES
-#define YOUPIBANANE "YoupiBanane/"
-#define UPLOADED "uploaded"
+#define CONTENT_NEGO_AVAILABLE "www/"
 #define OUTPUT_CGI "/cgi-bin/cgi_output_"
 #define POST_HTML "www/post.html"
-#define YOUPI_BAD "/youpi.bad_extension"
 #define ERROR_FOLDER "error_pages/"
-#define DEF_ERR_PAGE "404.html";
+#define DEF_ERR_PAGE "www/error_pages/404.html"
 
 //EXTENSIONS
 #define PHP ".php"
