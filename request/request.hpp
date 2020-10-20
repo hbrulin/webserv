@@ -71,6 +71,7 @@ class Request
 	
 	/*parsing*/
 	void parse();
+	int isGoodRequest();
 	void getBody();
 
 	/*methods*/

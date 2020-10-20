@@ -63,7 +63,7 @@ class Head_req
     std::string get_meta();
     void        getScriptName(std::string s);
 	std::string contentNego(std::string root);
-	void		parse(std::vector<std::string> parsed, std::string s, std::string url);
+	void		parse(std::string s, std::string url);
     std::string getXtoparse(std::string s, std::string toParse);
     struct stat st;
 };

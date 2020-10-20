@@ -289,10 +289,7 @@ void Head_req::getRemAddr()
 }
 
 
-void		Head_req::parse(std::vector<std::string> parsed, std::string m_buffer, std::string url) {
-	REQUEST_METHOD = parsed[0];
-	REQUEST_URI = parsed[1];
-	SERVER_PROTOCOL = parsed[2];
+void		Head_req::parse(std::string m_buffer, std::string url) {
 	if (strstr(m_buffer.c_str(), "X-") != NULL)
  	{
  		X_headers = getXtoparse(m_buffer, "X-");

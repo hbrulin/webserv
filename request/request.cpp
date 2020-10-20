@@ -39,14 +39,44 @@ void		Request::getBody() {
 	//std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
 }
 
+int Request::isGoodRequest()
+{
+	std::string buf;
+	int line = 0;
+	std::istringstream iss(m_headers.c_str());
+
+	while (std::getline(iss, buf))
+	{
+		std::istringstream s(buf.c_str());
+		std::vector<std::string> parsed((std::istream_iterator<std::string>(s)), std::istream_iterator<std::string>());
+		if (line == 0)
+		{
+			if (parsed.size() != 3)
+				return 1;
+			if (parsed[0] != GET && parsed[0] != POST && parsed[0] != HEAD && parsed[0] != PUT && parsed[0] != DELETE)
+				return 1;
+			if (strstr(parsed[1].c_str(), "/") == NULL)
+				return 1;
+			line++;
+			m_url = parsed[1];
+			_head_req.REQUEST_METHOD = parsed[0];
+			_head_req.REQUEST_URI = parsed[1];
+			_head_req.SERVER_PROTOCOL = parsed[2];
+		}
+		else
+		{
+			if (parsed.size() != 2)
+				return 1;
+		}
+	}
+	return 0;
+}
+
 void Request::parse() 
 {
-	std::istringstream iss(m_headers.c_str());
-	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-	if (parsed[0] == GET || parsed[0] == POST || parsed[0] == HEAD || parsed[0] == PUT || parsed[0] == DELETE)
+	if (!isGoodRequest())
 	{
-		m_url = parsed[1];
-		_head_req.parse(parsed, m_headers.c_str(), m_url);
+		_head_req.parse(m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
 		//std::cout << _loc._errors << std::endl;
