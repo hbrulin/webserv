@@ -35,7 +35,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 
 	_config = config;
 	//std::cout << s << std::endl;
-	_config->set_default_errors();
+	//_config->set_default_errors();
 	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;

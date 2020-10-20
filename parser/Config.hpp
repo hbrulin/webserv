@@ -18,6 +18,7 @@ struct Config
 	*/
 	Config();
 	Config(const Config&);
+	void operator = (const Config&);
 
 	void set_blank();
 	void set_default_locations();

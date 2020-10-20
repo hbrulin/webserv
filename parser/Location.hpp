@@ -94,7 +94,7 @@ class Location
 	void remove_whitespace(std::string&);
 	bool check_mode();
 
-	void set_default_errors();
+	void set_default_errors(std::map<int,std::string>);
 	std::string get_error_path(int code);
 
 	void check_path_validity();
