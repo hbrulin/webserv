@@ -42,6 +42,9 @@ int Request::isGoodRequest()
 {
 	std::string buf;
 	int line = 0;
+	if (m_headers.empty())
+		return 1;
+
 	std::istringstream iss(m_headers.c_str());
 
 	while (std::getline(iss, buf))
