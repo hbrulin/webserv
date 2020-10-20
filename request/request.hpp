@@ -72,6 +72,7 @@ class Request
 	/*parsing*/
 	void parse();
 	int isGoodRequest();
+	int forbiddenChars(std::string s);
 	void getBody();
 
 	/*methods*/

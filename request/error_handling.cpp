@@ -78,6 +78,18 @@ int Request::isAllowed(std::string path)
     return 1;
 }
 
+int Request::forbiddenChars(std::string s) {
+	int i = 0;
+	while (s[i])
+	{
+		if (s[i] == '\\' || s[i] == '{' || s[i] == '}' || s[i] == '|' 
+			|| s[i] == '^' || s[i] == '~' || s[i] == '(' || s[i] == ')' || s[i] == '`'
+			|| s[i] == '<' || s[i] == '>' || s[i] == '"' || s[i] == '#' || s[i] == '%')
+			return 1;
+		i++;
+	}
+	return 0;
+}
 
 
 

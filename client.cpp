@@ -59,7 +59,7 @@ int main(void)
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n\r\n";*/
 
-	string userInput = " GET HTTP/1.1\r\n";
+	string userInput = " GET / HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n\r\n";
 

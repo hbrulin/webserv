@@ -57,7 +57,7 @@ int Request::isGoodRequest()
 				return 1;
 			if (parsed[0] != GET && parsed[0] != POST && parsed[0] != HEAD && parsed[0] != PUT && parsed[0] != DELETE)
 				return 1;
-			if (strstr(parsed[1].c_str(), "/") == NULL)
+			if (strstr(parsed[1].c_str(), "/") == NULL || forbiddenChars(parsed[1]))
 				return 1;
 			line++;
 			m_url = parsed[1];
