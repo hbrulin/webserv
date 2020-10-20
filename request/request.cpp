@@ -35,8 +35,7 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
-	//std::cout << "body_size request" << m_body.size() << std::endl;
-	//std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
+
 }
 
 int Request::isGoodRequest()
@@ -114,6 +113,8 @@ void Request::parse()
 	}
 	else
 	{
+		//_loc = _conf._locations._blank;
+		//_loc.print();
 		badRequest();
 		return;
 	}

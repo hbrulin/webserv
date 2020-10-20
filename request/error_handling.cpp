@@ -42,8 +42,7 @@ void Request::notFound() {
 }
 
 void Request::badRequest() {
-	//if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-	_loc._root = "www/";
+	_loc._root = "www/"; //A SUPPRIMER QUAND ON AURA LA BONNE LOC AVEC BLOC SERVER
 	m_path = _loc._root + ERROR_FOLDER + BAD_REQUEST;
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
