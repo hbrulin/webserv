@@ -135,6 +135,11 @@ int Request::forking()
 }
 
 void Request::exec_cgi(){
+	if (_body_size > _loc._body_size)
+	{
+		m_errorCode = 413;
+		return;
+	}
 	if (_head_req.REQUEST_METHOD == POST)
 	{
 		post(); // on recupere les infos dans le body
@@ -147,10 +152,10 @@ void Request::exec_cgi(){
 }
 
 void Request::post() {
-	if (_head_req.CONTENT_LENGTH == "" && _head_req.TRANSFER_ENCODING == "")
+	if (_body_size > _loc._body_size)
 	{
-			m_errorCode = 411;
-			return;
+		m_errorCode = 413;
+		return;
 	}
 	if (is_cgi)
 		return;
@@ -161,15 +166,6 @@ void Request::post() {
 		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 200;
-		f.close();
-	}
-	else if (m_body.size() > _loc._body_size)
-	{
-		std::ifstream f(POST_HTML);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = POST_HTML;
-		m_url = str;
-		m_errorCode = 413;
 		f.close();
 	}
 	else
@@ -184,21 +180,8 @@ void Request::post() {
 }
 
 void Request::put() {
-	/*std::cout << m_body.size() << std::endl;
-	std::cout << m_chunk_size << std::endl << std::endl;*/
-	unsigned int n;
-	if (_head_req.TRANSFER_ENCODING == CHUNKED_STR)
-		n = m_chunk_size;
-	else if (_head_req.CONTENT_LENGTH.empty() == 0)
-		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
-	else 
-	{
-		m_errorCode = 411;
-		n = 0;
-		return;
-	}
-	//std::cout << n << "!!!!!!\n";
-	if ((_head_req.CONTENT_LENGTH.empty() == 0 && (unsigned int)stoi(_head_req.CONTENT_LENGTH)) > _loc._body_size)
+	
+	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
 		return;
@@ -213,7 +196,7 @@ void Request::put() {
 	//std::cout << _loc._uploaded_files_root << "\n";
 	std::ofstream ff(m_path);
 	if (ff.good())
-		ff << m_body.substr(0, n) << std::endl; //get msg from body, limit if above content-lenght
+		ff << m_body.substr(0, _body_size) << std::endl; //get msg from body, limit if above content-lenght
 	else
 		m_errorCode = 456;
 	ff.close();

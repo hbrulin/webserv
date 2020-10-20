@@ -14,7 +14,7 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		is_cgi = false;
 		s_addr = addr;
 		pid_ret = 0;
-		m_chunk_size = 0;
+		_body_size = 0;
 		bytes_left = 1;
 		first_send = 1;
 	};
@@ -28,14 +28,13 @@ void		Request::getBody() {
 	while (std::getline(f, buf))
 	{
 		if (!flag)
-			m_chunk_size += ft_atoi_base(buf, "0123456789abcdef");
-			//m_chunk_size += strtol(buf.c_str(), NULL, 16);
+			_body_size += ft_atoi_base(buf, "0123456789abcdef");
+			//_body_size += strtol(buf.c_str(), NULL, 16);
 		else
 			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;
 	}
 	m_body = total;
-
 }
 
 int Request::isGoodRequest()
@@ -110,9 +109,19 @@ void Request::parse()
 		}
 		m_path = _loc._root + m_url;
 
-		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
-			&& _head_req.TRANSFER_ENCODING == CHUNKED_STR)
-			getBody();
+		/*parse body*/
+		if (_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST)
+		{
+			if (_head_req.TRANSFER_ENCODING == CHUNKED_STR)
+				getBody();
+			else if (_head_req.CONTENT_LENGTH.empty() == 0)
+				_body_size = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
+			else 
+			{
+				m_errorCode = 411;
+				return;
+			}
+		}
 	}
 	else
 	{

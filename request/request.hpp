@@ -57,7 +57,7 @@ class Request
 	std::string m_path;
 	std::string m_url;
 	std::string m_body;
-	unsigned int m_chunk_size;
+	unsigned int _body_size;
 
 	/*Output*/
 	int m_errorCode;
