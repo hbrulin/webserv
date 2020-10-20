@@ -59,12 +59,5 @@ void Listener::clean()
     	if (FD_ISSET(i, &m_r_set))
         	close(i);
    }
-   	std::vector<Buffers*>::iterator it = buf_list.begin();
-	std::vector<Buffers*>::iterator ite = buf_list.end();
-	while (it != ite)
-	{
-		delete *it;
-		buf_list.erase(it);
-		it++;
-	}
+	exit(SIGQUIT);
 }
