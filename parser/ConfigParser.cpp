@@ -27,14 +27,11 @@ void ConfigParser::operator = (const ConfigParser& configParser)
 
 bool ConfigParser::setConfig(Config* config, std::string& s)
 {
-	//something like this
 	std::string key;
 	std::string value;
 	int i;
-	int parsing_sum = 0;
 
 	_config = config;
-	//std::cout << s << std::endl;
 	//_config->set_default_errors();
 	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
@@ -62,8 +59,6 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		try
 		{
 			(this->*(_map[key]))(value);
-			//std::cout << "1\n";
-			parsing_sum++;
 		}
 		catch (std::logic_error& e)
 		{
@@ -77,9 +72,6 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		else
 			s = s.substr(s.find('}') + 1);
 	}
-
-	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
-		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler*/
 
 	_config->set_blank();
 	_config->set_default_locations();
@@ -97,16 +89,10 @@ void ConfigParser::initiate_map()
 	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["errors"] = &ConfigParser::parse_errors;
-//	_map["error"] = &ConfigParser::parse_error;
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
-	//_map["host"] = &ConfigParser::parse_host;
 	_map["methods"] = &ConfigParser::parse_method;
-	//_map["directory_listing"] = &ConfigParser::parse_directory_listing;
-	//_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
-	//_map["send_files"] = &ConfigParser::parse_send_files;
-	//_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 	_map["location"] = &ConfigParser::parse_location;

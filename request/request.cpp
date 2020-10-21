@@ -39,7 +39,7 @@ void		Request::getBody() {
 	//std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
 }
 
-void Request::parse() 
+void Request::parse()
 {
 	std::istringstream iss(m_headers.c_str());
 	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
@@ -50,7 +50,7 @@ void Request::parse()
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
 		if (!_loc._errors.empty())
-			m_not_found = _loc._errors;
+			m_not_found = _loc._errors[404];
 		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())
@@ -69,7 +69,7 @@ void Request::parse()
 			_loc._root =  _head_req.contentNego(_loc._root);
 		m_path = _loc._root + m_url;
 
-		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
+		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST)
 			&& _head_req.TRANSFER_ENCODING == CHUNKED_STR)
 			getBody();
 	}
@@ -106,14 +106,14 @@ void Request::handle() {
 		delete_m();
 		return ;
 	}
-	else                                                                                                                                                                                                                                                                                                                          
-		get(); //also works for HEAD, change is in sendToClient()     
+	else
+		get(); //also works for HEAD, change is in sendToClient()
 
 }
 
 
 int Request::send_to_client() {
-	
+
 	if (first_send)
 	{
 		first_send = !first_send;

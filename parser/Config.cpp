@@ -73,6 +73,12 @@ void Config::set_default_locations()
 	//		_locations[i]._errors = _errors;
 		if (_locations[i]._body_size == 0)
 			_locations[i]._body_size = _body_size;
+		if (_locations[i]._root.empty())
+			_locations[i]._root = _root;
+		/*if (_locations[i]._cgi_type.empty())
+			_locations[i]._cgi_type = _cgi_type;
+		if (_locations[i]._cgi_root.empty())
+			_locations[i]._cgi_root = _cgi_root;*/
 		_locations[i].set_default_errors(_errors);
 	}
 }

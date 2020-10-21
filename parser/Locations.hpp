@@ -30,7 +30,7 @@ class Locations
 
 	public:
 	std::vector<Location> 	_v;
-	Location 				_blank; // blnk location returned if none was found
+	Location 				_blank; // blank location returned if none was found
 };
 
 #endif

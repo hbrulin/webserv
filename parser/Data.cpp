@@ -172,46 +172,7 @@ static void check_rooting_validity(Config& config)
 		j = config._host.find_first_of('.', j) + 1;
 	}
 }
-/*
-static void check_methods_validity(Config& config)
-{
-	std::string error = "Error on server: " + config._server_name + ": ";
-	int j = 0;
 
-	for (std::vector<std::string>::size_type i = 0; i < config._methods.size(); i++)
-	{
-		j = 0;
-		while (1)
-		{
-			if (Data::_SUPPORTED_METHOD[j] == NULL)
-				throw(std::logic_error(error + "Unsupported Method: " + config._methods[i]));
-			if (config._methods[i] == Data::_SUPPORTED_METHOD[j])
-				break ;
-			j++;
-		}
-	}
-	j = 0;
-	while (1)
-	{
-		if (Data::_SUPPORTED_CGI[j] == NULL)
-			throw(std::logic_error(error + "Unsupported cgi type: " + config._cgi_type));
-		if (config._cgi_type == Data::_SUPPORTED_CGI[j])
-			break ;
-		j++;
-	}
-}*/
-/*
-static void check_server_doubles(std::vector<Config>& configList)
-{
-	for (std::vector<Config>::size_type i = 0; i < configList.size() - 1; i++)
-	{
-		for (std::vector<Config>::size_type j = i + 1; j < configList.size(); j++)
-			if (configList[i]._listen == configList[j]._listen &&
-			configList[i]._host == configList[j]._host) // doublon
-				configList.erase(configList.begin() + j);
-	}
-}
-*/
 void Data::check_validity()
 {
 	/*
