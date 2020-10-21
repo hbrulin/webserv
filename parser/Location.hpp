@@ -65,8 +65,8 @@ class Location
 	std::string					_cgi_file;
 	std::string					_cgi_method;
 
-	std::string 				_errors;
-	std::map<int,std::string> _error;
+	//std::string 				_errors;
+	std::map<int,std::string> _errors;
 
 
 	fmap _map;
@@ -88,7 +88,7 @@ class Location
 	void parse_body_size(std::string b);
 	void parse_cgi_file(std::string);
 	void parse_errors(std::string);
-	void parse_error(std::string);
+//	void parse_error(std::string);
 
 
 	void remove_whitespace(std::string&);

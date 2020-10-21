@@ -97,7 +97,7 @@ void ConfigParser::initiate_map()
 	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["errors"] = &ConfigParser::parse_errors;
-	_map["error"] = &ConfigParser::parse_error;
+//	_map["error"] = &ConfigParser::parse_error;
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
@@ -126,13 +126,13 @@ void ConfigParser::parse_body_size(std::string b)
 		throw(std::logic_error("Body size cannot be negative"));
 	_config->_body_size = body;
 }
-
+/* OBSOLETE
 void ConfigParser::parse_errors(std::string b)
 {
 	remove_whitespace(b);
 	_config->_errors = b;
 }
-
+*/
 void ConfigParser::parse_listen(std::string b)
 {
 	remove_whitespace(b);
@@ -241,10 +241,10 @@ void ConfigParser::parse_method(std::string b)
 	}
 }
 
-void ConfigParser::parse_error(std::string b)
+void ConfigParser::parse_errors(std::string b)
 {
-	std::string code = "";
-	std::string path = "";
+	std::string code;
+	std::string path;
 
 	while (b.size())
 	{
@@ -265,7 +265,7 @@ void ConfigParser::parse_error(std::string b)
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
 		//std::cout << " Path: " << path << std::endl;
 
-		_config->_error[std::stoi(code)] = path;
+		_config->_errors[std::stoi(code)] = path;
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
@@ -295,9 +295,9 @@ void ConfigParser::print_data(Config* config)
 //		config = _config;
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
-	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors << std::endl;
+	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << std::endl;
 	config->_locations.print();
 	std::cout << "Error pages:\n";
-	for (std::map<int,std::string>::iterator it = config->_error.begin(); it != config->_error.end(); it++)
+	for (std::map<int,std::string>::iterator it = config->_errors.begin(); it != config->_errors.end(); it++)
 		std::cout << it->first << ": " << it->second << std::endl;
 }

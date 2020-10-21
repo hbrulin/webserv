@@ -20,10 +20,10 @@ void Location::check_path_validity()
 	//if (!path_exists(_errors))
 	//	throw (std::logic_error(error + _errors + " is invalid"));
 
-	for (std::map<int,std::string>::iterator it = _error.begin(); it != _error.end(); it++)
+	for (std::map<int,std::string>::iterator it = _errors.begin(); it != _errors.end(); it++)
 	{
 		if (!path_exists(it->second))
-			throw (std::logic_error(error + _errors + " is invalid"));
+			throw (std::logic_error(error + it->second + " is invalid"));
 	}
 	//if (!path_exists(config._cgi_root))
 	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
@@ -49,7 +49,7 @@ Location::Location()
 	_cgi_file = "";
 	_directory_listing = false;
 	_directory_answer_file = "";
-	_errors = "";
+	//_errors = ""; OBSOLETE
 
 	_methods.push_back("GET");
 	//set_default_errors();
@@ -74,7 +74,7 @@ void Location::initiate_map()
 	_map["send_files"] = &Location::parse_send_files;
 	_map["uploaded_files_root"] = &Location::parse_uploaded_files_root;
 	_map["errors"] = &Location::parse_errors;
-	_map["error"] = &Location::parse_error;
+	//_map["error"] = &Location::parse_error;
 }
 
 Location::~Location()
@@ -98,7 +98,7 @@ Location::Location(const Location& l)
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
 	_errors = l._errors;
-	_error = l._error;
+	//_error = l._error;
 	initiate_map();
 }
 
@@ -120,7 +120,7 @@ void Location::operator = (const Location& l)
 	_directory_listing = l._directory_listing;
 	_directory_answer_file = l._directory_answer_file;
 	_errors = l._errors;
-	_error = l._error;
+	//_error = l._error;
 	initiate_map();
 }
 
@@ -159,13 +159,7 @@ void Location::parse(std::string b)
 	if (_name[_name.size() - 1] != '/' && _name[0] != '.')
 		_name.push_back('/');
 
-	//if (!_name.empty()) // pas sur de ca
-	//_name = "/" + _name;
-
 	b = b.substr(b.find('{') + 1);
-
-//	std::cout << "Mode: " << _mode << std::endl;
-//	std::cout << "Name: " << _name << std::endl;
 
 	std::string key = b;
 	std::string value = "";
@@ -290,8 +284,8 @@ void Location::print()
 	"\ndefault_directory_answer_file: " << _directory_answer_file;
 
 	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type
-	<< "\nCGI_FILE: " << _cgi_file << "\nErrors: " << _errors << std::endl;;
-	for (std::map<int,std::string>::iterator it = _error.begin(); it != _error.end(); it++)
+	<< "\nCGI_FILE: " << std::endl;;
+	for (std::map<int,std::string>::iterator it = _errors.begin(); it != _errors.end(); it++)
 		std::cout << it->first << ": " << it->second << std::endl;
 
 	std::cout << std::endl;
@@ -368,12 +362,13 @@ void Location::parse_cgi_file(std::string b)
 	_cgi_file = b;
 }
 
+/*
 void Location::parse_errors(std::string b)
 {
 	remove_whitespace(b);
 	_errors = b;
 }
-
+*/
 // checks :
 
 void Location::check_methods_validity()
@@ -425,20 +420,8 @@ std::string Location::get_index()
 
 std::string Location::get_index_path()
 {
-	// if no root -> conf.root + name
-	// if root -> root
-	// if alias conf.root + alias
 	return (get_path() + _index);
 }
-/*
-bool Location::upload(std::string file)
-{
-	if (!_send_files)
-		return (false);
-	(void)file;
-	// upload to _uploaded_files_root
-	return (true);
-}*/
 
 unsigned int Location::get_body_size()
 {
@@ -458,7 +441,7 @@ std::string		Location::get_listing()
 	return ("directory listing on");
 }
 
-void Location::parse_error(std::string b)
+void Location::parse_errors(std::string b)
 {
 	std::string code = "";
 	std::string path = "";
@@ -481,7 +464,7 @@ void Location::parse_error(std::string b)
 		//std::cout << " Path: " << path << std::endl;
 
 
-		_error[std::stoi(code)] = path;
+		_errors[std::stoi(code)] = path;
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
@@ -491,20 +474,20 @@ void Location::parse_error(std::string b)
 }
 
 
-void Location::set_default_errors(std::map<int,std::string> error)
+void Location::set_default_errors(std::map<int,std::string> errors)
 {
-	for (std::map<int,std::string>::iterator it = error.begin(); it != error.end(); it++)
+	for (std::map<int,std::string>::iterator it = errors.begin(); it != errors.end(); it++)
 	{
-		if (_error.find(it->first) == _error.end() ||
-		(_error.find(it->first) != _error.end() && _error.find(it->first)->second.empty()))
-			_error[it->first] = it->second;
+		if (_errors.find(it->first) == _errors.end() ||
+		(_errors.find(it->first) != _errors.end() && _errors.find(it->first)->second.empty()))
+			_errors[it->first] = it->second;
 	}
 }
 
 std::string Location::get_error_path(int code)
 {
-	if (_error.find(code) != _error.end())
-		return (_error[code]);
+	if (_errors.find(code) != _errors.end())
+		return (_errors[code]);
 	return ("");
 }
 

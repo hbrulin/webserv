@@ -26,8 +26,8 @@ struct Config
 
 	std::string _server_name;
 	std::string _root; //-> root path of the server like www/
-	std::string _errors; // ->root of default errors directory
-	std::map<int,std::string> _error;
+	//std::string _errors; // ->root of default errors directory
+	std::map<int,std::string> _errors;
 
 
 	//routing

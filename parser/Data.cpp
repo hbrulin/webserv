@@ -136,8 +136,8 @@ static void check_path_validity(Config& config)
 
 	if (!path_exists(config._root))
 		throw (std::logic_error(error + config._root + " is invalid"));
-	if (!path_exists(config._errors))
-		throw (std::logic_error(error + config._errors + " is invalid"));
+//	if (!path_exists(config._errors)) ->maybe or maybe not
+//		throw (std::logic_error(error + config._errors + " is invalid"));
 	//if (!path_exists(config._cgi_root))
 	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
 	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
