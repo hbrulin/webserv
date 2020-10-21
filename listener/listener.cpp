@@ -395,8 +395,9 @@ void Listener::LaunchRequest(int n, int fd)
 	host = host.substr(0, m);
 	for (int j = 0; j < _size ; j++)
 	{
-		if (host == _conf[j]._server_name)
+		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
 		{
+			//std::cout << _conf[j]._server_name << std::endl;
 			m_nbConf = j;
 			break;
 		}

@@ -21,6 +21,7 @@ std::string Listener::getHost(const std::string buffer, const std::string toPars
 		int i = n;
 		while (buffer[i] != '\n' && buffer[i] != '\r') { i++;}
 		referer = buffer.substr(n, i - n);
+		//std::cout << referer << std::endl;
         return referer;
 	}
     return "";
