@@ -7,7 +7,8 @@ int Request::preChecks()
 		m_errorCode = 505;
 		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
 			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
-		m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
+		//m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
+		m_path = _loc._errors[m_errorCode];
 		std::ifstream f(m_path);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
@@ -19,7 +20,9 @@ int Request::preChecks()
 		m_errorCode = 405;
 		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
 			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
-		m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+		m_path = _loc._errors[m_errorCode];
+		//std::cout << m_path;
+		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
 		std::ifstream f(m_path);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_url = str;
@@ -30,10 +33,10 @@ int Request::preChecks()
 }
 
 void Request::notFound() {
-	/*if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);*/
-	m_path = m_not_found;
-	//std::cout << m_path << std::endl;
+	if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
+			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
+	//m_path = _loc._root + ERROR_FOLDER + m_not_found;
+	m_path = _loc._errors[404];
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 	m_url = str;
@@ -42,8 +45,9 @@ void Request::notFound() {
 }
 
 void Request::badRequest() {
-	_loc._root = "www/"; //A SUPPRIMER QUAND ON AURA LA BONNE LOC AVEC BLOC SERVER
-	m_path = _loc._root + ERROR_FOLDER + BAD_REQUEST;
+	//if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
+	//m_path = _loc._root + ERROR_FOLDER + BAD_REQUEST;
+	m_path = _loc._errors[400];
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 	m_url = str;
@@ -82,7 +86,7 @@ int Request::forbiddenChars(std::string s) {
 	int i = 0;
 	while (s[i])
 	{
-		if (s[i] == '\\' || s[i] == '{' || s[i] == '}' || s[i] == '|' 
+		if (s[i] == '\\' || s[i] == '{' || s[i] == '}' || s[i] == '|'
 			|| s[i] == '^' || s[i] == '~' || s[i] == '(' || s[i] == ')' || s[i] == '`'
 			|| s[i] == '<' || s[i] == '>' || s[i] == '"' || s[i] == '#' || s[i] == '%')
 			return 1;
