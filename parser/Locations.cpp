@@ -12,11 +12,13 @@ Locations::~Locations() {}
 Locations::Locations(const Locations& locs)
 {
 	_v = locs._v;
+	_blank = locs._blank;
 }
 
 void Locations::operator = (const Locations& locs)
 {
 	_v = locs._v;
+	_blank = locs._blank;
 }
 
 unsigned long Locations::size()
