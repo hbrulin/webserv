@@ -8,9 +8,9 @@ Config::Config()
 	_root = "";
 	_host = "0.0.0.0";
 	_server_name = _host;
-	_index = "";
 	_body_size = 120000000;
 	set_default_errors();
+	_index = "";
 	//_ports.push_back(80);
 }
 
