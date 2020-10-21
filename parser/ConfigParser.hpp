@@ -64,6 +64,8 @@ class ConfigParser
 
 	void remove_whitespace(std::string&);
 
+	void parse_index(std::string);
+
 };
 
 #endif

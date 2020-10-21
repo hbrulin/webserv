@@ -3,13 +3,14 @@
 
 Config::Config()
 {
-	_server_name = "";
 	//_errors = DEFAULT_ERROR_PAGES; -> OBSOLETE
 	_listen = 80;
 	_root = "";
 	_host = "0.0.0.0";
+	_server_name = _host;
 	_body_size = 120000000;
 	set_default_errors();
+	_index = "";
 	//_ports.push_back(80);
 }
 
@@ -33,6 +34,8 @@ Config::Config(const Config& b)
 	//_errors= b._error;
 	_errors = b._errors;
 
+	_index = b._index;
+
 }
 
 void Config::operator = (const Config& b)
@@ -53,6 +56,8 @@ void Config::operator = (const Config& b)
 	_cgi_root = b._cgi_root;
 	//_error = b._error;
 	_errors = b._errors;
+
+	_index = b._index;
 }
 
 void Config::set_blank()
@@ -63,6 +68,7 @@ void Config::set_blank()
 	_locations._blank._root = _root;
 	_locations._blank._cgi_root = _cgi_root;
 	_locations._blank._cgi_type = _cgi_type;
+	_locations._blank._index = _index;
 }
 
 void Config::set_default_locations()

@@ -88,6 +88,7 @@ void ConfigParser::initiate_map()
 	** correspondente que l'on crée en dessous et rajouter un attribut a config.hpp
 	*/
 	_map["root"] = &ConfigParser::parse_root;
+	_map["index"] = &ConfigParser::parse_index;
 	_map["errors"] = &ConfigParser::parse_errors;
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
@@ -102,6 +103,12 @@ void ConfigParser::parse_root(std::string b)
 {
 	remove_whitespace(b);
 	_config->_root = b;
+}
+
+void ConfigParser::parse_index(std::string b)
+{
+	remove_whitespace(b);
+	_config->_index = b;
 }
 
 void ConfigParser::parse_body_size(std::string b)
