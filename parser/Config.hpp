@@ -36,6 +36,7 @@ struct Config
 	std::string 				_host; // local host or something else
 
 
+	std::string _index;
 	//bool 		_directory_listing;
 	//std::string _default_directory_answer_file; // ????
 
