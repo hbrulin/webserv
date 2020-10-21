@@ -49,8 +49,8 @@ void Request::parse()
 		_head_req.parse(parsed, m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
-		if (!_loc._errors.empty())
-			m_not_found = _loc._errors[404];
+		/*if (!_loc._errors.empty())
+			m_not_found = _loc._errors[404];*/
 		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())

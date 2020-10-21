@@ -97,6 +97,14 @@ void Config::set_default_errors()
 		_errors[505] = NOT_SUPPORTED;
 	if (_errors.find(404) == _errors.end())
 		_errors[404] = DEF_ERR_PAGE;
+	if (_errors.find(206) == _errors.end())
+		_errors[206] = PARTIAL_CONTENT;
+	if (_errors.find(505) == _errors.end())
+		_errors[505] = NOT_SUPPORTED;
+	if (_errors.find(401) == _errors.end())
+		_errors[401] = AUTHORIZATION_REQUIRED;
+	if (_errors.find(411) == _errors.end())
+		_errors[411] = LENGTH_REQUIRED;
 }
 
 

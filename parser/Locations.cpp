@@ -63,6 +63,7 @@ void Locations::print()
 	{
 		_v[i].print();
 	}
+	_blank.print();
 }
 
 static void stack_url(std::stack<std::string>& urls, std::string b)

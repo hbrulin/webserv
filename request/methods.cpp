@@ -43,11 +43,11 @@ int Request::forking()
 	int ret;
 	if ((ret = stat((const char *)path, &buf)) < 0)
 		std::cout << ERR_STAT << strerror(errno) << std::endl;
-	else 
+	else
 	{
 		const char chars[] = "rwxrwxrwx";
 		char mode[10];
-  		for (size_t i = 0; i < 9; i++) 
+  		for (size_t i = 0; i < 9; i++)
     		mode[i] = (buf.st_mode & (1 << (8-i))) ? chars[i] : '-';
 		mode[9] = '\0';
   		//std::cout << "mode: " << mode << std::endl;
@@ -191,7 +191,7 @@ void Request::put() {
 		n = m_chunk_size;
 	else if (_head_req.CONTENT_LENGTH.empty() == 0)
 		n = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
-	else 
+	else
 	{
 		m_errorCode = 411;
 		n = 0;
