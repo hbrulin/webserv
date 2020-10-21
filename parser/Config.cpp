@@ -3,11 +3,11 @@
 
 Config::Config()
 {
-	_server_name = "";
 	//_errors = DEFAULT_ERROR_PAGES; -> OBSOLETE
 	_listen = 80;
 	_root = "";
 	_host = "0.0.0.0";
+	_server_name = _host;
 	_index = "";
 	_body_size = 120000000;
 	set_default_errors();
