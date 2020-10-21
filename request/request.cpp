@@ -8,7 +8,6 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		m_headers = headers;
 		m_body = body;
 		m_client = fd;
-		m_not_found = DEF_ERR_PAGE;
 		m_errorCode = DEFAULT_CODE;
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;

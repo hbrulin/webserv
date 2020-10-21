@@ -5,8 +5,6 @@ int Request::preChecks()
 	if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
 	{
 		m_errorCode = 505;
-		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
 		//m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
 		m_path = _loc._errors[m_errorCode];
 		std::ifstream f(m_path);
@@ -18,8 +16,6 @@ int Request::preChecks()
 	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
 	{	
 		m_errorCode = 405;
-		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
 		m_path = _loc._errors[m_errorCode];
 		//std::cout << m_path;
 		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
@@ -33,8 +29,6 @@ int Request::preChecks()
 }
 
 void Request::notFound() {
-	if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-			_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
 	//m_path = _loc._root + ERROR_FOLDER + m_not_found;
 	m_path = _loc._errors[404];
 	std::ifstream f(m_path);
@@ -45,8 +39,6 @@ void Request::notFound() {
 }
 
 void Request::badRequest() {
-	//if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-	//m_path = _loc._root + ERROR_FOLDER + BAD_REQUEST;
 	m_path = _loc._errors[400];
 	std::ifstream f(m_path);
 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
