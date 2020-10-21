@@ -97,7 +97,7 @@ class Request
 	int preChecks();
 	//int isAcceptable();
 	int isAuthorized(std::string str);
-	int isAllowed(std::string path);
+	//int isAllowed(std::string path);
 	void notFound();
 	void badRequest();
 	int internalError();

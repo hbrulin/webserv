@@ -14,7 +14,7 @@ int Request::preChecks()
 		f.close();
 		return 1;
 	}
-	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI) || !isAllowed(m_path))
+	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
 	{	
 		m_errorCode = 405;
 		if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
@@ -66,17 +66,17 @@ int Request::internalError() {
 	return 0;
 }
 
-int Request::isAllowed(std::string path)
-{
-    if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
-    {
-        _head_resp.ALLOW = GET;
-        return 0;
-    }
-    if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
-        return 0;
-    return 1;
-}
+//int Request::isAllowed(std::string path)
+//{
+ //   if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
+ //   {
+   //     _head_resp.ALLOW = GET;
+     //   return 0;
+    // }
+ //   if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
+  //      return 0;
+    //return 1;
+//}
 
 int Request::forbiddenChars(std::string s) {
 	int i = 0;
