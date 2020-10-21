@@ -63,7 +63,7 @@ int main(void)
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n\r\n";*/
 
-	//string userInput = "\r\n\r\n";
+	string userInput = "\r\n\r\n";
 	
     //		Send to server
     int sendRes = send(sock, userInput.c_str(), userInput.size() + 1, 0);

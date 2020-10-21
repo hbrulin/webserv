@@ -125,7 +125,7 @@ void Request::parse()
 	}
 	else
 	{
-		//_loc = _conf._locations._blank;
+		_loc = _conf._locations._blank;
 		//_loc.print();
 		badRequest();
 		return;
@@ -210,9 +210,9 @@ int Request::send_to_client() {
 		//std::cout << bytes << std::endl;
 		//std::cout << bytes_left << std::endl << std::endl;
 	}
-	/*if (_head_req.REQUEST_METHOD == GET)
+	/*if (!is_cgi)
 	{
-		std::cout << std::endl << m_output << std::endl;
+		std::cout << std::endl << m_output.substr(0, 500) << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
 	}*/
 	return 0;

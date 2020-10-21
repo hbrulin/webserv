@@ -135,6 +135,9 @@ int Request::forking()
 }
 
 void Request::exec_cgi(){
+
+	//std::cout << _body_size << std::endl;
+	//std::cout << _loc._body_size << std::endl;
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
@@ -152,8 +155,12 @@ void Request::exec_cgi(){
 }
 
 void Request::post() {
+	//std::cout << _body_size << std::endl;
+	//std::cout << _loc._body_size << std::endl;
+	//std::cout << "----" << std::endl;
 	if (_body_size > _loc._body_size)
 	{
+		std::cout << "----" << std::endl;
 		m_errorCode = 413;
 		return;
 	}
