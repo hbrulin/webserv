@@ -14,6 +14,9 @@ class Head_resp
 {
     public:
     Head_resp() : CONTENT_LANGUAGE("fr"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"),  DATE("default") {}
+    ~Head_resp();
+    Head_resp(const Head_resp &copy);
+    Head_resp &operator=(const Head_resp &copy);
     // response
     std::string ALLOW;
     std::string CONTENT_LANGUAGE;

@@ -29,6 +29,9 @@ class Request
 
 	public:
 	Request(){};
+	~Request();
+	//Request &operator=(const Request &copy);
+	Request(const Request &copy);
 
 	/*Conf*/
 	Config _conf;
