@@ -312,7 +312,7 @@ void Listener::receive_data(int fd) {
 		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
-			//std::cout << "M_BUFFER : " << s.substr(0, 20) << std::endl << std::endl;
+			std::cout << "M_BUFFER : " << s << std::endl << std::endl;
 			size_t npos = s.find(ENDCHARS);
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
@@ -336,8 +336,8 @@ void Listener::receive_data(int fd) {
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
 					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, CONTENT_L_STR);
 					buf_list[n]->track_length += ret - buf_list[n]->header_length;
-
-					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
+					//std::cout << buf_list[n]->track_length << std::endl;
+					if (buf_list[n]->track_length >= buf_list[n]->m_content_length - 1)
 					{
 						LaunchRequest(n, fd);
 						buf_list[n]->clean_buf();
@@ -393,7 +393,7 @@ void Listener::LaunchRequest(int n, int fd)
 	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
 	host = host.substr(0, m);
-	//std::cout << host << std::endl;
+	std::cout << host << std::endl;
 	for (int j = 0; j < _size ; j++)
 	{
 		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)

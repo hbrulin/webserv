@@ -210,11 +210,11 @@ int Request::send_to_client() {
 		//std::cout << bytes << std::endl;
 		//std::cout << bytes_left << std::endl << std::endl;
 	}
-	/*if (!is_cgi)
+	if (!is_cgi)
 	{
 		std::cout << std::endl << m_output.substr(0, 500) << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}*/
+	}
 	return 0;
 }
 
