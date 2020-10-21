@@ -160,7 +160,6 @@ void Request::post() {
 	//std::cout << "----" << std::endl;
 	if (_body_size > _loc._body_size)
 	{
-		std::cout << "----" << std::endl;
 		m_errorCode = 413;
 		return;
 	}
