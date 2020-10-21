@@ -136,8 +136,8 @@ static void check_path_validity(Config& config)
 
 	if (!path_exists(config._root))
 		throw (std::logic_error(error + config._root + " is invalid"));
-	if (!path_exists(config._errors))
-		throw (std::logic_error(error + config._errors + " is invalid"));
+//	if (!path_exists(config._errors)) ->maybe or maybe not
+//		throw (std::logic_error(error + config._errors + " is invalid"));
 	//if (!path_exists(config._cgi_root))
 	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
 	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
@@ -172,46 +172,7 @@ static void check_rooting_validity(Config& config)
 		j = config._host.find_first_of('.', j) + 1;
 	}
 }
-/*
-static void check_methods_validity(Config& config)
-{
-	std::string error = "Error on server: " + config._server_name + ": ";
-	int j = 0;
 
-	for (std::vector<std::string>::size_type i = 0; i < config._methods.size(); i++)
-	{
-		j = 0;
-		while (1)
-		{
-			if (Data::_SUPPORTED_METHOD[j] == NULL)
-				throw(std::logic_error(error + "Unsupported Method: " + config._methods[i]));
-			if (config._methods[i] == Data::_SUPPORTED_METHOD[j])
-				break ;
-			j++;
-		}
-	}
-	j = 0;
-	while (1)
-	{
-		if (Data::_SUPPORTED_CGI[j] == NULL)
-			throw(std::logic_error(error + "Unsupported cgi type: " + config._cgi_type));
-		if (config._cgi_type == Data::_SUPPORTED_CGI[j])
-			break ;
-		j++;
-	}
-}*/
-/*
-static void check_server_doubles(std::vector<Config>& configList)
-{
-	for (std::vector<Config>::size_type i = 0; i < configList.size() - 1; i++)
-	{
-		for (std::vector<Config>::size_type j = i + 1; j < configList.size(); j++)
-			if (configList[i]._listen == configList[j]._listen &&
-			configList[i]._host == configList[j]._host) // doublon
-				configList.erase(configList.begin() + j);
-	}
-}
-*/
 void Data::check_validity()
 {
 	/*

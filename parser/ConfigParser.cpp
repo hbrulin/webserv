@@ -27,14 +27,12 @@ void ConfigParser::operator = (const ConfigParser& configParser)
 
 bool ConfigParser::setConfig(Config* config, std::string& s)
 {
-	//something like this
 	std::string key;
 	std::string value;
 	int i;
-	int parsing_sum = 0;
 
 	_config = config;
-	//std::cout << s << std::endl;
+	//_config->set_default_errors();
 	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;
@@ -61,8 +59,6 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		try
 		{
 			(this->*(_map[key]))(value);
-			//std::cout << "1\n";
-			parsing_sum++;
 		}
 		catch (std::logic_error& e)
 		{
@@ -77,17 +73,10 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 			s = s.substr(s.find('}') + 1);
 	}
 
-	/*if (parsing_sum != NUMBER_OF_PARAMETERS)
-		throw (std::logic_error("One parameter is missing")); // A voir pour retravailler*/
-
-/*	_config->_locations.get_loc_by_url("");
-	_config->_locations.get_loc_by_url("/bonjour/aurevoir/salut/");
-	_config->_locations.get_loc_by_url("/");*/
 	_config->set_blank();
 	_config->set_default_locations();
-	/*std::cout << "\nBLANK\n\n";
-	_config->_locations._blank.print();*/
-	//print_data(_config);
+
+//	_config->_locations.check_path_validity(); -> a travailler pour voir si on check les paths
 	return (true);
 }
 
@@ -103,12 +92,7 @@ void ConfigParser::initiate_map()
 	_map["body_size"] = &ConfigParser::parse_body_size;
 	_map["server_name"] = &ConfigParser::parse_server_name;
 	_map["listen"] = &ConfigParser::parse_listen;
-	//_map["host"] = &ConfigParser::parse_host;
 	_map["methods"] = &ConfigParser::parse_method;
-	//_map["directory_listing"] = &ConfigParser::parse_directory_listing;
-	//_map["default_directory_answer_file"] = &ConfigParser::parse_default_directory_answer_file;
-	//_map["send_files"] = &ConfigParser::parse_send_files;
-	//_map["uploaded_files_root"] = &ConfigParser::parse_files_root;
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 	_map["location"] = &ConfigParser::parse_location;
@@ -128,13 +112,13 @@ void ConfigParser::parse_body_size(std::string b)
 		throw(std::logic_error("Body size cannot be negative"));
 	_config->_body_size = body;
 }
-
+/* OBSOLETE
 void ConfigParser::parse_errors(std::string b)
 {
 	remove_whitespace(b);
 	_config->_errors = b;
 }
-
+*/
 void ConfigParser::parse_listen(std::string b)
 {
 	remove_whitespace(b);
@@ -243,6 +227,39 @@ void ConfigParser::parse_method(std::string b)
 	}
 }
 
+void ConfigParser::parse_errors(std::string b)
+{
+	std::string code;
+	std::string path;
+
+	while (b.size())
+	{
+		code = "";
+		path = "";
+		code = b.substr(
+		b.find_first_of("0123456789"),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")));
+		//std::cout << s << std::endl;
+		remove_whitespace(code);
+
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << "Code: " << code;
+		path = b.substr(
+		b.find_first_of(ALPHACHAR),
+		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+		//std::cout << " Path: " << path << std::endl;
+
+		_config->_errors[std::stoi(code)] = path;
+		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
+			break;
+		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
+
+		//std::cout << "b: " << b << std::endl;
+	}
+}
+
 void ConfigParser::remove_whitespace(std::string& s)
 {
 	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
@@ -258,16 +275,15 @@ void ConfigParser::remove_whitespace(std::string& s)
 }
 
 
-
-
-
 void ConfigParser::print_data(Config* config)
 {
 //	if (!config)
 //		config = _config;
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
-	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << "\nerrors: " << config->_errors << std::endl;
+	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << std::endl;
 	config->_locations.print();
-	std::cout << std::endl;
+	std::cout << "Error pages:\n";
+	for (std::map<int,std::string>::iterator it = config->_errors.begin(); it != config->_errors.end(); it++)
+		std::cout << it->first << ": " << it->second << std::endl;
 }

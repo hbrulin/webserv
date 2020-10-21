@@ -29,11 +29,15 @@
 #define DELETE "DELETE"
 
 //ERRORS PAGES AND CODES
-#define NOT_ALLOWED "405.html"
-#define NOT_ACCEPTABLE "406.html"
-#define BAD_REQUEST "400.html"
-#define UNAUTHORIZED "401.html"
-#define NOT_SUPPORTED "505.html"
+#define NOT_ALLOWED "www/error_pages/405.html"
+#define NOT_ACCEPTABLE "www/error_pages/406.html"
+#define BAD_REQUEST "www/error_pages/400.html"
+#define UNAUTHORIZED "www/error_pages/401.html"
+#define NOT_SUPPORTED "www/error_pages/505.html"
+#define PARTIAL_CONTENT "www/error_pages/206.html"
+#define AUTHORIZATION_REQUIRED "www/error_pages/401.html"
+#define VERSION_NOT_SUPPORTED "www/error_pages/505.html"
+#define LENGTH_REQUIRED "www/error_pages/411.html"
 #define DEFAULT_CODE 200
 #define ERR_STAT "erreur stat\n"
 #define PIPE_ERR "pipe error\n"

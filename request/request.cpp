@@ -74,16 +74,16 @@ int Request::isGoodRequest()
 	return 0;
 }
 
-void Request::parse() 
+void Request::parse()
 {
 	if (!isGoodRequest())
 	{
 		_head_req.parse(m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
-		//std::cout << _loc._errors << std::endl;
-		if (!_loc._errors.empty())
-			m_not_found = _loc._errors;
+		/*if (!_loc._errors.empty())
+			m_not_found = _loc._errors[404];*/
+		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())
 			return;
@@ -117,7 +117,7 @@ void Request::parse()
 				getBody();
 			else if (_head_req.CONTENT_LENGTH.empty() == 0)
 				_body_size = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
-			else 
+			else
 			{
 				m_errorCode = 411;
 				return;
@@ -159,8 +159,8 @@ void Request::handle() {
 		delete_m();
 		return ;
 	}
-	else                                                                                                                                                                                                                                                                                                                          
-		get(); //also works for HEAD, change is in sendToClient()     
+	else
+		get(); //also works for HEAD, change is in sendToClient()
 
 }
 
@@ -228,7 +228,7 @@ Request::~Request(){}
 //	return *this;
 //}
 
-Request::Request(const Request &copy) 
+Request::Request(const Request &copy)
 {
 	this->is_cgi = copy.is_cgi;
 	//this->m_body = copy.m_body;
