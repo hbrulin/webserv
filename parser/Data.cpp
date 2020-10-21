@@ -132,10 +132,16 @@ static bool path_exists(std::string& s)
 
 static void check_path_validity(Config& config)
 {
-	std::string error = "Error on server: " + config._server_name + ": path ";
+	std::string error = "Error on server: " + config._server_name + ": path: ";
 
 	if (!path_exists(config._root))
 		throw (std::logic_error(error + config._root + " is invalid"));
+	for (std::map<int,std::string>::iterator it = config._errors.begin(); it != config._errors.end(); it++)
+	{
+		if (!path_exists(it->second))
+			throw (std::logic_error(error + it->second + " is invalid"));
+		config._locations.check_path_validity();
+	}
 //	if (!path_exists(config._errors)) ->maybe or maybe not
 //		throw (std::logic_error(error + config._errors + " is invalid"));
 	//if (!path_exists(config._cgi_root))
