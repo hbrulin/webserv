@@ -39,6 +39,7 @@ void		Request::getBody() {
 
 int Request::isGoodRequest()
 {
+	//std::cout << m_headers << std::endl;
 	std::string buf;
 	int line = 0;
 	if (m_headers.empty())
@@ -66,7 +67,7 @@ int Request::isGoodRequest()
 		}
 		else
 		{
-			if (parsed.size() != 2)
+			if (parsed.size() < 2)
 				return 1;
 		}
 	}
