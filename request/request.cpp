@@ -165,7 +165,6 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
-	
 	if (first_send)
 	{
 		first_send = !first_send;
@@ -217,4 +216,19 @@ int Request::send_to_client() {
 		std::cout << "- - - - - - - - - - " << std::endl;
 	}*/
 	return 0;
+}
+
+Request::~Request(){}
+
+//Request &Request::operator=(const Request &copy)
+//{
+	//this->m_body = copy.m_body;
+//	this->is_cgi = copy.is_cgi;
+//	return *this;
+//}
+
+Request::Request(const Request &copy) 
+{
+	this->is_cgi = copy.is_cgi;
+	//this->m_body = copy.m_body;
 }
