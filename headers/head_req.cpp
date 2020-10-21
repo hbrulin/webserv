@@ -85,28 +85,6 @@ std::string Head_req::get_meta()
 	return str;
 }
 
-//void Head_req::getScriptName(std::string s) // remplacer par cgi extension
-//{
-//	std::string str_q, str_p;
-//	//REQUEST_URI
-//	REQUEST_URI = s;
-//	int len, i = 0;
-//	//SCRIPT_NAME
-//	int n = s.find(CGI);
-//	if (n != (int)std::string::npos)
-//	{
-//		n = n + 4;
-//		len = n;
-//		i = n;
-//		while(n > 0 && s[n - 1] != '/') {n--;}
-//		SCRIPT_NAME = str_q.append(&s[n], len - n); 
-//	}
-//	len = n;
-	//PATH_INFO
-//	while (s[len] != '\0' && s[len] != '?') {len++;}
-//	if (s[len] != '\0') {PATH_INFO = str_p.append(&s[i], len - i);}
-//}
-
 std::string Head_req::getMetatoParse(std::string s, std::string toParse, std::string Sep)
 {
     int n;
@@ -302,7 +280,6 @@ void		Head_req::parse(std::string m_buffer, std::string url) {
 	if (strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
 		CONTENT_LENGTH = getStringtoParse(m_buffer, CONTENT_L_STR);
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
-	//getScriptName(url);
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
 	if (getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "")
 		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";
