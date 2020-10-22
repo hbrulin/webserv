@@ -176,21 +176,28 @@ int Listener::run() {
 				std::vector<Request*>::iterator ite = req_list.end();
 				while (it != ite && (*it)->m_client != j)
 					it++;
-				if (FD_ISSET(j, &m_write_set) && it != ite && (*it)->_status = SEND)
+				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					send_data(it);
+					if ((*it)->_status = SEND)
+						send_data(it);
 					//close_conn(j);
 				}
-				else if (FD_ISSET(j, &m_write_set) && it != ite && (*it)->_status = WRITE_FILE)
+				else if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					if ((*it)->write_file() < 0)
-						m_close = true;
+					if ((*it)->_status = WRITE_FILE)
+					{
+						if ((*it)->write_file() < 0)
+							m_close = true;
+					}
 					//close_conn(j);
 				}
-				else if (FD_ISSET(j, &m_read_set) && it != ite && (*it)->_status = READ_FILE)
+				else if (FD_ISSET(j, &m_read_set) && it != ite)
 				{
-					if ((*it)->read_file() < 0)
-						m_close = true;
+					if ((*it)->_status = READ_FILE)
+					{
+						if ((*it)->read_file() < 0)
+							m_close = true;
+					}
 					//close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set

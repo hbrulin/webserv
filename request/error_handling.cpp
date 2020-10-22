@@ -5,56 +5,47 @@ int Request::preChecks()
 	if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
 	{
 		m_errorCode = 505;
-		//m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
 		m_path = _loc._errors[m_errorCode];
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		f.close();
+		read_fd = open(m_path.c_str(), O_RDONLY);
+		setFileToRead(true);
+		_status = READ_FILE;
 		return 1;
 	}
 	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
 	{	
 		m_errorCode = 405;
 		m_path = _loc._errors[m_errorCode];
-		//std::cout << m_path;
-		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		f.close();
+		read_fd = open(m_path.c_str(), O_RDONLY);
+		setFileToRead(true);
+		_status = READ_FILE;
 		return 1;
 	}
 	return 0;
 }
 
 void Request::notFound() {
-	//m_path = _loc._root + ERROR_FOLDER + m_not_found;
 	m_path = _loc._errors[404];
-	std::ifstream f(m_path);
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	m_url = str;
+	read_fd = open(m_path.c_str(), O_RDONLY);
 	m_errorCode = 404;
-	f.close();
+	setFileToRead(true);
+	_status = READ_FILE;
 }
 
 void Request::badRequest() {
 	m_path = _loc._errors[400];
-	std::ifstream f(m_path);
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	m_url = str;
+	read_fd = open(m_path.c_str(), O_RDONLY);
 	m_errorCode = 400;
-	f.close();
+	setFileToRead(true);
+	_status = READ_FILE;
 }
 
 int Request::internalError() {
-	std::ostringstream oss;
+	//std::ostringstream oss;
 	int ret;
-	oss << "HTTP/1.1 " << 500;
-	oss << " Internal Server Error\r\n";
-	oss << "Content-Type: text/html" << "\r\n";
-	oss << "Content-Length: 97\r\n\r\n";
-	oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
+	m_output = "HTTP/1.1 500 Internal Server Error\r\n";
+	m_output += "Content-Type: text/html" << "\r\n";
+	m_output += "Content-Length: 97\r\n\r\n";
+	m_output += "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
 	if ((ret = send(m_client, m_output.c_str(), m_output.size() + 1, 0)) < 0)
 		return -1;
 	else if (ret == 0)

@@ -218,6 +218,7 @@ void Request::delete_m()
 	else
 		m_errorCode = 204;
 	unlink(m_path.c_str());
+	_status = SEND;
 }
 
 void Request::get() {
@@ -255,7 +256,10 @@ void	Request::setFileToRead(bool state)
 		if (state)
 			FD_SET(read_fd, &R_SET);
 		else
+		{
 			FD_CLR(read_fd, &R_SET);
+			close(read_fd);
+		}
 	}
 }
 
@@ -264,9 +268,12 @@ void	Request::setFileToWrite(bool state)
 	if (write_fd != -1)
 	{
 		if (state)
-			FD_SET(read_fd, &W_SET);
+			FD_SET(write_fd, &W_SET);
 		else
-			FD_CLR(read_fd, &W_SET);
+		{
+			FD_CLR(write_fd, &W_SET);
+			close(write_fd);
+		}
 	}
 }
 
