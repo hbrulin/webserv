@@ -11,6 +11,7 @@ Config::Config()
 	_body_size = 120000000;
 	set_default_errors();
 	_index = "";
+	_autoindex = false;
 	//_ports.push_back(80);
 }
 
@@ -35,6 +36,7 @@ Config::Config(const Config& b)
 	_errors = b._errors;
 
 	_index = b._index;
+	_autoindex = b._autoindex;
 
 }
 
@@ -58,6 +60,7 @@ void Config::operator = (const Config& b)
 	_errors = b._errors;
 
 	_index = b._index;
+	_autoindex = b._autoindex;
 }
 
 void Config::set_blank()
@@ -69,6 +72,8 @@ void Config::set_blank()
 	_locations._blank._cgi_root = _cgi_root;
 	_locations._blank._cgi_type = _cgi_type;
 	_locations._blank._index = _index;
+	_locations._blank._autoindex = _autoindex;
+	_locations._blank._methods.push_back("GET");
 }
 
 void Config::set_default_locations()

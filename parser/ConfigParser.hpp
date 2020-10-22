@@ -62,9 +62,10 @@ class ConfigParser
 
 	void parse_errors(std::string);
 
-	void remove_whitespace(std::string&);
-
 	void parse_index(std::string);
+	void parse_autoindex(std::string b);
+
+	void remove_whitespace(std::string&);
 
 };
 
