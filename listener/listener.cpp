@@ -172,13 +172,13 @@ int Listener::run() {
 
 			/*Descriptors are available*/
 			for (int j = 0; j <= m_highsock && sock_count > 0; j++) {
-				/*std::vector<Request*>::iterator it = req_list.begin();
+				std::vector<Request*>::iterator it = req_list.begin();
 				std::vector<Request*>::iterator ite = req_list.end();
 				while (it != ite && (*it)->m_client != j)
-					it++;*/
-				if (FD_ISSET(j, &m_write_set) && req.bytes_left)
+					it++;
+				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					send_data();
+					send_data(j);
 					close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
@@ -406,38 +406,38 @@ void Listener::LaunchRequest(int n, int fd)
 		}
 	}
 
-	req = Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr);
-	/*std::vector<Request*>::iterator it = req_list.begin();
+	req_list.push_back(new Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr));
+	std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
-		it++;*/
-	req.parse();
-	req.handle();
-	//ADD TO WRITE_SET
+		it++;
+	(*it)->parse();
+	(*it)->handle();
 
 }
 
-void Listener::send_data()
+void Listener::send_data(int fd)
 {
-	/*std::vector<Request*>::iterator it = req_list.begin();
+	std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
-		it++;*/
+		it++;
 	
 	//error checking to comply with correction : if error, client will be removed
-	if (req.send_to_client() == -1)
+	if ((*it)->send_to_client() == -1)
 	{
 		m_close = true; //client removed
 		//delete *it;
 		//req_list.erase(it);
 		return;
 	}
-	/*if (!(*it)->bytes_left)
+	if (!(*it)->bytes_left)
 	{
-		//retirer du WRITE_SET
-		//delete *it;
-		//req_list.erase(it);
-	}*/
+		/*if ((*it)-> is_cgi)
+			std::cout << "DONE" << std::endl;*/
+		delete *it;
+		req_list.erase(it);
+	}
 }
 
 
