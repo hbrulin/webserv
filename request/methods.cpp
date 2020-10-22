@@ -240,7 +240,6 @@ void Request::get() {
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
 		m_path = m_path + YOUPI_BAD;
-
 	std::ifstream f(m_path);
 	if (f.good())
 	{
