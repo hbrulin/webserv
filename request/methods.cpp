@@ -61,6 +61,7 @@ int Request::forking()
 	if (pipe(pp))
 		perror(PIPE_ERR);
 	pid = fork();
+	char **argv = NULL;
 	std::string cgi_output(dir_cgi);
 	cgi_output = cgi_output + OUTPUT_CGI + std::to_string(m_client);
 	int fd;
@@ -71,7 +72,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(fd, 1);
-		res = execve(path, NULL, env);
+		res = execve(path, argv, env);
 		if (res != 0)
 		{
 			exit(127);

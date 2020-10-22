@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/time.h>
+#include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>

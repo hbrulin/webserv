@@ -2,7 +2,9 @@
 # define REQUEST_HPP
 
 #include <string>
+#include <sys/wait.h>
 #include <sys/socket.h>
+#include <string.h>
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
 #include "../utils/libft.h"
