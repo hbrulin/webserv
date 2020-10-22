@@ -4,7 +4,7 @@ extern fd_set		R_SET;
 extern fd_set		W_SET;
 extern int 			highsock;
 
-void Request::split_resp(char *buffer)
+/*void Request::split_resp(char *buffer)
 {
 	std::string s(buffer);
 	int i = 0;
@@ -20,7 +20,7 @@ void Request::split_resp(char *buffer)
 	{
 		m_url.append(buffer, strlen(buffer));
 	}
-}
+}*/
 
 int Request::forking()
 {
@@ -225,14 +225,14 @@ int		Request::read_file()
 {
 	int					ret = 0;
 	char				buf[4096];
-	std::string			result;
+	//std::string			result;
 	while ((ret = read(file_fd, buf, 4095)) > 0)
 	{
 		buf[ret] = '\0';
-		result += buf;
+		m_url += buf;
 	}
 	//std::cout << m_url << std::endl;
-	split_resp((char *)result.c_str());
+	//split_resp((char *)result.c_str());
 	close(file_fd);
 	setFileToSet(false);
 	_status = SEND;
