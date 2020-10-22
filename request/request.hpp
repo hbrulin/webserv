@@ -2,7 +2,7 @@
 # define REQUEST_HPP
 
 #include <string>
-//#include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 //#include <sstream>
 //#include <fstream>
