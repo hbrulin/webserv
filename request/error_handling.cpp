@@ -43,13 +43,13 @@ int Request::internalError() {
 	//std::ostringstream oss;
 	int ret;
 	m_output = "HTTP/1.1 500 Internal Server Error\r\n";
-	m_output += "Content-Type: text/html" << "\r\n";
+	m_output += "Content-Type: text/html\r\n";
 	m_output += "Content-Length: 97\r\n\r\n";
 	m_output += "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
 	if ((ret = send(m_client, m_output.c_str(), m_output.size() + 1, 0)) < 0)
 		return -1;
 	else if (ret == 0)
-			return 0;
+		return 0;
 	return 0;
 }
 

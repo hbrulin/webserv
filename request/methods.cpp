@@ -1,5 +1,8 @@
 #include "request.hpp"
 
+extern fd_set		R_SET; 
+extern fd_set		W_SET; 
+
 /*void Request::split_resp(char *buffer)
 {
 	std::string s(buffer);
@@ -23,25 +26,20 @@ int Request::forking()
 	int pid, res, status;
 	int pp[2];
 	res = 0;
-	std::ostringstream oss;
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
-	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
-		return (-1);
-	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
-		return (-1);
-	//free(dir_cgi);
+	dir_cgi = std::string(curr_dir) + "/";
+	path = dir_cgi + m_url;
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
 	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
-	std::ifstream f(path);
-	if (!f.good())
-	{
+
+	if (!(path_exists(path)))
 		return 127;
-	}
+
 	struct stat buf;
 	int ret;
-	if ((ret = stat((const char *)path, &buf)) < 0)
+	if ((ret = stat(path.c_str(), &buf)) < 0)
 		std::cout << ERR_STAT << strerror(errno) << std::endl;
 	else
 	{
@@ -72,7 +70,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(fd, 1);
-		res = execve(path, argv, env);
+		res = execve(path.c_str(), argv, env);
 		if (res != 0)
 		{
 			exit(127);
@@ -88,22 +86,6 @@ int Request::forking()
 			perror(WAIT_ERR);
 		close(pp[1]);
 		close(fd);
-		//int boucle = 1;
-		// while (boucle)
-		// {
-		// 	int ret = wait(&status);
-		// 	if (WIFSIGNALED(status))
-		// 	{
-		// 		if (WTERMSIG(status) == 2)
-		// 			return -3;
-		// 		else if (WTERMSIG(status) == 3)
-		// 			return -2;
-		// 	}
-		// 	else
-		// 		return WEXITSTATUS(status);
-		// 	if (ret == pid)
-		// 		boucle = 0;
-		// }
 	}
 	else
 		perror(FORK_ERR);
@@ -128,10 +110,11 @@ int Request::forking()
 		k++;
 	}
 	free(env);
-	free(dir_cgi);
-	dir_cgi = NULL;
-	free(path);
-	path = NULL;
+	//free(dir_cgi);
+	//dir_cgi = NULL;
+	//free(path);
+	//path = NULL;
+	_status = SEND; // A SUPPRIMER QUAND REGLE
 	return 0;
 }
 
@@ -266,7 +249,7 @@ void	Request::setFileToWrite(bool state)
 
 int		Request::read_file() {
 	
-	int					ret;
+	int					ret = 0;
 	char				buf[4096];
 
 	while ((ret = read(read_fd, buf, 4095)) > 0)
@@ -277,14 +260,17 @@ int		Request::read_file() {
 	close(read_fd);
 	setFileToRead(false);
 	_status = SEND;
+	return ret;
 }
 
 int		Request::write_file() {
+	int ret = 0;
 
 	if (_head_req.REQUEST_METHOD == PUT) 
-		write(write_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
+		ret = write(write_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
 
 	close(write_fd);
 	setFileToWrite(false);
 	_status = SEND;
+	return ret;
 }

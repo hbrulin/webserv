@@ -1,11 +1,15 @@
 #include "parser/Data.hpp"
 #include "listener/listener.hpp"
-#include "../utils/definitions.hpp"
+
+#include <fcntl.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+fd_set		R_SET; /* Socket file descriptors we want to wake up for, using select() */
+fd_set		W_SET; /* Socket file descriptors we want to wake up for, using select() */
 
 int main (int ac, char **av) {
 	(void)ac;
-	ft_memset((char *) &R_SET, 0, sizeof(R_SET));
-	ft_memset((char *) &W_SET, 0, sizeof(W_SET));
 	try
 	{
 		Data data(av[1]);

@@ -1,5 +1,7 @@
 #include "listener.hpp"
 
+extern fd_set		R_SET; 
+extern fd_set		W_SET; 
 
 int Listener::checkpast(int i)
 {
@@ -57,7 +59,7 @@ void Listener::clean()
 {
 	for (int i=0; i <= m_highsock; ++i)
    	{
-    	if (FD_ISSET(i, &m_r_set))
+    	if (FD_ISSET(i, &R_SET))
         	close(i);
    }
 	exit(SIGQUIT);

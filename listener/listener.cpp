@@ -1,6 +1,8 @@
 #include "listener.hpp"
 
 bool		m_run = true;
+extern fd_set		R_SET; 
+extern fd_set		W_SET; 
 
 Listener::Listener(std::vector<Config> conf, int size) {
 
@@ -58,6 +60,9 @@ void Listener::build_fd_set() {
 
 int Listener::init() {
 	signal(SIGINT, &Listener::exiting);
+
+	ft_memset((char *) &R_SET, 0, sizeof(R_SET));
+	ft_memset((char *) &W_SET, 0, sizeof(W_SET));
 
 	int reuse_addr = 1;  /* Used so we can re-bind to our port
 				while a previous connection is still
@@ -178,13 +183,13 @@ int Listener::run() {
 					it++;
 				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					if ((*it)->_status = SEND)
+					if ((*it)->_status == SEND)
 						send_data(it);
 					//close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					if ((*it)->_status = WRITE_FILE)
+					if ((*it)->_status == WRITE_FILE)
 					{
 						if ((*it)->write_file() < 0)
 							m_close = true;
@@ -193,7 +198,7 @@ int Listener::run() {
 				}
 				else if (FD_ISSET(j, &m_read_set) && it != ite)
 				{
-					if ((*it)->_status = READ_FILE)
+					if ((*it)->_status == READ_FILE)
 					{
 						if ((*it)->read_file() < 0)
 							m_close = true;
