@@ -228,12 +228,8 @@ void Request::get() {
 	fstat(fd, &buf);
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
-<<<<<<< HEAD
-		m_path = m_path + YOUPI_BAD;
-=======
 		m_path = m_path + "/" + m_index;
 
->>>>>>> 2996d2fd68b9fc7ee8d5d91db7dcddecc0068213
 	std::ifstream f(m_path);
 	if (f.good())
 	{
