@@ -2,28 +2,22 @@
 #define HEAD_REQ_HPP
 
 #include <iostream>
-//#include <sys/stat.h>
-//#include <sys/time.h>
-//#include <vector>
 #include <string>
-//#include <iterator>
 #include "../utils/libft.h"
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
-#include <sstream>
-//#include <fstream>
-//#include <iostream>
-//#include <cctype>
+#include <sstream> //WRONG
 #include "../utils/definitions.hpp"
 
 class Head_req
 {
-    public:
-    Head_req(const Head_req &copy);
-    Head_req &operator=(const Head_req &copy);
-    ~Head_req();
-    Head_req() : HOST(LOCALHOST) { 
-    }
+    private:
+    Head_req(const Head_req &copy) {(void)copy;}
+    Head_req &operator=(const Head_req &copy) {(void)copy; return *this;}
+
+	public:
+    ~Head_req() {}
+    Head_req() : HOST(LOCALHOST) {}
     // response
     //request 
     //to check if ok ??? How to implement

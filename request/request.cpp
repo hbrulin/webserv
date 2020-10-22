@@ -202,17 +202,20 @@ int Request::send_to_client() {
 	return 0;
 }
 
-Request::~Request(){}
 
-//Request &Request::operator=(const Request &copy)
-//{
-	//this->m_body = copy.m_body;
-//	this->is_cgi = copy.is_cgi;
-//	return *this;
-//}
+Request &Request::operator=(const Request &copy) {
 
-Request::Request(const Request &copy)
-{
-	this->is_cgi = copy.is_cgi;
-	//this->m_body = copy.m_body;
+	_conf = copy._conf;
+	m_headers = copy.m_headers;
+	m_body = copy.m_body;
+	m_client = copy.m_client;
+	m_errorCode = copy.m_errorCode;
+	_head_req.SERVER_PORT = copy._head_req.SERVER_PORT;
+	is_cgi = copy.is_cgi;
+	s_addr = copy.s_addr;
+	pid_ret = copy.pid_ret;
+	_body_size = copy._body_size;
+	bytes_left = copy.bytes_left;
+	first_send = copy.first_send;
+	return *this;
 }

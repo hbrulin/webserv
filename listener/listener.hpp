@@ -2,10 +2,8 @@
 # define LISTENER_HPP
 
 #include <iostream>
-//#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
-//#include <netinet/in.h>
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -20,8 +18,14 @@
 
 class Listener {
 
+	private:
+	Listener() {}
+    Listener(const Listener &copy) {(void)copy;}
+    Listener &operator=(const Listener &copy) {(void)copy; return *this;}
+
 	public:
 		Listener(std::vector<Config> conf, int size);
+		virtual ~Listener() {}
 		int init();
 		int run();
 		void LaunchRequest(int n, int fd);
@@ -59,8 +63,6 @@ class Listener {
 		std::vector<Buffers*> buf_list;
 		//std::vector<Request*> req_list;
 		Request req;
-	
-		Listener() {};
 
 };
 

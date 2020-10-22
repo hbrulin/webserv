@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include <fstream>
+#include <fstream> //WRONG
 #include <sys/stat.h>
 
 #include "Locations.hpp"
@@ -19,6 +19,7 @@ struct Config
 	Config();
 	Config(const Config&);
 	void operator = (const Config&);
+	virtual ~Config() {}
 
 	void set_blank();
 	void set_default_locations();

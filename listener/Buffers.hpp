@@ -7,6 +7,11 @@
 
 class Buffers {
 	
+	private:
+	Buffers() {}
+    Buffers(const Buffers &copy) {(void)copy;}
+    Buffers &operator=(const Buffers &copy) {(void)copy; return *this;}
+
 	public:
 		std::string headers;
 		std::string body;

@@ -87,15 +87,3 @@ std::string Head_resp::getBuffer_cgi(int code, std::string m_body, std::string X
 	oss << "\r\n";
     return oss.str();
 }
-
-Head_resp::~Head_resp(){}
-Head_resp::Head_resp(const Head_resp &copy)
-{
-	this->CONTENT_LENGTH = copy.CONTENT_LENGTH;
-}
-
-Head_resp &Head_resp::operator=(const Head_resp &copy)
-{
-	this->CONTENT_LENGTH = copy.CONTENT_LENGTH;
-	return *this;
-}
