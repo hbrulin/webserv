@@ -4,7 +4,7 @@ extern fd_set		R_SET;
 extern fd_set		W_SET;
 extern int 			highsock;
 
-/*void Request::split_resp(char *buffer)
+void Request::split_resp(char *buffer)
 {
 	std::string s(buffer);
 	int i = 0;
@@ -20,7 +20,7 @@ extern int 			highsock;
 	{
 		m_url.append(buffer, strlen(buffer));
 	}
-}*/
+}
 
 int Request::forking()
 {
@@ -196,12 +196,13 @@ void Request::get() {
 	// Open the document in the local file system
 
 	file_fd = open(m_path.c_str(), O_RDONLY);
+	//std::cout << file_fd << std::endl;
 	struct stat buf;
 	fstat(file_fd, &buf);
-	//close(read_fd);
+	close(file_fd);
 	if (buf.st_mode & S_IFDIR)
 		m_path = m_path + "/" + m_index;
-
+	file_fd = open(m_path.c_str(), O_RDONLY);
 	if (path_exists(m_path))
 	{
 		//m_url = "";
@@ -224,15 +225,18 @@ int		Request::read_file()
 {
 	int					ret = 0;
 	char				buf[4096];
-
+	std::string			result;
 	while ((ret = read(file_fd, buf, 4095)) > 0)
 	{
 		buf[ret] = '\0';
-		m_url += buf;
+		result += buf;
 	}
+	//std::cout << m_url << std::endl;
+	split_resp((char *)result.c_str());
 	close(file_fd);
 	setFileToSet(false);
 	_status = SEND;
+	//std::cout << ret << std::endl;
 	return ret;
 }
 

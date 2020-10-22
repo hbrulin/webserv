@@ -166,6 +166,7 @@ void Request::handle() {
 
 
 int Request::send_to_client() {
+	//std::cout << m_path << std::endl;
 	if (first_send)
 	{
 		first_send = !first_send;
@@ -195,9 +196,9 @@ int Request::send_to_client() {
 	else if (bytes == m_output.size())
 		bytes_left = !bytes_left;
 	
-	/*if (is_cgi)
+	/*if (!is_cgi)
 	{
-		std::cout << std::endl << m_output.substr(0, 100) << std::endl;
+		std::cout << std::endl << m_output << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
 	}*/
 	return 0;

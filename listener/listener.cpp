@@ -214,6 +214,7 @@ int Listener::run() {
 				//std::cout << (*it)->m_client << std::endl;
 				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
+					//std::cout << "!!!!!!!!!!" << std::endl;
 					if ((*it)->_status == SEND)
 						send_data(it);
 					//close_conn(j);
