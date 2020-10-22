@@ -4,6 +4,7 @@
 #include <string>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <stdio.h>
 //#include <sstream>
 //#include <fstream>
 //#include <iostream>
