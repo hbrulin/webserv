@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../utils/definitions.hpp"
+#include "../utils/libft.h"
 
 class Buffers {
 	

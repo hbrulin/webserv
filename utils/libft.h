@@ -6,13 +6,13 @@
 /*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/19 00:10:07 by hbrulin          ###   ########.fr       */
+/*   Updated: 2020/10/22 14:53:44 by hbrulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
-# include <string.h>
+//# include <string.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <string>

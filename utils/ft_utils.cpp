@@ -250,3 +250,36 @@ void	ft_tabdel(void **tab)
 		free(tab);
 	}
 }
+
+void	*ft_memset(void *b, int c, size_t len)
+{
+	unsigned char *p;
+
+	p = (unsigned char *)b;
+	while (len > 0)
+	{
+		*(p++) = (unsigned char)c;
+		len--;
+	}
+	return (b);
+}
+
+void	*ft_memcpy(void *dst, const void *src, size_t n)
+{
+	unsigned char		*p;
+	const unsigned char	*q;
+	size_t				i;
+
+	i = 0;
+	if (!(dst || src))
+		return (dst);
+	p = (unsigned char *)dst;
+	q = (const unsigned char *)src;
+	while (n)
+	{
+		p[i] = q[i];
+		i++;
+		n--;
+	}
+	return (dst);
+}

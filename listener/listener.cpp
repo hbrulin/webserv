@@ -13,16 +13,16 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	m_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in) * size + 1);
 	//m_run = true;
 	m_highsock = 0;
-	memset((char *) &m_r_set, 0, sizeof(m_r_set));
-	memset((char *) &m_w_set, 0, sizeof(m_w_set));
-	memset((char *) &m_read_set, 0, sizeof(m_read_set));
-	memset((char *) &m_write_set, 0, sizeof(m_write_set));
+	ft_memset((char *) &m_r_set, 0, sizeof(m_r_set));
+	ft_memset((char *) &m_w_set, 0, sizeof(m_w_set));
+	ft_memset((char *) &m_read_set, 0, sizeof(m_read_set));
+	ft_memset((char *) &m_write_set, 0, sizeof(m_write_set));
 
 	for (int i = 0; i < size; i++)
 	{
-		memset((int *) &m_port[i], 0, sizeof(m_port[i]));
-		memset((int *) &m_sock[i], 0, sizeof(m_sock[i]));
-		memset((char *) &m_address[i], 0, sizeof(m_address[i]));
+		ft_memset((int *) &m_port[i], 0, sizeof(m_port[i]));
+		ft_memset((int *) &m_sock[i], 0, sizeof(m_sock[i]));
+		ft_memset((char *) &m_address[i], 0, sizeof(m_address[i]));
 	}
 }
 
@@ -155,8 +155,8 @@ int Listener::run() {
 		only one client is sending a message at that time. The contents of 'copy' will
 		be one socket. You will have LOST all the other sockets.*/
 		//for (int i = 0; i < _size ; i++) {
-			memcpy(&m_read_set, &m_r_set, sizeof(m_r_set));
-			memcpy(&m_write_set, &m_w_set, sizeof(m_w_set));
+			ft_memcpy(&m_read_set, &m_r_set, sizeof(m_r_set));
+			ft_memcpy(&m_write_set, &m_w_set, sizeof(m_w_set));
 
 			/*calling select()*/
 			/* The first argument to select is the highest file
@@ -312,11 +312,11 @@ void Listener::receive_data(int fd) {
 		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
-			std::cout << "M_BUFFER : " << s << std::endl << std::endl;
+			//std::cout << "M_BUFFER : " << s << std::endl << std::endl;
 			size_t npos = s.find(ENDCHARS);
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
-			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+			ft_memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (strstr(buf_list[n]->headers.c_str(), POST) != NULL || strstr(buf_list[n]->headers.c_str(), PUT) != NULL)
 			{
 				if (strstr(buf_list[n]->headers.c_str(), CHUNKED_STR) != NULL)
@@ -364,7 +364,7 @@ void Listener::receive_data(int fd) {
 		else if (buf_list[n]->body_parse_chunk || buf_list[n]->body_parse_length)
 		{
 			buf_list[n]->body += buf_list[n]->m_buffer;
-			memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
+			ft_memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
 			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 			{
 				LaunchRequest(n, fd);

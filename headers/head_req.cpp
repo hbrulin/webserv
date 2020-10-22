@@ -2,7 +2,7 @@
 
 std::string Head_req::get_meta()
 {
-	memset((char *) &str, 0, sizeof(str));
+	ft_memset((char *) &str, 0, sizeof(str));
 	// content_env = ft_strtrim(content_env, "'/t''/0'");
 	// str.append(content_env);
 	//ajouter http_request_method et http_content-type ???
