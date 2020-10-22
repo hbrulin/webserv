@@ -203,7 +203,7 @@ void Request::put() {
 	//std::cout << _loc._uploaded_files_root << "\n";
 	std::ofstream ff(m_path);
 	if (ff.good())
-		ff << m_body.substr(0, _body_size) << std::endl; //get msg from body, limit if above content-lenght
+		ff << m_body.substr(0, _body_size - 1) << std::endl; //get msg from body, limit if above content-lenght
 	else
 		m_errorCode = 456;
 	ff.close();
