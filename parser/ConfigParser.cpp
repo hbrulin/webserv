@@ -29,7 +29,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 {
 	std::string key;
 	std::string value;
-	int i;
+   	int i;
 
 	_config = config;
 	//_config->set_default_errors();
@@ -97,6 +97,7 @@ void ConfigParser::initiate_map()
 	_map["cgi_root"] = &ConfigParser::parse_cgi_root;
 	_map["cgi_type"] = &ConfigParser::parse_cgi_type;
 	_map["location"] = &ConfigParser::parse_location;
+	_map["autoindex"] = &ConfigParser::parse_autoindex;
 }
 
 void ConfigParser::parse_root(std::string b)
@@ -110,6 +111,18 @@ void ConfigParser::parse_index(std::string b)
 	remove_whitespace(b);
 	_config->_index = b;
 }
+
+void ConfigParser::parse_autoindex(std::string b)
+{
+	remove_whitespace(b);
+	if (b == "yes")
+		_config->_autoindex = true;
+	else if (b == "no")
+		_config->_autoindex = false;
+	else
+		throw(std::logic_error("autoindex: Must be yes or no"));
+}
+
 
 void ConfigParser::parse_body_size(std::string b)
 {

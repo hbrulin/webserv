@@ -24,10 +24,9 @@ struct Config
 	void set_default_locations();
 	void set_default_errors();
 
-	std::string _server_name;
-	std::string _root; //-> root path of the server like www/
-	//std::string _errors; // ->root of default errors directory
-	std::map<int,std::string> _errors;
+	std::string					_server_name;
+	std::string					_root; //-> root path of the server like www/
+	std::map<int,std::string>	_errors;
 
 
 	//routing
@@ -36,17 +35,14 @@ struct Config
 	std::string 				_host; // local host or something else
 
 
-	std::string _index;
-	//bool 		_directory_listing;
-	//std::string _default_directory_answer_file; // ????
+	std::string 				_index;
+	bool						_autoindex;
 
-	//bool		_send_files;
-	//std::string	_files_root;
 
 	std::string 				_cgi_type;
 	std::string 				_cgi_root;
 
-	unsigned int 						_body_size;// --> don't know what it is
+	unsigned int 				_body_size;// --> don't know what it is
 	///std::vector<std::string> 	_methods; // list of accepted method
 
 //	Location _cgi;

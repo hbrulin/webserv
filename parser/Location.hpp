@@ -54,9 +54,8 @@ class Location
 
 	std::vector<std::string>	_methods;
 	bool 						_send_files;
-	bool						_directory_listing;
+	bool						_autoindex;
 	std::string 				_uploaded_files_root;
-	std::string					_directory_answer_file;
 
 	unsigned int				_body_size;
 
@@ -81,8 +80,7 @@ class Location
 
 	void parse_cgi_root(std::string b);
 	void parse_cgi_type(std::string b);
-	void parse_directory_listing(std::string b);
-	void parse_default_directory_answer_file(std::string b);
+	void parse_autoindex(std::string b);
 	void parse_send_files(std::string b);
 	void parse_uploaded_files_root(std::string b);
 	void parse_body_size(std::string b);

@@ -27,7 +27,7 @@ void Location::check_path_validity()
 	}
 	//if (!path_exists(config._cgi_root))
 	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
+	//if (config.__autoindex && !path_exists(config._default_directory_answer_file))
 	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
 	//if (config._send_files && !path_exists(config._files_root))
 	//	throw (std::logic_error(error + config._files_root + " is invalid"));
@@ -47,11 +47,10 @@ Location::Location()
 	_cgi_type = "";
 	_cgi_root = "";
 	_cgi_file = "";
-	_directory_listing = false;
-	_directory_answer_file = "";
+	_autoindex = false;
 	//_errors = ""; OBSOLETE
 
-	_methods.push_back("GET");
+	//_methods.push_back("GET");
 	//set_default_errors();
 	//_methods.push_back("HEAD");
 //	set_default_errors();
@@ -68,8 +67,7 @@ void Location::initiate_map()
 	_map["cgi_root"] = &Location::parse_cgi_root;
 	_map["cgi_type"] = &Location::parse_cgi_type;
 	_map["cgi_file"] = &Location::parse_cgi_file;
-	_map["allow_directory_listing"] = &Location::parse_directory_listing;
-	_map["directory_answer_file"] = &Location::parse_default_directory_answer_file;
+	_map["autoindex"] = &Location::parse_autoindex;
 	_map["body_size"] = &Location::parse_body_size;
 	_map["send_files"] = &Location::parse_send_files;
 	_map["uploaded_files_root"] = &Location::parse_uploaded_files_root;
@@ -95,8 +93,7 @@ Location::Location(const Location& l)
 	_body_size = l._body_size;
 	_send_files = l._send_files;
 	_uploaded_files_root = l._uploaded_files_root;
-	_directory_listing = l._directory_listing;
-	_directory_answer_file = l._directory_answer_file;
+	_autoindex = l._autoindex;
 	_errors = l._errors;
 	//_error = l._error;
 	initiate_map();
@@ -117,8 +114,7 @@ void Location::operator = (const Location& l)
 	_body_size = l._body_size;
 	_send_files = l._send_files;
 	_uploaded_files_root = l._uploaded_files_root;
-	_directory_listing = l._directory_listing;
-	_directory_answer_file = l._directory_answer_file;
+	_autoindex = l._autoindex;
 	_errors = l._errors;
 	//_error = l._error;
 	initiate_map();
@@ -280,8 +276,7 @@ void Location::print()
 
 	std::cout << "\nclient body stuff: " << _body_size
 	<< "\nAllow_uploaded: " << _send_files << "\nuploaded_files_root: " << _uploaded_files_root
-	<< "\nAllow_directory_listing: " << _directory_listing <<
-	"\ndefault_directory_answer_file: " << _directory_answer_file;
+	<< "\nAllow_autoindex: " << _autoindex;
 
 	std::cout << "\nCGI_ROOT: " << _cgi_root << "\nCGI_TYPE: " << _cgi_type
 	<< "\nCGI_FILE: " << std::endl;;
@@ -311,21 +306,15 @@ void Location::parse_cgi_type(std::string b)
 	_cgi_type = b;
 }
 
-void Location::parse_directory_listing(std::string b)
+void Location::parse_autoindex(std::string b)
 {
 	remove_whitespace(b);
 	if (b == "yes")
-		_directory_listing = true;
+		_autoindex = true;
 	else if (b == "no")
-		_directory_listing = false;
+		_autoindex = false;
 	else
-		throw(std::logic_error("Bad Location block: Allow_directory_listing: Must be yes or no"));
-}
-
-void Location::parse_default_directory_answer_file(std::string b)
-{
-	remove_whitespace(b);
-	_directory_answer_file = b;
+		throw(std::logic_error("Bad Location block: Allow_autoindex: Must be yes or no"));
 }
 
 void Location::parse_send_files(std::string b)
@@ -435,7 +424,7 @@ std::string		Location::get_cgi_root()
 
 std::string		Location::get_listing()
 {
-	if (!_directory_listing)
+	if (!_autoindex)
 		return ("Directory listing not allowed");
 	// return a string with all files in location
 	return ("directory listing on");
@@ -492,17 +481,6 @@ std::string Location::get_error_path(int code)
 }
 
 /*
-boolcheck_allowed_cgi(std::string ext)
-{
-	for (unsigned long i = 0; i < _cgi_type.size(); i++)
-	{
-		if (_cgi_type[i] == ext)
-			return (true);
-	}
-	return (false);
-}*/
-
-/*
 void check_path_validity()
 {
 	if (!path_exists(root))
@@ -511,7 +489,7 @@ void check_path_validity()
 		throw (std::logic_error(error + config._errors + " is invalid"));
 	//if (!path_exists(config._cgi_root))
 	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	//if (config._directory_listing && !path_exists(config._default_directory_answer_file))
+	//if (config.autoindex && !path_exists(config._default_directory_answer_file))
 	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
 	//if (config._send_files && !path_exists(config._files_root))
 	//	throw (std::logic_error(error + config._files_root + " is invalid"));
