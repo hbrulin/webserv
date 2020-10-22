@@ -178,7 +178,7 @@ int Listener::run() {
 					it++;
 				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
-					send_data(j);
+					send_data(it);
 					close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
@@ -416,12 +416,12 @@ void Listener::LaunchRequest(int n, int fd)
 
 }
 
-void Listener::send_data(int fd)
+void Listener::send_data(std::vector<Request*>::iterator it)
 {
-	std::vector<Request*>::iterator it = req_list.begin();
+	/*std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
-		it++;
+		it++;*/
 	
 	//error checking to comply with correction : if error, client will be removed
 	if ((*it)->send_to_client() == -1)

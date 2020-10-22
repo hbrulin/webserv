@@ -283,3 +283,9 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	}
 	return (dst);
 }
+
+bool path_exists(std::string& s)
+{
+	struct stat buffer;
+	return (stat (s.c_str(), &buffer) == 0);
+}

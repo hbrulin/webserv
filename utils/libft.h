@@ -6,7 +6,7 @@
 /*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/22 14:53:44 by hbrulin          ###   ########.fr       */
+/*   Updated: 2020/10/22 18:34:10 by hbrulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <string>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 
 typedef struct	s_list
@@ -79,5 +81,6 @@ char			*ft_strtrim(char const *s1, char const *set);
 void			*ft_calloc(size_t count, size_t size);
 void			ft_tabdel(void **tab);
 long int		ft_atoi_base(std::string str, std::string base);
+bool 			path_exists(std::string& s);
 
 #endif

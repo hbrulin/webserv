@@ -120,7 +120,7 @@ int Request::forking()
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
 	}
 	f_cgi.close();
-	remove(cgi_output.c_str());
+	unlink(cgi_output.c_str());
 	int k = 0;
 	while (env[k])
 	{
@@ -194,12 +194,14 @@ void Request::put() {
 		return;
 	}
 	m_path = _loc._uploaded_files_root + m_url;
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
 		m_errorCode = 201; //created
-	f.close();
+	//std::ifstream f(m_path);
+	//if (f.good())
+
+	//f.close();
 	//std::cout << _loc._uploaded_files_root << "\n";
 	std::ofstream ff(m_path);
 	if (ff.good())
@@ -211,13 +213,10 @@ void Request::put() {
 
 void Request::delete_m()
 {
-	//m_path = _conf._root + m_url;
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
-		m_errorCode = 204; //created
-	f.close();
+		m_errorCode = 204;
 	unlink(m_path.c_str());
 }
 
@@ -236,6 +235,7 @@ void Request::get() {
 	{
 		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		//std::cout << str << std::endl;
 		split_resp((char *)str.c_str());
 		m_errorCode = 200;
 		f.close();
