@@ -507,6 +507,15 @@ std::string Location::get_autoindex()
 		list.append("</a>\n");
 	}
 	list.append("\t</p></body></html>\n");
+
+	int fd = open(std::string(_root + "listing.html").c_str(), O_CREAT);
+	if (fd > 0)
+	{
+		//write(fd, list.c_str(), list.size());
+		std:: cout << "write\n" << write(fd, list.c_str(), 28);
+	}
+	close(fd);
+
 	return (list);
 }
 
