@@ -2,6 +2,7 @@
 
 extern fd_set		R_SET; 
 extern fd_set		W_SET; 
+extern int 			highsock;
 
 int Listener::checkpast(int i)
 {
@@ -57,7 +58,7 @@ int Listener::getLength(const std::string body, const std::string toParse)
 
 void Listener::clean()
 {
-	for (int i=0; i <= m_highsock; ++i)
+	for (int i=0; i <= highsock; ++i)
    	{
     	if (FD_ISSET(i, &R_SET))
         	close(i);

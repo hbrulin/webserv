@@ -57,7 +57,7 @@ class Listener {
 		//fd_set		m_w_set; /* Socket file descriptors we want to wake up for, using select() */
 		fd_set		m_read_set;
 		fd_set		m_write_set;
-		int			m_highsock;
+		//int			m_highsock;
 		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 		int			m_nbConf;

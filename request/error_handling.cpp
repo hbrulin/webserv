@@ -6,8 +6,8 @@ int Request::preChecks()
 	{
 		m_errorCode = 505;
 		m_path = _loc._errors[m_errorCode];
-		read_fd = open(m_path.c_str(), O_RDONLY);
-		setFileToRead(true);
+		file_fd = open(m_path.c_str(), O_RDONLY);
+		setFileToSet(true);
 		_status = READ_FILE;
 		return 1;
 	}
@@ -15,8 +15,8 @@ int Request::preChecks()
 	{	
 		m_errorCode = 405;
 		m_path = _loc._errors[m_errorCode];
-		read_fd = open(m_path.c_str(), O_RDONLY);
-		setFileToRead(true);
+		file_fd = open(m_path.c_str(), O_RDONLY);
+		setFileToSet(true);
 		_status = READ_FILE;
 		return 1;
 	}
@@ -25,17 +25,17 @@ int Request::preChecks()
 
 void Request::notFound() {
 	m_path = _loc._errors[404];
-	read_fd = open(m_path.c_str(), O_RDONLY);
+	file_fd = open(m_path.c_str(), O_RDONLY);
 	m_errorCode = 404;
-	setFileToRead(true);
+	setFileToSet(true);
 	_status = READ_FILE;
 }
 
 void Request::badRequest() {
 	m_path = _loc._errors[400];
-	read_fd = open(m_path.c_str(), O_RDONLY);
+	file_fd = open(m_path.c_str(), O_RDONLY);
 	m_errorCode = 400;
-	setFileToRead(true);
+	setFileToSet(true);
 	_status = READ_FILE;
 }
 

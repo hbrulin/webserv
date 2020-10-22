@@ -47,8 +47,7 @@ class Request
 	Head_resp _head_resp;
 
 	/*file fds*/
-	int read_fd;
-	int write_fd;
+	int file_fd;
 
 	/*Request*/
 	std::string m_path;
@@ -81,8 +80,8 @@ class Request
 	void getBody();
 
 	/*file fds*/
-	void	setFileToRead(bool state);
-	void	setFileToWrite(bool state);
+	void	setFileToSet(bool state);
+	//void	setFileToWrite(bool state);
 	int		read_file();
 	int		write_file();
 

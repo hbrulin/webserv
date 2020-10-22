@@ -3,6 +3,7 @@
 bool		m_run = true;
 extern fd_set		R_SET; 
 extern fd_set		W_SET; 
+extern int 			highsock;
 
 Listener::Listener(std::vector<Config> conf, int size) {
 
@@ -14,7 +15,6 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	m_sock = (int *)malloc(sizeof(int) * size + 1);
 	m_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in) * size + 1);
 	//m_run = true;
-	m_highsock = 0;
 	//ft_memset((char *) &m_r_set, 0, sizeof(m_r_set));
 	//ft_memset((char *) &m_w_set, 0, sizeof(m_w_set));
 	ft_memset((char *) &m_read_set, 0, sizeof(m_read_set));
@@ -44,7 +44,7 @@ void Listener::build_fd_set() {
 
 		/* Since we start with only one socket, the listening socket,
 		it is the highest socket so far. */
-		m_highsock = m_sock[i];
+		highsock = m_sock[i];
 	}
 
 	FD_ZERO(&W_SET); //clear out so no fd inside
@@ -53,7 +53,7 @@ void Listener::build_fd_set() {
 
 		/* Since we start with only one socket, the listening socket,
 		it is the highest socket so far. */
-		m_highsock = m_sock[i];
+		highsock = m_sock[i];
 	}
 }
 
@@ -63,6 +63,7 @@ int Listener::init() {
 
 	ft_memset((char *) &R_SET, 0, sizeof(R_SET));
 	ft_memset((char *) &W_SET, 0, sizeof(W_SET));
+	highsock = 0;
 
 	int reuse_addr = 1;  /* Used so we can re-bind to our port
 				while a previous connection is still
@@ -169,40 +170,52 @@ int Listener::run() {
 			The second argument to select() is the address of
 				the fd_set that contains sockets we're waiting
 				to be readable (including the listening socket).*/
-			sock_count = select(m_highsock + 1, &m_read_set, &m_write_set, NULL, NULL);
+			sock_count = select(highsock + 1, &m_read_set, &m_write_set, NULL, NULL);
 			if (sock_count < 0) {
 				strerror(errno);
-				//exit(EXIT_FAILURE); //FAUT-IL EXIT SI SELECT FAIL? non
 			}
 
+
+			/*check if files are open*/
+			std::vector<Request*>::iterator it = req_list.begin();
+			std::vector<Request*>::iterator ite = req_list.end();
+			while (it != ite && (*it)->_status != READ_FILE)
+				it++;
+			if (it != ite && (*it)->file_fd != -1)
+			{
+				if (FD_ISSET((*it)->file_fd, &m_read_set))
+				{
+					if ((*it)->read_file() < 0)
+						m_close = true;
+				}
+				continue;
+				//close_conn(j);
+			}
+			it = req_list.begin();
+			ite = req_list.end();
+			while (it != ite && (*it)->_status != WRITE_FILE)
+				it++;
+			if (it != ite && (*it)->file_fd != -1)
+			{
+				if (FD_ISSET((*it)->file_fd, &m_write_set))
+				{
+					if ((*it)->write_file() < 0)
+						m_close = true;
+				}
+				continue;
+				//close_conn(j);
+			}
 			/*Descriptors are available*/
-			for (int j = 0; j <= m_highsock && sock_count > 0; j++) {
+			for (int j = 0; j <= highsock && sock_count > 0; j++) {
 				std::vector<Request*>::iterator it = req_list.begin();
 				std::vector<Request*>::iterator ite = req_list.end();
 				while (it != ite && (*it)->m_client != j)
 					it++;
+				//std::cout << (*it)->m_client << std::endl;
 				if (FD_ISSET(j, &m_write_set) && it != ite)
 				{
 					if ((*it)->_status == SEND)
 						send_data(it);
-					//close_conn(j);
-				}
-				else if (FD_ISSET(j, &m_write_set) && it != ite)
-				{
-					if ((*it)->_status == WRITE_FILE)
-					{
-						if ((*it)->write_file() < 0)
-							m_close = true;
-					}
-					//close_conn(j);
-				}
-				else if (FD_ISSET(j, &m_read_set) && it != ite)
-				{
-					if ((*it)->_status == READ_FILE)
-					{
-						if ((*it)->read_file() < 0)
-							m_close = true;
-					}
 					//close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
@@ -280,8 +293,8 @@ void Listener::accept_incoming_connections(int i) {
 		/*Add new incoming connection to master fd_set*/
 		FD_SET(new_sock, &R_SET);
 		FD_SET(new_sock, &W_SET);
-		if (new_sock > m_highsock)
-			m_highsock = new_sock;
+		if (new_sock > highsock)
+			highsock = new_sock;
 	}
 }
 
@@ -404,7 +417,7 @@ void Listener::LaunchRequest(int n, int fd)
 	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
 	host = host.substr(0, m);
-	//std::cout << host << std::endl;
+	//std::cout << "IN" << std::endl;
 	for (int j = 0; j < _size ; j++)
 	{
 		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
@@ -472,9 +485,9 @@ void Listener::close_conn(int fd) {
 		close(fd);
 		FD_CLR(fd, &R_SET);
 		FD_CLR(fd, &W_SET);
-		if (fd == m_highsock) {
-			while (!(FD_ISSET(m_highsock, &R_SET)) && !(FD_ISSET(m_highsock, &W_SET))) 
-				m_highsock -= 1;
+		if (fd == highsock) {
+			while (!(FD_ISSET(highsock, &R_SET)) && !(FD_ISSET(highsock, &W_SET))) 
+				highsock -= 1;
 		//delete *it;
 		//buf_list.erase(it);
 		}

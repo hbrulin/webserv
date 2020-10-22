@@ -1,7 +1,8 @@
 #include "request.hpp"
 
 extern fd_set		R_SET; 
-extern fd_set		W_SET; 
+extern fd_set		W_SET;
+extern int 			highsock;
 
 /*void Request::split_resp(char *buffer)
 {
@@ -157,8 +158,8 @@ void Request::post() {
 		m_errorCode = 201;
 	
 	m_path = POST_HTML;
-	read_fd = open(m_path.c_str(), O_RDONLY);
-	setFileToRead(true);
+	file_fd = open(m_path.c_str(), O_RDONLY);
+	setFileToSet(true);
 	_status = READ_FILE;
 }
 
@@ -176,8 +177,8 @@ void Request::put() {
 	else
 		m_errorCode = 201; //created
 
-	write_fd = open(m_path.c_str(), O_RDONLY);
-	setFileToWrite(true);
+	file_fd = open(m_path.c_str(), O_WRONLY);
+	setFileToSet(true);
 	_status = WRITE_FILE;
 }
 
@@ -194,9 +195,9 @@ void Request::delete_m()
 void Request::get() {
 	// Open the document in the local file system
 
-	read_fd = open(m_path.c_str(), O_RDONLY);
+	file_fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
-	fstat(read_fd, &buf);
+	fstat(file_fd, &buf);
 	//close(read_fd);
 	if (buf.st_mode & S_IFDIR)
 		m_path = m_path + "/" + m_index;
@@ -204,7 +205,7 @@ void Request::get() {
 	if (path_exists(m_path))
 	{
 		//m_url = "";
-		setFileToRead(true);
+		setFileToSet(true);
 		
 		//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		//std::cout << str << std::endl;
@@ -219,46 +220,18 @@ void Request::get() {
 	}
 }
 
-void	Request::setFileToRead(bool state)
+int		Request::read_file() 
 {
-	if (read_fd != -1)
-	{
-		if (state)
-			FD_SET(read_fd, &R_SET);
-		else
-		{
-			FD_CLR(read_fd, &R_SET);
-			close(read_fd);
-		}
-	}
-}
-
-void	Request::setFileToWrite(bool state)
-{
-	if (write_fd != -1)
-	{
-		if (state)
-			FD_SET(write_fd, &W_SET);
-		else
-		{
-			FD_CLR(write_fd, &W_SET);
-			close(write_fd);
-		}
-	}
-}
-
-int		Request::read_file() {
-	
 	int					ret = 0;
 	char				buf[4096];
 
-	while ((ret = read(read_fd, buf, 4095)) > 0)
+	while ((ret = read(file_fd, buf, 4095)) > 0)
 	{
 		buf[ret] = '\0';
 		m_url += buf;
 	}
-	close(read_fd);
-	setFileToRead(false);
+	close(file_fd);
+	setFileToSet(false);
 	_status = SEND;
 	return ret;
 }
@@ -267,10 +240,35 @@ int		Request::write_file() {
 	int ret = 0;
 
 	if (_head_req.REQUEST_METHOD == PUT) 
-		ret = write(write_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
+		ret = write(file_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
 
-	close(write_fd);
-	setFileToWrite(false);
+	close(file_fd);
+	setFileToSet(false);
 	_status = SEND;
 	return ret;
+}
+
+void	Request::setFileToSet(bool state)
+{
+	if (file_fd != -1)
+	{
+		if (state)
+		{
+			FD_SET(file_fd, &R_SET);
+			FD_SET(file_fd, &W_SET);
+			if (file_fd > highsock)
+				highsock = file_fd;
+			//_status = READ_FILE;
+		}
+		else
+		{
+			FD_CLR(file_fd, &R_SET);
+			FD_CLR(file_fd, &W_SET);
+			close(file_fd);
+			if (file_fd == highsock) {
+				while (!(FD_ISSET(highsock, &R_SET)) && !(FD_ISSET(highsock, &W_SET))) 
+					highsock -= 1;
+			}
+		}
+	}
 }

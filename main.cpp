@@ -7,6 +7,7 @@
 
 fd_set		R_SET; /* Socket file descriptors we want to wake up for, using select() */
 fd_set		W_SET; /* Socket file descriptors we want to wake up for, using select() */
+int 		highsock;
 
 int main (int ac, char **av) {
 	(void)ac;
