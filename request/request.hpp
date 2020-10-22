@@ -15,15 +15,12 @@
 
 class Request
 {
-	//private:
-	//Request(){};
 
 /*Attributes*/
-
-	private:
-    Request(const Request &copy) {(void)copy;}
-
 	public:
+
+	/*Status*/
+	int _status;
 
 	/*Conf*/
 	Config _conf;
@@ -61,6 +58,11 @@ class Request
 
 
 /*Methods*/
+
+	private:
+    Request(const Request &copy) {(void)copy;}
+
+	public:
 	Request() {}
 	~Request() {}
 	Request &operator=(const Request &copy);

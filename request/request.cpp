@@ -4,6 +4,7 @@
 
 Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
 	{
+		_status = PARSE;
 		_conf = conf;
 		m_headers = headers;
 		m_body = body;
@@ -205,6 +206,7 @@ int Request::send_to_client() {
 
 Request &Request::operator=(const Request &copy) {
 
+	_status = copy._status;
 	_conf = copy._conf;
 	m_headers = copy.m_headers;
 	m_body = copy.m_body;
