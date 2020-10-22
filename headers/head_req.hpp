@@ -19,6 +19,9 @@
 class Head_req
 {
     public:
+    Head_req(const Head_req &copy);
+    Head_req &operator=(const Head_req &copy);
+    ~Head_req();
     Head_req() : HOST(LOCALHOST) { 
     }
     // response
@@ -61,9 +64,9 @@ class Head_req
     std::string getStringtoParse(std::string s, std::string toParse);
     std::string getMetatoParse(std::string s, std::string toParse, std::string Sep);
     std::string get_meta();
-    void        getScriptName(std::string s);
+    //void        getScriptName(std::string s);
 	std::string contentNego(std::string root);
-	void		parse(std::vector<std::string> parsed, std::string s, std::string url);
+	void		parse(std::string s, std::string url);
     std::string getXtoparse(std::string s, std::string toParse);
     struct stat st;
 };

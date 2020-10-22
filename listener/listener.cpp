@@ -172,13 +172,13 @@ int Listener::run() {
 
 			/*Descriptors are available*/
 			for (int j = 0; j <= m_highsock && sock_count > 0; j++) {
-				std::vector<Request*>::iterator it = req_list.begin();
+				/*std::vector<Request*>::iterator it = req_list.begin();
 				std::vector<Request*>::iterator ite = req_list.end();
 				while (it != ite && (*it)->m_client != j)
-					it++;
-				if (FD_ISSET(j, &m_write_set) && it != ite)
+					it++;*/
+				if (FD_ISSET(j, &m_write_set) && req.bytes_left)
 				{
-					send_data(j);
+					send_data();
 					close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
@@ -236,7 +236,7 @@ int Listener::run() {
 				}*/
 			}
 	}
-	//clean();
+	clean();
 	return 0;
 }
 
@@ -312,7 +312,7 @@ void Listener::receive_data(int fd) {
 		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
-			//std::cout << "M_BUFFER : " << s.substr(0, 20) << std::endl << std::endl;
+			std::cout << "M_BUFFER : " << s << std::endl << std::endl;
 			size_t npos = s.find(ENDCHARS);
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
@@ -336,8 +336,8 @@ void Listener::receive_data(int fd) {
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
 					buf_list[n]->m_content_length = getLength(buf_list[n]->headers, CONTENT_L_STR);
 					buf_list[n]->track_length += ret - buf_list[n]->header_length;
-
-					if (buf_list[n]->track_length >= buf_list[n]->m_content_length)
+					//std::cout << buf_list[n]->track_length << std::endl;
+					if (buf_list[n]->track_length >= buf_list[n]->m_content_length - 1)
 					{
 						LaunchRequest(n, fd);
 						buf_list[n]->clean_buf();
@@ -393,47 +393,51 @@ void Listener::LaunchRequest(int n, int fd)
 	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
 	host = host.substr(0, m);
+	std::cout << host << std::endl;
 	for (int j = 0; j < _size ; j++)
 	{
-		if (host == _conf[j]._server_name)
+		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
 		{
+			/*std::cout << _conf[j]._server_name << std::endl;
+			std::cout << j << std::endl;
+			std::cout << _conf.size() << std::endl;*/
 			m_nbConf = j;
 			break;
 		}
 	}
 
-	req_list.push_back(new Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr));
-	std::vector<Request*>::iterator it = req_list.begin();
+	req = Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr);
+	/*std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
-		it++;
-	(*it)->parse();
-	(*it)->handle();
+		it++;*/
+	req.parse();
+	req.handle();
 	//ADD TO WRITE_SET
 
 }
 
-void Listener::send_data(int fd)
+void Listener::send_data()
 {
-	std::vector<Request*>::iterator it = req_list.begin();
+	/*std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
-		it++;
+		it++;*/
 	
 	//error checking to comply with correction : if error, client will be removed
-	if ((*it)->send_to_client() == -1)
+	if (req.send_to_client() == -1)
 	{
 		m_close = true; //client removed
-		delete *it;
-		req_list.erase(it);
+		//delete *it;
+		//req_list.erase(it);
 		return;
 	}
-	if (!(*it)->bytes_left)
+	/*if (!(*it)->bytes_left)
 	{
 		//retirer du WRITE_SET
-		delete *it;
-		req_list.erase(it);
-	}
+		//delete *it;
+		//req_list.erase(it);
+	}*/
 }
 
 

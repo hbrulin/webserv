@@ -48,10 +48,10 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	oss << CACHE_STR;
     oss << CONTENT_T_STR << "text/html" << "\r\n";
 	oss << CONTENT_LANG_STR << CONTENT_LANGUAGE << "\r\n";
-	if (_method != PUT)
-    	oss << CONTENT_L_STR << getContentLength(fichier) << "\r\n";
-	else
+	if (_method == PUT || (_method == POST && getContentLength(fichier) == ""))
 		oss << CONTENT_L_STR << "0" << "\r\n";
+	else
+		oss << CONTENT_L_STR << getContentLength(fichier) << "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
 	oss << CONTENT_LOC_STR << fichier << "\r\n";
 	/*if (WWW_AUTHENTICATE != NULL)
@@ -86,4 +86,16 @@ std::string Head_resp::getBuffer_cgi(int code, std::string m_body, std::string X
  	 	oss << "http-" << X_head << "\r\n";
 	oss << "\r\n";
     return oss.str();
+}
+
+Head_resp::~Head_resp(){}
+Head_resp::Head_resp(const Head_resp &copy)
+{
+	this->CONTENT_LENGTH = copy.CONTENT_LENGTH;
+}
+
+Head_resp &Head_resp::operator=(const Head_resp &copy)
+{
+	this->CONTENT_LENGTH = copy.CONTENT_LENGTH;
+	return *this;
 }

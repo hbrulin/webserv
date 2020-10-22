@@ -47,19 +47,12 @@ class ConfigParser
 	fmap _map;
 
 	void parse_root(std::string b);
-	//void parse_body_size(std::string b);
-	void parse_errors(std::string b);
+	//void parse_errors(std::string b);
 	void parse_listen(std::string);
 	void parse_host(std::string);
 	void parse_method(std::string);
 	void parse_directory(std::string);
-	//void parse_directory_listing(std::string);
-	//void parse_default_directory_answer_file(std::string);
-	//void parse_send_files(std::string);
-	//void parse_files_root(std::string);
 	void parse_server_name(std::string);
-	//void parse_cgi_root(std::string);
-	//void parse_cgi_type(std::string);
 
 	void parse_location(std::string);
 
@@ -67,7 +60,11 @@ class ConfigParser
 	void parse_cgi_type(std::string b);
 	void parse_body_size(std::string b);
 
+	void parse_errors(std::string);
+
 	void remove_whitespace(std::string&);
+
+	void parse_index(std::string);
 
 };
 

@@ -9,14 +9,16 @@ Locations::Locations()
 
 Locations::~Locations() {}
 
-Locations::Locations(const Locations& locs)
+Locations::Locations(const Locations& loc)
 {
-	_v = locs._v;
+	_v = loc._v;
+	_blank = loc._blank;
 }
 
-void Locations::operator = (const Locations& locs)
+void Locations::operator = (const Locations& loc)
 {
-	_v = locs._v;
+	_v = loc._v;
+	_blank = loc._blank;
 }
 
 unsigned long Locations::size()
@@ -61,6 +63,7 @@ void Locations::print()
 	{
 		_v[i].print();
 	}
+	_blank.print();
 }
 
 static void stack_url(std::stack<std::string>& urls, std::string b)
@@ -102,7 +105,7 @@ Location& Locations::get_loc_by_url(std::string url)
 			if (last == _v[i].get_name())
 				return (_v[i]);
 		}
-	}*/
+	}-> for locaation .something */
 
 	while (urls.size())
 	{
@@ -115,6 +118,13 @@ Location& Locations::get_loc_by_url(std::string url)
 		}
 		urls.pop();
 	}
-	//std::cout << "blank" << std::endl;
 	return (_blank);
+}
+
+void Locations::check_path_validity()
+{
+	for (unsigned long i = 0; i < size(); i++)
+	{
+		_v[i].check_path_validity();
+	}
 }

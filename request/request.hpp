@@ -22,12 +22,16 @@
 
 class Request
 {
-	private:
-	Request(){};
+	//private:
+	//Request(){};
 
 /*Attributes*/
 
 	public:
+	Request(){};
+	~Request();
+	//Request &operator=(const Request &copy);
+	Request(const Request &copy);
 
 	/*Conf*/
 	Config _conf;
@@ -56,7 +60,7 @@ class Request
 	std::string m_path;
 	std::string m_url;
 	std::string m_body;
-	unsigned int m_chunk_size;
+	unsigned int _body_size;
 
 	/*Output*/
 	int m_errorCode;
@@ -70,6 +74,8 @@ class Request
 	
 	/*parsing*/
 	void parse();
+	int isGoodRequest();
+	int forbiddenChars(std::string s);
 	void getBody();
 
 	/*methods*/
@@ -91,7 +97,7 @@ class Request
 	int preChecks();
 	//int isAcceptable();
 	int isAuthorized(std::string str);
-	int isAllowed(std::string path);
+	//int isAllowed(std::string path);
 	void notFound();
 	void badRequest();
 	int internalError();

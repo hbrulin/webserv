@@ -8,13 +8,12 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		m_headers = headers;
 		m_body = body;
 		m_client = fd;
-		m_not_found = DEF_ERR_PAGE;
 		m_errorCode = DEFAULT_CODE;
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;
 		s_addr = addr;
 		pid_ret = 0;
-		m_chunk_size = 0;
+		_body_size = 0;
 		bytes_left = 1;
 		first_send = 1;
 	};
@@ -28,29 +27,61 @@ void		Request::getBody() {
 	while (std::getline(f, buf))
 	{
 		if (!flag)
-			m_chunk_size += ft_atoi_base(buf, "0123456789abcdef");
-			//m_chunk_size += strtol(buf.c_str(), NULL, 16);
+			_body_size += ft_atoi_base(buf, "0123456789abcdef");
+			//_body_size += strtol(buf.c_str(), NULL, 16);
 		else
 			total += buf.substr(0, buf.size() - 1);
 		flag = !flag;
 	}
 	m_body = total;
-	//std::cout << "body_size request" << m_body.size() << std::endl;
-	//std::cout << "calcul chunk" << m_chunk_size << std::endl << std::endl;
 }
 
-void Request::parse() 
+int Request::isGoodRequest()
 {
+	//std::cout << m_headers << std::endl;
+	std::string buf;
+	int line = 0;
+	if (m_headers.empty())
+		return 1;
+
 	std::istringstream iss(m_headers.c_str());
-	std::vector<std::string> parsed((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-	if (parsed[0] == GET || parsed[0] == POST || parsed[0] == HEAD || parsed[0] == PUT || parsed[0] == DELETE)
+
+	while (std::getline(iss, buf))
 	{
-		m_url = parsed[1];
-		_head_req.parse(parsed, m_headers.c_str(), m_url);
+		std::istringstream s(buf.c_str());
+		std::vector<std::string> parsed((std::istream_iterator<std::string>(s)), std::istream_iterator<std::string>());
+		if (line == 0)
+		{
+			if (parsed.size() != 3)
+				return 1;
+			if (parsed[0] != GET && parsed[0] != POST && parsed[0] != HEAD && parsed[0] != PUT && parsed[0] != DELETE)
+				return 1;
+			if (strstr(parsed[1].c_str(), "/") == NULL || forbiddenChars(parsed[1]))
+				return 1;
+			line++;
+			m_url = parsed[1];
+			_head_req.REQUEST_METHOD = parsed[0];
+			_head_req.REQUEST_URI = parsed[1];
+			_head_req.SERVER_PROTOCOL = parsed[2];
+		}
+		else
+		{
+			if (parsed.size() < 2)
+				return 1;
+		}
+	}
+	return 0;
+}
+
+void Request::parse()
+{
+	if (!isGoodRequest())
+	{
+		_head_req.parse(m_headers.c_str(), m_url);
 		_loc = _conf._locations.get_loc_by_url(m_url);
 		m_index = _loc._index;
-		if (!_loc._errors.empty())
-			m_not_found = _loc._errors;
+		/*if (!_loc._errors.empty())
+			m_not_found = _loc._errors[404];*/
 		//std::cout << "!!!" << _loc._errors << std::endl;
 
 		if (preChecks())
@@ -65,16 +96,37 @@ void Request::parse()
 			m_url = m_index;
 		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 			m_url.erase(0, _loc._name.size());
-		if (_loc._root != YOUPIBANANE && strstr(m_url.c_str(), UPLOADED) == NULL)
-			_loc._root =  _head_req.contentNego(_loc._root);
+
+		if (!_loc._uploaded_files_root.empty() && strstr(m_url.c_str(), _loc._uploaded_files_root.c_str()) != NULL)
+		{
+			m_path = m_url;
+			return;
+		}
+
+		if (strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
+		{
+			_loc._root = _head_req.contentNego(_loc._root);
+		}
 		m_path = _loc._root + m_url;
 
-		if ((_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST) 
-			&& _head_req.TRANSFER_ENCODING == CHUNKED_STR)
-			getBody();
+		/*parse body*/
+		if (_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST)
+		{
+			if (_head_req.TRANSFER_ENCODING == CHUNKED_STR)
+				getBody();
+			else if (_head_req.CONTENT_LENGTH.empty() == 0)
+				_body_size = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
+			else
+			{
+				m_errorCode = 411;
+				return;
+			}
+		}
 	}
 	else
 	{
+		_loc = _conf._locations._blank;
+		//_loc.print();
 		badRequest();
 		return;
 	}
@@ -106,14 +158,13 @@ void Request::handle() {
 		delete_m();
 		return ;
 	}
-	else                                                                                                                                                                                                                                                                                                                          
-		get(); //also works for HEAD, change is in sendToClient()     
+	else
+		get(); //also works for HEAD, change is in sendToClient()
 
 }
 
 
 int Request::send_to_client() {
-	
 	if (first_send)
 	{
 		first_send = !first_send;
@@ -138,6 +189,8 @@ int Request::send_to_client() {
 	{
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
+		else if (bytes == 0)
+			return 0;
 		if (bytes < m_output.size())
 			m_output = m_output.substr(bytes);
 		else if (bytes == m_output.size())
@@ -148,6 +201,8 @@ int Request::send_to_client() {
 		//std::cout << m_output.size() << std::endl;
 		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 			return - 1;
+		else if (bytes == 0)
+			return 0;
 		if (bytes < m_output.size())
 			m_output = m_output.substr(bytes);
 		else if (bytes == m_output.size())
@@ -155,10 +210,25 @@ int Request::send_to_client() {
 		//std::cout << bytes << std::endl;
 		//std::cout << bytes_left << std::endl << std::endl;
 	}
-	/*if (_head_req.REQUEST_METHOD == POST)
+	if (!is_cgi)
 	{
-		std::cout << std::endl << m_output << std::endl;
+		std::cout << std::endl << m_output.substr(0, 500) << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}*/
+	}
 	return 0;
+}
+
+Request::~Request(){}
+
+//Request &Request::operator=(const Request &copy)
+//{
+	//this->m_body = copy.m_body;
+//	this->is_cgi = copy.is_cgi;
+//	return *this;
+//}
+
+Request::Request(const Request &copy)
+{
+	this->is_cgi = copy.is_cgi;
+	//this->m_body = copy.m_body;
 }
