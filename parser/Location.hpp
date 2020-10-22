@@ -6,7 +6,9 @@
 #include <vector>
 #include <map>
 #include <sys/stat.h>
+#include <dirent.h>
 #include "../utils/definitions.hpp"
+
 
 
 class Location
@@ -97,6 +99,8 @@ class Location
 
 	void check_path_validity();
 	void check_methods_validity();
+
+	std::string get_autoindex();
 
 
 	static const char* _SUPPORTED_CGI[];

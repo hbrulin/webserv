@@ -480,6 +480,36 @@ std::string Location::get_error_path(int code)
 	return ("");
 }
 
+std::string Location::get_autoindex()
+{
+	std::string path = _root; // not sure
+
+	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
+	+ "</title>\n\t</head>\n\t\t<body><p>";
+
+	if (_autoindex == false)
+	{
+		return (list + "404 not found" + "\t</p></body></html>\n");
+	}
+
+	//if (path + partial_path doesn't exists return 404)
+
+	struct dirent *files;
+	DIR *current = opendir(path.c_str());
+	if (current == NULL)
+		return (_errors[404]);
+	while ((files = readdir(current)) != NULL)
+	{
+		list.append("\t\t<a href =\"");
+		list.append(std::string(files->d_name));
+		list.append("\">");
+		list.append("-" + std::string(files->d_name));
+		list.append("</a>\n");
+	}
+	list.append("\t</p></body></html>\n");
+	return (list);
+}
+
 /*
 void check_path_validity()
 {

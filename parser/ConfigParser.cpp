@@ -64,7 +64,7 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		{
 			if (key == "location")
 				std::cout << e.what() << std::endl;
-			throw (std::logic_error("Parsing error: Unknown value: '" + value + "' for option: " + key));
+			throw (std::logic_error("Parsing error: Unknown value: '" + value + "' for option: " + key + ": " + e.what()));
 			return (false);
 		}
 		if (key != "location")
@@ -180,6 +180,14 @@ void ConfigParser::parse_listen(std::string b)
 		// maybe check if number
 		_config->_listen = stoi(b);
 		_config->_ports.push_back(stoi(b));
+	}
+
+	for (unsigned long i = 0; i < _config->_ports.size(); i++)
+	{
+		for (unsigned long j = i + 1; j < _config->_ports.size(); j++)
+			if (_config->_ports[i] == _config->_ports[j])
+				throw (std::logic_error("Same server cannot have 2 times the same port: " +
+				std::to_string(_config->_ports[j])));
 	}
 }
 
