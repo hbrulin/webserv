@@ -1,6 +1,6 @@
 #include "request.hpp"
 
-void Request::split_resp(char *buffer)
+/*void Request::split_resp(char *buffer)
 {
 	std::string s(buffer);
 	int i = 0;
@@ -16,7 +16,7 @@ void Request::split_resp(char *buffer)
 	{
 		m_url.append(buffer, strlen(buffer));
 	}
-}
+}*/
 
 int Request::forking()
 {
@@ -223,27 +223,69 @@ void Request::delete_m()
 void Request::get() {
 	// Open the document in the local file system
 
-	int fd = open(m_path.c_str(), O_RDONLY);
+	read_fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
-	fstat(fd, &buf);
-	close(fd);
+	fstat(read_fd, &buf);
+	//close(read_fd);
 	if (buf.st_mode & S_IFDIR)
 		m_path = m_path + "/" + m_index;
 
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 	{
-		m_url = "";
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		//m_url = "";
+		setFileToRead(true);
+		
+		//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		//std::cout << str << std::endl;
-		split_resp((char *)str.c_str());
+		//split_resp((char *)str.c_str());
 		m_errorCode = 200;
-		f.close();
+		_status = READ_FILE;
 		return;
 	}
 	else
 	{
-		f.close();
 		notFound();
 	}
+}
+
+void	Request::setFileToRead(bool state)
+{
+	if (read_fd != -1)
+	{
+		if (state)
+			FD_SET(read_fd, &R_SET);
+		else
+			FD_CLR(read_fd, &R_SET);
+	}
+}
+
+void	Request::setFileToWrite(bool state)
+{
+	if (write_fd != -1)
+	{
+		if (state)
+			FD_SET(read_fd, &W_SET);
+		else
+			FD_CLR(read_fd, &W_SET);
+	}
+}
+
+int		Request::read_file() {
+	
+	int					ret;
+	char				buf[4096];
+
+	while ((ret = read(read_fd, buf, 4095)) > 0)
+	{
+		buf[ret] = '\0';
+		m_url += buf;
+	}
+	close(read_fd);
+	setFileToRead(false);
+	_status = SEND;
+}
+
+int		Request::write_file() {
+
+	setFileToWrite(false);
 }

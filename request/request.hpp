@@ -4,6 +4,8 @@
 #include <string>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <fcntl.h>
+#include <arpa/inet.h>
 #include <string.h>
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
@@ -44,6 +46,10 @@ class Request
 	Head_req _head_req;
 	Head_resp _head_resp;
 
+	/*file fds*/
+	int read_fd;
+	int write_fd;
+
 	/*Request*/
 	std::string m_path;
 	std::string m_url;
@@ -73,6 +79,13 @@ class Request
 	int isGoodRequest();
 	int forbiddenChars(std::string s);
 	void getBody();
+
+	/*file fds*/
+	void	setFileToRead(bool state);
+	void	setFileToWrite(bool state);
+	int		read_file();
+	int		write_file();
+
 
 	/*methods*/
 	void handle();

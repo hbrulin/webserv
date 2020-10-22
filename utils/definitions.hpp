@@ -1,6 +1,9 @@
 #ifndef DEFINITIONS_HPP
 # define DEFINITIONS_HPP
 
+fd_set		R_SET; /* Socket file descriptors we want to wake up for, using select() */
+fd_set		W_SET; /* Socket file descriptors we want to wake up for, using select() */
+
 typedef enum	e_status
 {
 	READ,

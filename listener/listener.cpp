@@ -13,8 +13,8 @@ Listener::Listener(std::vector<Config> conf, int size) {
 	m_address = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in) * size + 1);
 	//m_run = true;
 	m_highsock = 0;
-	ft_memset((char *) &m_r_set, 0, sizeof(m_r_set));
-	ft_memset((char *) &m_w_set, 0, sizeof(m_w_set));
+	//ft_memset((char *) &m_r_set, 0, sizeof(m_r_set));
+	//ft_memset((char *) &m_w_set, 0, sizeof(m_w_set));
 	ft_memset((char *) &m_read_set, 0, sizeof(m_read_set));
 	ft_memset((char *) &m_write_set, 0, sizeof(m_write_set));
 
@@ -36,18 +36,18 @@ void Listener::exiting(int n) {
 
 /*prepare fd_set : sock variable for connections coming in + other sockets already accepted*/
 void Listener::build_fd_set() {
-	FD_ZERO(&m_r_set); //clear out so no fd inside
+	FD_ZERO(&R_SET); //clear out so no fd inside
 	for (int i = 0; i < _size ; i++) {
-		FD_SET(m_sock[i], &m_r_set); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
+		FD_SET(m_sock[i], &R_SET); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
 
 		/* Since we start with only one socket, the listening socket,
 		it is the highest socket so far. */
 		m_highsock = m_sock[i];
 	}
 
-	FD_ZERO(&m_w_set); //clear out so no fd inside
+	FD_ZERO(&W_SET); //clear out so no fd inside
 	for (int i = 0; i < _size ; i++) {
-		FD_SET(m_sock[i], &m_w_set); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
+		FD_SET(m_sock[i], &W_SET); //adds m_sock to set, so that select() will return if a connection comes in on that socket -> will trigger accept() etc...
 
 		/* Since we start with only one socket, the listening socket,
 		it is the highest socket so far. */
@@ -155,8 +155,8 @@ int Listener::run() {
 		only one client is sending a message at that time. The contents of 'copy' will
 		be one socket. You will have LOST all the other sockets.*/
 		//for (int i = 0; i < _size ; i++) {
-			ft_memcpy(&m_read_set, &m_r_set, sizeof(m_r_set));
-			ft_memcpy(&m_write_set, &m_w_set, sizeof(m_w_set));
+			ft_memcpy(&m_read_set, &R_SET, sizeof(R_SET));
+			ft_memcpy(&m_write_set, &W_SET, sizeof(W_SET));
 
 			/*calling select()*/
 			/* The first argument to select is the highest file
@@ -266,8 +266,8 @@ void Listener::accept_incoming_connections(int i) {
 			break;
 		}
 		/*Add new incoming connection to master fd_set*/
-		FD_SET(new_sock, &m_r_set);
-		FD_SET(new_sock, &m_w_set);
+		FD_SET(new_sock, &R_SET);
+		FD_SET(new_sock, &W_SET);
 		if (new_sock > m_highsock)
 			m_highsock = new_sock;
 	}
@@ -426,8 +426,8 @@ void Listener::send_data(std::vector<Request*>::iterator it)
 	if ((*it)->send_to_client() == -1)
 	{
 		m_close = true; //client removed
-		//delete *it;
-		//req_list.erase(it);
+		delete *it;
+		req_list.erase(it);
 		return;
 	}
 	if (!(*it)->bytes_left)
@@ -458,10 +458,10 @@ void Listener::close_conn(int fd) {
 
 	if (m_close) {
 		close(fd);
-		FD_CLR(fd, &m_r_set);
-		FD_CLR(fd, &m_w_set);
+		FD_CLR(fd, &R_SET);
+		FD_CLR(fd, &W_SET);
 		if (fd == m_highsock) {
-			while (!(FD_ISSET(m_highsock, &m_r_set)) && !(FD_ISSET(m_highsock, &m_w_set))) 
+			while (!(FD_ISSET(m_highsock, &R_SET)) && !(FD_ISSET(m_highsock, &W_SET))) 
 				m_highsock -= 1;
 		//delete *it;
 		//buf_list.erase(it);

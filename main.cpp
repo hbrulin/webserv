@@ -1,8 +1,11 @@
 #include "parser/Data.hpp"
 #include "listener/listener.hpp"
+#include "../utils/definitions.hpp"
 
 int main (int ac, char **av) {
 	(void)ac;
+	ft_memset((char *) &R_SET, 0, sizeof(R_SET));
+	ft_memset((char *) &W_SET, 0, sizeof(W_SET));
 	try
 	{
 		Data data(av[1]);
