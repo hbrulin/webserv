@@ -280,10 +280,7 @@ void		Head_req::parse(std::string m_buffer, std::string url) {
 	if (strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
 		CONTENT_LENGTH = getStringtoParse(m_buffer, CONTENT_L_STR);
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
-<<<<<<< HEAD
 	//getScriptName(url);
-=======
->>>>>>> 2996d2fd68b9fc7ee8d5d91db7dcddecc0068213
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
 	if (getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "")
 		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";

@@ -185,31 +185,15 @@ int Request::send_to_client() {
 	}
 
 	size_t bytes;
-	if (!is_cgi)
-	{
-		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
-			return - 1;
-		else if (bytes == 0)
-			return 0;
-		if (bytes < m_output.size())
-			m_output = m_output.substr(bytes);
-		else if (bytes == m_output.size())
-			bytes_left = !bytes_left;
-	}
-	else
-	{
-		//std::cout << m_output.size() << std::endl;
-		if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
-			return - 1;
-		else if (bytes == 0)
-			return 0;
-		if (bytes < m_output.size())
-			m_output = m_output.substr(bytes);
-		else if (bytes == m_output.size())
-			bytes_left = !bytes_left;
-		//std::cout << bytes << std::endl;
-		//std::cout << bytes_left << std::endl << std::endl;
-	}
+	if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
+		return - 1;
+	else if (bytes == 0)
+		return 0;
+	if (bytes < m_output.size())
+		m_output = m_output.substr(bytes);
+	else if (bytes == m_output.size())
+		bytes_left = !bytes_left;
+	
 	if (!is_cgi)
 	{
 		std::cout << std::endl << m_output.substr(0, 500) << std::endl;

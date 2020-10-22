@@ -393,7 +393,7 @@ void Listener::LaunchRequest(int n, int fd)
 	std::string host = getHost(buf_list[n]->headers, HOST_STR);
 	size_t m = host.find(":");
 	host = host.substr(0, m);
-	std::cout << host << std::endl;
+	//std::cout << host << std::endl;
 	for (int j = 0; j < _size ; j++)
 	{
 		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
