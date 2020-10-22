@@ -142,12 +142,13 @@ void Request::exec_cgi(){
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
+		_status = SEND;
 		return;
 	}
-	if (_head_req.REQUEST_METHOD == POST)
+	/*if (_head_req.REQUEST_METHOD == POST)
 	{
 		post(); // on recupere les infos dans le body
-	}
+	}*/
 	m_url = _loc._cgi_root + _loc._cgi_file;
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
@@ -162,28 +163,20 @@ void Request::post() {
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
+		_status = SEND;
 		return;
 	}
-	if (is_cgi)
-		return;
+	/*if (is_cgi)
+		return;*/
 	if (m_body.size() == 0)
-	{
-		std::ifstream f(POST_HTML);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = POST_HTML;
-		m_url = str;
 		m_errorCode = 200;
-		f.close();
-	}
 	else
-	{
-		std::ifstream f(POST_HTML);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = POST_HTML;
-		m_url = str;
 		m_errorCode = 201;
-		f.close();
-	}
+	
+	m_path = POST_HTML;
+	read_fd = open(m_path.c_str(), O_RDONLY);
+	setFileToRead(true);
+	_status = READ_FILE;
 }
 
 void Request::put() {
@@ -191,6 +184,7 @@ void Request::put() {
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
+		_status = SEND;
 		return;
 	}
 	m_path = _loc._uploaded_files_root + m_url;
@@ -198,17 +192,10 @@ void Request::put() {
 		m_errorCode = 200;
 	else
 		m_errorCode = 201; //created
-	//std::ifstream f(m_path);
-	//if (f.good())
 
-	//f.close();
-	//std::cout << _loc._uploaded_files_root << "\n";
-	std::ofstream ff(m_path);
-	if (ff.good())
-		ff << m_body.substr(0, _body_size - 1) << std::endl; //get msg from body, limit if above content-lenght
-	else
-		m_errorCode = 456;
-	ff.close();
+	write_fd = open(m_path.c_str(), O_RDONLY);
+	setFileToWrite(true);
+	_status = WRITE_FILE;
 }
 
 void Request::delete_m()
@@ -294,5 +281,10 @@ int		Request::read_file() {
 
 int		Request::write_file() {
 
+	if (_head_req.REQUEST_METHOD == PUT) 
+		write(write_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
+
+	close(write_fd);
 	setFileToWrite(false);
+	_status = SEND;
 }

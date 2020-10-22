@@ -176,7 +176,7 @@ int Request::send_to_client() {
 		{
 			m_output = _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
 			if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
-			m_output = m_output + m_url;
+				m_output = m_output + m_url;
 		}
 		else 
 		{
