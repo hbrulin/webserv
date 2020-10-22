@@ -1,6 +1,15 @@
 #ifndef DEFINITIONS_HPP
 # define DEFINITIONS_HPP
 
+typedef enum	e_status
+{
+	PARSE,
+	READ_FILE, //-> il faut creer nouvelles fts
+	WRITE_FILE, 
+	DONE // (si error ou si tout est ok)
+}				t_status;
+
+
 //parse config
 #define LOCALHOST "127.0.0.1"
 #define DEFAULT_ERROR_PAGES "www/"
