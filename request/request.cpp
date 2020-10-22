@@ -4,7 +4,7 @@
 
 Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
 	{
-		_status = PARSE;
+		_status = READ;
 		_conf = conf;
 		m_headers = headers;
 		m_body = body;

@@ -240,36 +240,6 @@ void Request::get() {
 		m_errorCode = 200;
 		f.close();
 		return;
-		/*if (!isAllowed(m_path) || m_errorCode == 405)
-		{
-			f.close();
-			if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-				_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
-			m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-			std::ifstream f(m_path);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_url = str;
-			m_errorCode = 405;
-			f.close();
-		}*/
-		/*else if (!isAuthorized(m_header))
-		{
-			f.close();
-			std::ifstream f(_loc._root + m_unauthorized);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_unauthorized;
-			m_url = str;
-			m_errorCode = 401;
-			f.close();
-		}
-		//else
-		{
-			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			//m_url = str;
-			m_errorCode = 200;
-			f.close();
-			return;
-		}*/
 	}
 	else
 	{

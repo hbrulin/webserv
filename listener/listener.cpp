@@ -176,13 +176,24 @@ int Listener::run() {
 				std::vector<Request*>::iterator ite = req_list.end();
 				while (it != ite && (*it)->m_client != j)
 					it++;
-				if (FD_ISSET(j, &m_write_set) && it != ite)
+				if (FD_ISSET(j, &m_write_set) && it != ite && (*it)->_status = SEND)
 				{
 					send_data(it);
-					close_conn(j);
+					//close_conn(j);
+				}
+				else if (FD_ISSET(j, &m_write_set) && it != ite && (*it)->_status = WRITE_FILE)
+				{
+					if ((*it)->write_file() < 0)
+						m_close = true;
+					//close_conn(j);
+				}
+				else if (FD_ISSET(j, &m_read_set) && it != ite && (*it)->_status = READ_FILE)
+				{
+					if ((*it)->read_file() < 0)
+						m_close = true;
+					//close_conn(j);
 				}
 				else if (FD_ISSET(j, &m_read_set)) {//if descriptor is ready, is in read_set
-					//std::cout << "test" << std::endl;
 					//Fd is already readable - we have one less to look for. So that we can eventually stop looking
 					sock_count -= 1;
 
@@ -190,13 +201,10 @@ int Listener::run() {
 					Accept all incoming connections that are queued up on the listening socket before we
 					loop back and call select again.*/
 					ret = look_for_sock(j);
-					//std::cout << ret.first << ret.second << std::endl;
 					if (ret.first) {
 						//std::cout << ret.first << std::endl;
 						accept_incoming_connections(ret.first);
 						m_nbConf = ret.second;
-						//buf_list.push_back(new Buffers(ret.first));
-						//std::cout << "+ 1 BUFFER - size is : " << buf_list.size() << "new_id is " << j << std::endl;
 					}
 					else { //if it is not listening socket, then there is a readable connexion that was added in master set and passed into read set
 						m_close = false;
@@ -221,19 +229,10 @@ int Listener::run() {
 							}
 						receive_data(j); //receive all incoming data on socket before looping back and calling select again
 						//m_close = true;
-						close_conn(j);
+						//close_conn(j);
 					}
 				}
-				/*if (FD_ISSET(j, &m_write_set))
-				{
-					std::vector<Request*>::iterator it = req_list.begin();
-					std::vector<Request*>::iterator ite = req_list.end();
-					while (it != ite && (*it)->m_client != j)
-						it++;
-					if (it != ite)
-						send_data(j);
-					close_conn(j);
-				}*/
+				close_conn(j);
 			}
 	}
 	clean();

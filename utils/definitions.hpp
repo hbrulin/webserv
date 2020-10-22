@@ -3,9 +3,10 @@
 
 typedef enum	e_status
 {
-	PARSE,
+	READ,
 	READ_FILE, //-> il faut creer nouvelles fts
-	WRITE_FILE, 
+	WRITE_FILE,
+	SEND,
 	DONE // (si error ou si tout est ok)
 }				t_status;
 
