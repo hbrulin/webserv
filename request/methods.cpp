@@ -10,11 +10,11 @@ void Request::split_resp(char *buffer)
 	{
 		n = n + 3;
 		i = n;
-		m_url.append(&buffer[n], strlen(buffer) - n);
+		m_url.append(&buffer[n], ft_strlen(buffer) - n);
 	}
 	else
 	{
-		m_url.append(buffer, strlen(buffer));
+		m_url.append(buffer, ft_strlen(buffer));
 	}
 }
 
