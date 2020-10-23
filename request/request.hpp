@@ -5,20 +5,12 @@
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <string.h>
-//#include <sstream>
-//#include <fstream>
-//#include <iostream>
-//#include <vector>
 #include "../parser/Config.hpp"
 #include "../parser/Location.hpp"
 #include "../utils/libft.h"
 #include "../headers/head_req.hpp"
 #include "../headers/head_resp.hpp"
-//#include <algorithm>
-//#include <sys/stat.h>
 #include <fcntl.h>
-//#include <sys/types.h>
-//#include <dirent.h>
 #include "../utils/definitions.hpp"
 
 class Request
@@ -28,16 +20,14 @@ class Request
 
 /*Attributes*/
 
+	private:
+    Request(const Request &copy) {(void)copy;}
+
 	public:
-	Request(){};
-	~Request();
-	//Request &operator=(const Request &copy);
-	Request(const Request &copy);
 
 	/*Conf*/
 	Config _conf;
 	Location _loc;
-	std::string m_not_found;
 	std::string m_index;
 
 	/*Client*/
@@ -46,8 +36,8 @@ class Request
 
 	/*For cgi*/
 	char curr_dir[200];
-	char *dir_cgi;
-	char *path;
+	std::string dir_cgi;
+	std::string path;
 	std::string content_env; //env que l'on recup dans requete POST pour les cgi
 	int pid_ret;
 	bool is_cgi;
@@ -71,6 +61,9 @@ class Request
 
 
 /*Methods*/
+	Request() {}
+	~Request() {}
+	Request &operator=(const Request &copy);
 	Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr);
 	
 	/*parsing*/

@@ -283,3 +283,34 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	}
 	return (dst);
 }
+
+bool path_exists(std::string& s)
+{
+	struct stat buffer;
+	return (stat (s.c_str(), &buffer) == 0);
+}
+
+
+int		getline(std::string &buffer, std::string &line)
+{
+	size_t					pos;
+
+	pos = buffer.find("\n");
+	if (pos != std::string::npos)
+	{
+		line = std::string (buffer, 0, pos++);
+		buffer = buffer.substr(pos);
+	}
+	else
+	{
+		if (buffer[buffer.size() - 1] == '\n')
+			buffer = buffer.substr(buffer.size());
+		else
+		{
+			line = buffer;
+			buffer = buffer.substr(buffer.size());
+		}
+	}
+	//std::cout << line.size() << std::endl;
+	return line.size();
+}

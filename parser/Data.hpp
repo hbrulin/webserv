@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <fstream>
+#include <fstream> //WRONG
 #include "Config.hpp"
 #include "ConfigParser.hpp"
 #include "../utils/definitions.hpp"
@@ -52,7 +52,7 @@ class Data
 	static const char* _SUPPORTED_METHOD[];
 
 	private:
-	//Data() {};
+	Data() {};
 
 	std::vector<Config> _configList;
 	ConfigParser _configParser;

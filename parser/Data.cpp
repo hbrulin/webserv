@@ -124,11 +124,11 @@ void Data::operator = (const Data& data)
 
 /// CHECK ERRORS
 
-static bool path_exists(std::string& s)
+/*static bool path_exists(std::string& s)
 {
 	struct stat buffer;
 	return (stat (s.c_str(), &buffer) == 0);
-}
+}*/
 
 static void check_path_validity(Config& config)
 {

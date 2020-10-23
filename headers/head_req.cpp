@@ -314,20 +314,3 @@ void		Head_req::parse(std::string m_buffer, std::string url) {
 	}
 	free(tab);
 }
-
-Head_req::Head_req(const Head_req &copy)
-{
-	this->AUTH_TYPE = copy.AUTH_TYPE;
-}
-
-Head_req &Head_req::operator=(const Head_req &copy)
-{
-	this->AUTH_TYPE = copy.AUTH_TYPE;
-	return *this;
-}
-
-Head_req::~Head_req() {
-	AUTH_TYPE = "";
-	CONTENT_TYPE = "";
-	CONTENT_LENGTH = "";
-}

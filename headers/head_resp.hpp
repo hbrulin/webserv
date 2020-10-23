@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sstream>
+#include <sstream> //WRONG
 #include <vector>
 #include <unistd.h>
 #include "../utils/returnCodes.hpp"
@@ -12,11 +12,14 @@
 
 class Head_resp
 {
+	private:
+	Head_resp(const Head_resp &copy) {(void)copy;}
+    Head_resp &operator=(const Head_resp &copy) {(void)copy; return *this;}
+
     public:
-    Head_resp() : CONTENT_LANGUAGE("fr"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"),  DATE("default") {}
-    ~Head_resp();
-    Head_resp(const Head_resp &copy);
-    Head_resp &operator=(const Head_resp &copy);
+	Head_resp() : CONTENT_LANGUAGE("fr"), LAST_MODIFIED("default"), SERVER("webserver"), RETRY_AFTER("02:00"),  DATE("default") {}
+    ~Head_resp() {}
+
     // response
     std::string ALLOW;
     std::string CONTENT_LANGUAGE;

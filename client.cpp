@@ -48,11 +48,11 @@ int main(void)
 	string userInput = "PUT /put_test/test HTTP/1.1\r\n";
 	userInput += "Host: localhost:80\r\n";
 	userInput += "User-Agent: personal_client/1.1\r\n";
-    userInput += "Content-Length: 1000\r\n";
+    userInput += "Content-Length: 100\r\n";
     userInput += "Content-Type: test/file\r\n";
 	userInput += "Accept-Encoding: gzip\r\n\r\n";
     int k = 0;
-    while (k++ < 1000)
+    while (k++ < 100)
         userInput += "w";
 
 	/*string userInput = " GET www/uploaded/test HTTP/1.1\r\n";

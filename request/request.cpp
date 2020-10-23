@@ -20,11 +20,11 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 
 
 void		Request::getBody() {
-	std::istringstream f(m_body);
+	//std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
 	bool flag = 0;
-	while (std::getline(f, buf))
+	while (getline(m_body, buf))
 	{
 		if (!flag)
 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
@@ -34,6 +34,8 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
+	//std::cout << m_body.size() << std::endl;
+	//std::cout << _body_size << std::endl;
 }
 
 int Request::isGoodRequest()
@@ -168,20 +170,20 @@ int Request::send_to_client() {
 	if (first_send)
 	{
 		first_send = !first_send;
-		std::ostringstream oss;
+		//std::ostringstream oss;
 		if (pid_ret > 0)
 			return internalError();
 		if (!is_cgi)
-			oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
-		if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
-			oss << m_url;
-		if (is_cgi)
+		{
+			m_output = _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
+			if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
+				m_output = m_output + m_url;
+		}
+		else 
 		{
 			m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
 			m_output = m_output + m_body;
 		}
-		else
-			m_output = oss.str();
 	}
 
 	size_t bytes;
@@ -194,25 +196,28 @@ int Request::send_to_client() {
 	else if (bytes == m_output.size())
 		bytes_left = !bytes_left;
 	
-	if (!is_cgi)
+	/*if (is_cgi)
 	{
-		std::cout << std::endl << m_output.substr(0, 500) << std::endl;
+		std::cout << std::endl << m_output.substr(0, 100) << std::endl;
 		std::cout << "- - - - - - - - - - " << std::endl;
-	}
+	}*/
 	return 0;
 }
 
-Request::~Request(){}
 
-//Request &Request::operator=(const Request &copy)
-//{
-	//this->m_body = copy.m_body;
-//	this->is_cgi = copy.is_cgi;
-//	return *this;
-//}
+Request &Request::operator=(const Request &copy) {
 
-Request::Request(const Request &copy)
-{
-	this->is_cgi = copy.is_cgi;
-	//this->m_body = copy.m_body;
+	_conf = copy._conf;
+	m_headers = copy.m_headers;
+	m_body = copy.m_body;
+	m_client = copy.m_client;
+	m_errorCode = copy.m_errorCode;
+	_head_req.SERVER_PORT = copy._head_req.SERVER_PORT;
+	is_cgi = copy.is_cgi;
+	s_addr = copy.s_addr;
+	pid_ret = copy.pid_ret;
+	_body_size = copy._body_size;
+	bytes_left = copy.bytes_left;
+	first_send = copy.first_send;
+	return *this;
 }

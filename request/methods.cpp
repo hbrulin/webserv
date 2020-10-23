@@ -26,22 +26,19 @@ int Request::forking()
 	std::ostringstream oss;
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
-	if ((dir_cgi = ft_strjoin(curr_dir, "/")) == NULL) // leak
-		return (-1);
-	if ((path = ft_strjoin(dir_cgi, m_url.c_str())) == NULL)
-		return (-1);
-	//free(dir_cgi);
+	dir_cgi = std::string(curr_dir) + "/";
+	path = dir_cgi + m_url;
+
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
 	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
-	std::ifstream f(path);
-	if (!f.good())
-	{
+	
+	if (!(path_exists(path)))
 		return 127;
-	}
+
 	struct stat buf;
 	int ret;
-	if ((ret = stat((const char *)path, &buf)) < 0)
+	if ((ret = stat(path.c_str(), &buf)) < 0)
 		std::cout << ERR_STAT << strerror(errno) << std::endl;
 	else
 	{
@@ -72,7 +69,7 @@ int Request::forking()
 		close(pp[1]);
    		dup2(pp[0], 0);
 		dup2(fd, 1);
-		res = execve(path, argv, env);
+		res = execve(path.c_str(), argv, env);
 		if (res != 0)
 		{
 			exit(127);
@@ -88,22 +85,6 @@ int Request::forking()
 			perror(WAIT_ERR);
 		close(pp[1]);
 		close(fd);
-		//int boucle = 1;
-		// while (boucle)
-		// {
-		// 	int ret = wait(&status);
-		// 	if (WIFSIGNALED(status))
-		// 	{
-		// 		if (WTERMSIG(status) == 2)
-		// 			return -3;
-		// 		else if (WTERMSIG(status) == 3)
-		// 			return -2;
-		// 	}
-		// 	else
-		// 		return WEXITSTATUS(status);
-		// 	if (ret == pid)
-		// 		boucle = 0;
-		// }
 	}
 	else
 		perror(FORK_ERR);
@@ -120,7 +101,7 @@ int Request::forking()
 		m_body = str_cgi.substr(n, str_cgi.size() - n);
 	}
 	f_cgi.close();
-	remove(cgi_output.c_str());
+	unlink(cgi_output.c_str());
 	int k = 0;
 	while (env[k])
 	{
@@ -128,10 +109,6 @@ int Request::forking()
 		k++;
 	}
 	free(env);
-	free(dir_cgi);
-	dir_cgi = NULL;
-	free(path);
-	path = NULL;
 	return 0;
 }
 
@@ -144,10 +121,10 @@ void Request::exec_cgi(){
 		m_errorCode = 413;
 		return;
 	}
-	if (_head_req.REQUEST_METHOD == POST)
+	/*if (_head_req.REQUEST_METHOD == POST)
 	{
 		post(); // on recupere les infos dans le body
-	}
+	}*/
 	m_url = _loc._cgi_root + _loc._cgi_file;
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
@@ -164,8 +141,8 @@ void Request::post() {
 		m_errorCode = 413;
 		return;
 	}
-	if (is_cgi)
-		return;
+	/*if (is_cgi)
+		return;*/
 	if (m_body.size() == 0)
 	{
 		std::ifstream f(POST_HTML);
@@ -194,16 +171,18 @@ void Request::put() {
 		return;
 	}
 	m_path = _loc._uploaded_files_root + m_url;
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
 		m_errorCode = 201; //created
-	f.close();
+	//std::ifstream f(m_path);
+	//if (f.good())
+
+	//f.close();
 	//std::cout << _loc._uploaded_files_root << "\n";
 	std::ofstream ff(m_path);
 	if (ff.good())
-		ff << m_body.substr(0, _body_size) << std::endl; //get msg from body, limit if above content-lenght
+		ff << m_body.substr(0, _body_size - 1) << std::endl; //get msg from body, limit if above content-lenght
 	else
 		m_errorCode = 456;
 	ff.close();
@@ -211,13 +190,10 @@ void Request::put() {
 
 void Request::delete_m()
 {
-	//m_path = _conf._root + m_url;
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
-		m_errorCode = 204; //created
-	f.close();
+		m_errorCode = 204;
 	unlink(m_path.c_str());
 }
 
@@ -236,40 +212,11 @@ void Request::get() {
 	{
 		m_url = "";
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		//std::cout << str << std::endl;
 		split_resp((char *)str.c_str());
 		m_errorCode = 200;
 		f.close();
 		return;
-		/*if (!isAllowed(m_path) || m_errorCode == 405)
-		{
-			f.close();
-			if (_loc._root.find("fr") != std::string::npos || _loc._root.find("en") != std::string::npos || _loc._root.find("es") != std::string::npos || _loc._root.find("de") != std::string::npos)
-				_loc._root = _loc._root.substr(0, _loc._root.size() - 3);
-			m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-			std::ifstream f(m_path);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_url = str;
-			m_errorCode = 405;
-			f.close();
-		}*/
-		/*else if (!isAuthorized(m_header))
-		{
-			f.close();
-			std::ifstream f(_loc._root + m_unauthorized);
-			std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			m_path = _loc._root + m_unauthorized;
-			m_url = str;
-			m_errorCode = 401;
-			f.close();
-		}
-		//else
-		{
-			//std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-			//m_url = str;
-			m_errorCode = 200;
-			f.close();
-			return;
-		}*/
 	}
 	else
 	{
