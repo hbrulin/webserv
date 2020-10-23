@@ -309,7 +309,7 @@ void Listener::receive_data(int fd) {
 	{
 		bytes += ret;
 		buf_list[n]->m_buffer[bytes] = '\0';
-		if (strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
+		if (ft_strstr(buf_list[n]->m_buffer, ENDCHARS) != NULL && !buf_list[n]->body_parse_chunk && !buf_list[n]->body_parse_length)
 		{
 			std::string s(buf_list[n]->m_buffer);
 			//std::cout << "M_BUFFER : " << s << std::endl << std::endl;
@@ -317,12 +317,12 @@ void Listener::receive_data(int fd) {
 			buf_list[n]->headers = s.substr(0, npos);
 			buf_list[n]->body += s.substr(npos + 4, s.size());
 			ft_memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (strstr(buf_list[n]->headers.c_str(), POST) != NULL || strstr(buf_list[n]->headers.c_str(), PUT) != NULL)
+			if (ft_strstr(buf_list[n]->headers.c_str(), POST) != NULL || ft_strstr(buf_list[n]->headers.c_str(), PUT) != NULL)
 			{
-				if (strstr(buf_list[n]->headers.c_str(), CHUNKED_STR) != NULL)
+				if (ft_strstr(buf_list[n]->headers.c_str(), CHUNKED_STR) != NULL)
 				{
 					buf_list[n]->body_parse_chunk = !buf_list[n]->body_parse_chunk;
-					if (buf_list[n]->body.empty() == 0 && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
+					if (buf_list[n]->body.empty() == 0 && ft_strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 					{
 						LaunchRequest(n, fd);
 						buf_list[n]->clean_buf();
@@ -330,7 +330,7 @@ void Listener::receive_data(int fd) {
 						//buf_list.erase(it);
 					}
 				}
-				else if (strstr(buf_list[n]->headers.c_str(), CONTENT_L_STR) != NULL)
+				else if (ft_strstr(buf_list[n]->headers.c_str(), CONTENT_L_STR) != NULL)
 				{
 					buf_list[n]->body_parse_length = !buf_list[n]->body_parse_length;
 					buf_list[n]->header_length = buf_list[n]->headers.size() + 5;
@@ -365,7 +365,7 @@ void Listener::receive_data(int fd) {
 		{
 			buf_list[n]->body += buf_list[n]->m_buffer;
 			ft_memset((void *)buf_list[n]->m_buffer, 0, BUFFER_SIZE + 1);
-			if (buf_list[n]->body_parse_chunk && strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
+			if (buf_list[n]->body_parse_chunk && ft_strstr(buf_list[n]->body.c_str(), ENDCHARS_BOD) != NULL)
 			{
 				LaunchRequest(n, fd);
 				buf_list[n]->clean_buf();
@@ -396,7 +396,7 @@ void Listener::LaunchRequest(int n, int fd)
 	//std::cout << host << std::endl;
 	for (int j = 0; j < _size ; j++)
 	{
-		if (strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
+		if (ft_strstr(host.c_str(), _conf[j]._server_name.c_str()) != NULL)
 		{
 			/*std::cout << _conf[j]._server_name << std::endl;
 			std::cout << j << std::endl;

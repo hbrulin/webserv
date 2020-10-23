@@ -75,7 +75,7 @@ int Request::isGoodRequest()
 				return 1;
 			if (parsed[0] != GET && parsed[0] != POST && parsed[0] != HEAD && parsed[0] != PUT && parsed[0] != DELETE)
 				return 1;
-			if (strstr(parsed[1].c_str(), "/") == NULL || forbiddenChars(parsed[1]))
+			if (ft_strstr(parsed[1].c_str(), "/") == NULL || forbiddenChars(parsed[1]))
 				return 1;
 			line++;
 			m_url = parsed[1];
@@ -113,16 +113,16 @@ void Request::parse()
 		_loc._name.pop_back();
 		if (m_url == "/" || _loc._name == m_url)
 			m_url = m_index;
-		else if (strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
+		else if (ft_strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
 			m_url.erase(0, _loc._name.size());
 
-		if (!_loc._uploaded_files_root.empty() && strstr(m_url.c_str(), _loc._uploaded_files_root.c_str()) != NULL)
+		if (!_loc._uploaded_files_root.empty() && ft_strstr(m_url.c_str(), _loc._uploaded_files_root.c_str()) != NULL)
 		{
 			m_path = m_url;
 			return;
 		}
 
-		if (strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
+		if (ft_strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
 		{
 			_loc._root = _head_req.contentNego(_loc._root);
 		}

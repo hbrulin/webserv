@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: bothilie <bothilie@stduent.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/23 12:06:28 by hbrulin          ###   ########.fr       */
+/*   Updated: 2020/10/23 12:53:07 by bothilie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,5 +83,6 @@ void			ft_tabdel(void **tab);
 long int		ft_atoi_base(std::string str, std::string base);
 bool 			path_exists(std::string& s);
 int				getline(std::string &buffer, std::string &line);
+char			*ft_strstr(const char *haystack, const char *needle);
 
 #endif

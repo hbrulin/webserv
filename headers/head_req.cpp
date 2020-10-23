@@ -268,7 +268,7 @@ void Head_req::getRemAddr()
 
 
 void		Head_req::parse(std::string m_buffer, std::string url) {
-	if (strstr(m_buffer.c_str(), "X-") != NULL)
+	if (ft_strstr(m_buffer.c_str(), "X-") != NULL)
  	{
  		X_headers = getXtoparse(m_buffer, "X-");
  	}
@@ -277,7 +277,7 @@ void		Head_req::parse(std::string m_buffer, std::string url) {
 	AUTH_TYPE = tab[0];
 	ACCEPT_ENCODING = getStringtoParse(m_buffer, ACCEPT_EN_STR);
 	CONTENT_TYPE = getStringtoParse(m_buffer, CONTENT_T_STR);
-	if (strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
+	if (ft_strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
 		CONTENT_LENGTH = getStringtoParse(m_buffer, CONTENT_L_STR);
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
 	//getScriptName(url);
@@ -291,7 +291,7 @@ void		Head_req::parse(std::string m_buffer, std::string url) {
 	//rest of parsing
 	if (getStringtoParse(m_buffer, ACCEPT_CHAR_STR) != "")
 		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, ACCEPT_CHAR_STR).c_str(), ',');
-	if (strstr(m_buffer.c_str(), TRANSFER_EN_STR) != NULL)
+	if (ft_strstr(m_buffer.c_str(), TRANSFER_EN_STR) != NULL)
 		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
 	DATE = getStringtoParse(m_buffer, DATE_STR);	
 	//parsing languages into vector
