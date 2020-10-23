@@ -23,7 +23,6 @@ int Request::forking()
 	int pid, res, status;
 	int pp[2];
 	res = 0;
-	std::ostringstream oss;
 	if (getcwd(curr_dir, 200) == NULL)
 		return (-1);
 	dir_cgi = std::string(curr_dir) + "/";
@@ -159,6 +158,7 @@ void Request::post() {
 		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 201;
+		_head_resp.LOCATION = m_path;
 		f.close();
 	}
 }
@@ -170,11 +170,14 @@ void Request::put() {
 		m_errorCode = 413;
 		return;
 	}
-	m_path = _loc._uploaded_files_root + m_url;
+	m_path = _loc._uploaded_files_root + m_url; 
 	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
+	{
 		m_errorCode = 201; //created
+		_head_resp.LOCATION = m_path;
+	}
 	//std::ifstream f(m_path);
 	//if (f.good())
 

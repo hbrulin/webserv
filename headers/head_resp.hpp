@@ -28,7 +28,7 @@ class Head_resp
     std::string CONTENT_TYPE;
     std::string LAST_MODIFIED; //OK
     std::string SERVER; // OK
-    // SI 503
+    std::string LOCATION;
     std::string RETRY_AFTER; // 2 lignes date + delay-second
     std::string TRANSFER_ENCODING;
     //char **WWW_AUTHENTICATE;

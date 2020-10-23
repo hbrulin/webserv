@@ -54,7 +54,8 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 	else
 		ret+= (std::string) CONTENT_L_STR + getContentLength(fichier) + "\r\n";
 	//oss << "Transfer-Encoding: deflate\r\n";
-	ret += CONTENT_LOC_STR + (std::string)fichier + "\r\n";
+	if (code != 201)
+		ret += CONTENT_LOC_STR + (std::string)fichier + "\r\n";
 	/*if (WWW_AUTHENTICATE != NULL)
 		oss << "WWW-Authenticate: " << WWW_AUTHENTICATE[0]<< " " << WWW_AUTHENTICATE[1]  << "\r\n";*/
     ret += DATE_STR + this->getDate() + "\r\n";
@@ -70,6 +71,8 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 		 	ret += *it + ", ";
 		ret += "\r\n";
 	}
+	if (code == 201)
+		ret += "Location: " + LOCATION + "\r\n";
 	ret += "\r\n";
     return ret;
 }
