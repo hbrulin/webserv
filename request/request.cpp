@@ -19,8 +19,26 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		first_send = 1;
 	};
 
-
+//VERSION STREAM
 void		Request::getBody() {
+	std::istringstream f(m_body);
+	std::string buf;
+	std::string total;
+	bool flag = 0;
+	while (std::getline(f, buf))
+	{
+		if (!flag)
+			_body_size += ft_atoi_base(buf, "0123456789abcdef");
+			//_body_size += strtol(buf.c_str(), NULL, 16);
+		else
+			total += buf.substr(0, buf.size() - 1);
+		flag = !flag;
+	}
+	m_body = total;
+}
+
+//VERSION CUSTOM GETLINE
+/*void		Request::getBody() {
 	//std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
@@ -37,7 +55,62 @@ void		Request::getBody() {
 	m_body = total;
 	//std::cout << m_body.size() << std::endl;
 	//std::cout << _body_size << std::endl;
-}
+}*/
+
+//VERSION DIRECTE
+/*void		Request::getBody() {
+
+	std::string		tmp;
+	bool flag = 0;
+
+	tmp = m_body;
+	m_body = "";
+
+	while (strstr(tmp.c_str(), "\r\n"))
+	{
+		if (!flag)
+			_body_size += ft_atoi_base(tmp, "0123456789abcdef");
+		else
+			m_body += tmp.substr(0, tmp.find("\r\n"));
+		//std::cout << m_body << std::endl;
+		flag = !flag;
+		tmp = tmp.substr(tmp.find("\r\n") + 2);
+	}
+	std::cout << m_body.size() << std::endl;
+	std::cout << _body_size << std::endl;
+}*/
+
+//VERSION AVEC GNL ET BUFFER
+/*void		Request::getBody() {
+	
+	int ret;
+	char *line;
+	bool flag = 0;
+	char *tmp = ft_strdup(m_body.c_str());
+	m_body = "";
+	char *total;
+
+	while ((ret = get_next_line(&tmp, &line)) > 0)
+	{
+		std::cout << line << std::endl;
+		std::cout << "----" << std::endl;
+		if (!flag)
+		{
+			_body_size += ft_atoi_base(line, "0123456789abcdef");
+		}
+		else
+		{
+			total = ft_substr(line, 0, ft_strlen(line) - 1);
+			m_body += total;
+			free(total);
+		}
+		flag = !flag;
+	}
+	//m_body = total;
+	std::cout << m_body.size() << std::endl;
+	std::cout << _body_size << std::endl;
+}*/
+
 
 int Request::isGoodRequest()
 {

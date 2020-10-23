@@ -299,10 +299,10 @@ int		getline(std::string &buffer, std::string &line)
 	pos = buffer.find("\n");
 	if (pos != std::string::npos)
 	{
-		line = std::string (buffer, 0, pos++);
+		line = buffer;
 		buffer = buffer.substr(pos);
 	}
-	else
+	/*else
 	{
 		if (buffer[buffer.size() - 1] == '\n')
 			buffer = buffer.substr(buffer.size());
@@ -311,7 +311,52 @@ int		getline(std::string &buffer, std::string &line)
 			line = buffer;
 			buffer = buffer.substr(buffer.size());
 		}
-	}
+	}*/
 	//std::cout << line.size() << std::endl;
 	return line.size();
+}
+
+size_t	tab_size(char **tab)
+{
+	size_t i;
+
+	i = 0;
+	while (tab[i])
+		i++;
+	return (i);
+}
+
+char	*ft_strnew(size_t size)
+{
+	char	*s;
+	size_t	i;
+
+	i = 0;
+	if (!(s = (char*)malloc(size + 1)))
+		return (NULL);
+	while (i < size)
+		s[i++] = 0;
+	s[size] = '\0';
+	return (s);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	int		i;
+	char	*s2;
+
+	if (!s)
+		return (NULL);
+	i = 0;
+	if ((size_t)start > ft_strlen(s))
+		return (ft_strdup(""));
+	s2 = ft_strnew(len + 1);
+	while (len)
+	{
+		s2[i] = s[start];
+		start++;
+		i++;
+		len--;
+	}
+	return (s2);
 }

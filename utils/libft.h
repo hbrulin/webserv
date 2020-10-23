@@ -6,7 +6,7 @@
 /*   By: hbrulin <hbrulin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/23 11:46:25 by hbrulin          ###   ########.fr       */
+/*   Updated: 2020/10/23 20:03:42 by hbrulin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,9 @@ void			ft_tabdel(void **tab);
 long int		ft_atoi_base(std::string str, std::string base);
 bool 			path_exists(std::string& s);
 int				getline(std::string &buffer, std::string &line);
+size_t			tab_size(char **tab);
+char			*ft_strnew(size_t size);
+int			get_next_line(char **file, char **line);
 
 
 #endif
