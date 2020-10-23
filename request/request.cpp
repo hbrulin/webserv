@@ -168,20 +168,20 @@ int Request::send_to_client() {
 	if (first_send)
 	{
 		first_send = !first_send;
-		std::ostringstream oss;
+		//std::ostringstream oss;
 		if (pid_ret > 0)
 			return internalError();
 		if (!is_cgi)
-			oss << _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
-		if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
-			oss << m_url;
-		if (is_cgi)
+		{
+			m_output = _head_resp.getBuffer(m_errorCode, m_path.c_str(), _loc._methods, _head_req.REQUEST_METHOD);
+			if (_head_req.REQUEST_METHOD != HEAD && _head_req.REQUEST_METHOD != PUT && !is_cgi)
+				m_output = m_output + m_url;
+		}
+		else 
 		{
 			m_output = _head_resp.getBuffer_cgi(m_errorCode, m_body, _head_req.X_headers);
 			m_output = m_output + m_body;
 		}
-		else
-			m_output = oss.str();
 	}
 
 	size_t bytes;

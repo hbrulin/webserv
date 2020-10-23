@@ -36,8 +36,8 @@ class Request
 
 	/*For cgi*/
 	char curr_dir[200];
-	char *dir_cgi;
-	char *path;
+	std::string dir_cgi;
+	std::string path;
 	std::string content_env; //env que l'on recup dans requete POST pour les cgi
 	int pid_ret;
 	bool is_cgi;
