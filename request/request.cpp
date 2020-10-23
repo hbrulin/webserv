@@ -21,11 +21,11 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 
 
 void		Request::getBody() {
-	std::istringstream f(m_body);
+	//std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
 	bool flag = 0;
-	while (std::getline(f, buf))
+	while (getline(m_body, buf))
 	{
 		if (!flag)
 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
@@ -35,6 +35,8 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
+	//std::cout << m_body.size() << std::endl;
+	//std::cout << _body_size << std::endl;
 }
 
 int Request::isGoodRequest()

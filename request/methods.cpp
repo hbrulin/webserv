@@ -177,7 +177,8 @@ void Request::put() {
 	else
 		m_errorCode = 201; //created
 
-	file_fd = open(m_path.c_str(), O_WRONLY);
+	file_fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+	//std::cout << file_fd << std::endl;
 	setFileToSet(true);
 	_status = WRITE_FILE;
 }
@@ -244,7 +245,7 @@ int		Request::write_file() {
 	int ret = 0;
 
 	if (_head_req.REQUEST_METHOD == PUT) 
-		ret = write(file_fd, m_body.c_str(), _body_size - 1); //get msg from body, limit if above content-lenght
+		ret = write(file_fd, m_body.c_str(), _body_size); //get msg from body, limit if above content-lenght
 
 	close(file_fd);
 	setFileToSet(false);
