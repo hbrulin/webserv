@@ -20,7 +20,7 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 	};
 
 //VERSION STREAM
-void		Request::getBody() {
+/*void		Request::getBody() {
 	std::istringstream f(m_body);
 	std::string buf;
 	std::string total;
@@ -35,7 +35,7 @@ void		Request::getBody() {
 		flag = !flag;
 	}
 	m_body = total;
-}
+}*/
 
 //VERSION CUSTOM GETLINE
 /*void		Request::getBody() {
@@ -110,6 +110,30 @@ void		Request::getBody() {
 	std::cout << m_body.size() << std::endl;
 	std::cout << _body_size << std::endl;
 }*/
+
+
+//VERSION BIG CHUNK
+void		Request::getBody() {
+
+	std::string		tmp;
+	//bool flag = 0;
+	size_t pos;
+	unsigned int nb = 0;
+	std::string total;
+
+	while (!m_body.empty())
+	{
+		pos = m_body.find("\r\n");
+		tmp = m_body.substr(0, pos);
+		nb = ft_atoi_base(tmp, "0123456789abcdef");
+		_body_size += nb;
+		total += m_body.substr(pos + 2, (size_t)nb);
+		m_body = m_body.substr(pos + 2 + nb + 2);
+	}
+	m_body = total;
+	std::cout << m_body.size() << std::endl;
+	std::cout << _body_size << std::endl;
+}
 
 
 int Request::isGoodRequest()
