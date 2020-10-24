@@ -489,7 +489,7 @@ std::string Location::get_autoindex()
 
 	if (_autoindex == false)
 	{
-		return (list + "404 not found" + "\t</p></body></html>\n");
+		return (_errors[404]);
 	}
 
 	//if (path + partial_path doesn't exists return 404)
@@ -506,8 +506,14 @@ std::string Location::get_autoindex()
 		list.append("-" + std::string(files->d_name));
 		list.append("</a>\n");
 	}
-	list.append("\t</p></body></html>\n");
-	return (list);
+	list.append("\t</p>\n\t\t</body>\n\t</html>\n");
+	closedir(current);
+
+	int fd = open((path + "list.html").c_str(), O_CREAT | O_WRONLY, S_IRWXO);
+
+	write(fd, list.c_str(), list.size());// << std::endl;
+	close(fd);
+	return ((path + "list.hmtl"));
 }
 
 /*
