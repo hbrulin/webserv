@@ -34,7 +34,6 @@ int Request::forking()
 	
 	if (!(path_exists(path)))
 		return 127;
-
 	struct stat buf;
 	int ret;
 	if ((ret = stat(path.c_str(), &buf)) < 0)
@@ -48,7 +47,9 @@ int Request::forking()
 		mode[9] = '\0';
   		//std::cout << "mode: " << mode << std::endl;
 		if (mode[2] != 'x' || mode[5] != 'x' || mode[8] != 'x')
+		{
 			return (127);
+		}
 		//free(mode);
 		//free(chars);
 	}
