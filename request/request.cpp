@@ -38,21 +38,41 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 	//std::cout << _body_size << std::endl;
 }*/
 
+// void		Request::getBody() {
+// 	std::istringstream f(m_body);
+// 	std::string buf;
+// 	std::string total;
+// 	bool flag = 0;
+// 	while (std::getline(f, buf))
+// 	{
+// 		if (!flag)
+// 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
+// 			//_body_size += strtol(buf.c_str(), NULL, 16);
+// 		else
+// 			total += buf.substr(0, buf.size() - 1);
+// 		flag = !flag;
+// 	}
+// 	m_body = total;
+// }
+
 void		Request::getBody() {
-	std::istringstream f(m_body);
-	std::string buf;
+	std::string		tmp;
+	//bool flag = 0;
+	size_t pos;
+	unsigned int nb = 0;
 	std::string total;
-	bool flag = 0;
-	while (std::getline(f, buf))
+	while (!m_body.empty())
 	{
-		if (!flag)
-			_body_size += ft_atoi_base(buf, "0123456789abcdef");
-			//_body_size += strtol(buf.c_str(), NULL, 16);
-		else
-			total += buf.substr(0, buf.size() - 1);
-		flag = !flag;
+		pos = m_body.find("\r\n");
+		tmp = m_body.substr(0, pos);
+		nb = ft_atoi_base(tmp, "0123456789abcdef");
+		_body_size += nb;
+		total += m_body.substr(pos + 2, (size_t)nb);
+		m_body = m_body.substr(pos + 2 + nb + 2);
 	}
 	m_body = total;
+	std::cout << m_body.size() << std::endl;
+	std::cout << _body_size << std::endl;
 }
 
 int Request::isGoodRequest()
