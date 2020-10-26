@@ -31,7 +31,7 @@ class Head_resp
     std::string LOCATION;
     std::string RETRY_AFTER; // 2 lignes date + delay-second
     std::string TRANSFER_ENCODING;
-    //char **WWW_AUTHENTICATE;
+    char **WWW_AUTHENTICATE;
 	std::string DATE; // HH:MM:SS GMT //OK
     public:
     std::string getLastModified(const char *path);

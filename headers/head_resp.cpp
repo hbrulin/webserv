@@ -65,8 +65,8 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
         ret += RETRY_STR + RETRY_AFTER + "\r\n";
 	if (code == 405)
 	{
-		ret += ALLOW_STR + ALLOW + "\r\n";
-		ret += SERVER_METHODS_STR;
+		ret += ALLOW_STR;
+		//ret += SERVER_METHODS_STR;
 		 for (std::vector<std::string>::iterator it = methods.begin(); it != methods.end(); it++)
 		 	ret += *it + ", ";
 		ret += "\r\n";
