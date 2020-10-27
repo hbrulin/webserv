@@ -485,6 +485,56 @@ std::string Location::get_autoindex()
 	std::string path = _root; // not sure
 
 	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
+	+ "</title>\n\t</head>\n\t\t<body><p>";
+	list.append(_root + ":");
+	list.append("</p");
+	//std::cout << _name << std::endl;
+	if (_autoindex == false)
+	{
+	//	std::cout << "lol_ici\n";
+	//	Le check se fait dans methods, donc en principe on est jamais la
+		return (_errors[404]);
+	}
+
+	//if (path + partial_path doesn't exists return 404)
+
+	struct dirent *files;
+	//std::cout << "lol\n";
+	DIR *current = opendir(path.c_str());
+	if (current == NULL)
+		return ("");
+	list.append("\t\t<ul>\n");
+	while ((files = readdir(current)) != NULL)
+	{
+		list.append("\t\t<li><a href =\"");
+		list.append(std::string(files->d_name));
+		list.append("\">");
+		list.append(": " + std::string(files->d_name));
+		list.append("</a></li>\n");
+	}
+	list.append("\t\t</ul>");
+	list.append("\n\t\t</body>\n\t</html>\n");
+	closedir(current);
+
+	int fd;
+//	std::cout << path << std::endl;
+	//std::cout << (fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666)) << std::endl;
+	fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666);
+	if (fd < 0)
+		return ("");
+
+	//std::cout << write(fd, list.c_str(), list.size()) << std::endl;// << std::endl;
+	write(fd, list.c_str(), list.size());
+	close(fd);
+//	std::cout << path + "list.hmtl" << std::endl;
+	return ((path + "list.html"));
+}
+/*
+std::string Location::get_autoindex(std::string url)
+{
+	std::string path = _root + '/' + url; // not sure
+
+	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
 	+ "</title>\n\t</head>\n\t\t<body>";
 	//std::cout << _name << std::endl;
 	if (_autoindex == false)
@@ -524,7 +574,7 @@ std::string Location::get_autoindex()
 //	std::cout << path + "list.hmtl" << std::endl;
 	return ((path + "list.html"));
 }
-
+*/
 /*
 void check_path_validity()
 {

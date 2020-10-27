@@ -105,6 +105,7 @@ class Location
 	void check_methods_validity();
 
 	std::string get_autoindex();
+	std::string get_autoindex(std::string);
 
 
 	static const char* _SUPPORTED_CGI[];
