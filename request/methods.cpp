@@ -222,6 +222,8 @@ void Request::get() {
 //			else
 //				m_path = _loc.get_autoindex(m_url);
 		}
+		else
+			m_path = b;
 	}
 
 	std::ifstream f(m_path);
