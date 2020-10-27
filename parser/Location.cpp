@@ -486,7 +486,7 @@ std::string Location::get_autoindex()
 
 	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
 	+ "</title>\n\t</head>\n\t\t<body>";
-	std::cout << _name << std::endl;
+	//std::cout << _name << std::endl;
 	if (_autoindex == false)
 	{
 	//	std::cout << "lol_ici\n";
