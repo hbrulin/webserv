@@ -31,7 +31,7 @@ int Request::forking()
 	_head_req.PATH_TRANSLATED = path;
 	_head_req.PATH_INFO = _head_req.REQUEST_URI;
 	_head_req.CONTENT_LENGTH = std::to_string(m_body.size());
-	
+
 	if (!(path_exists(path)))
 		return 127;
 	struct stat buf;
@@ -171,7 +171,7 @@ void Request::put() {
 		m_errorCode = 413;
 		return;
 	}
-	m_path = _loc._uploaded_files_root + m_url; 
+	m_path = _loc._uploaded_files_root + m_url;
 	if (path_exists(m_path))
 		m_errorCode = 200;
 	else
@@ -209,7 +209,16 @@ void Request::get() {
 	fstat(fd, &buf);
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
-		m_path = m_path + "/" + m_index;
+	{
+		std::string b = m_path + "/" + m_index;
+		//m_path = m_path + "/" + m_index;
+		if (path_exists(b))
+			m_path = b;
+		else if (_loc._autoindex == true)
+		{
+			m_path = _loc.get_autoindex();
+		}
+	}
 
 	std::ifstream f(m_path);
 	if (f.good())

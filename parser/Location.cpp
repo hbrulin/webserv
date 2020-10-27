@@ -485,35 +485,44 @@ std::string Location::get_autoindex()
 	std::string path = _root; // not sure
 
 	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
-	+ "</title>\n\t</head>\n\t\t<body><p>";
-
+	+ "</title>\n\t</head>\n\t\t<body>";
+	std::cout << _name << std::endl;
 	if (_autoindex == false)
 	{
+	//	std::cout << "lol_ici\n";
 		return (_errors[404]);
 	}
 
 	//if (path + partial_path doesn't exists return 404)
 
 	struct dirent *files;
+	//std::cout << "lol\n";
 	DIR *current = opendir(path.c_str());
 	if (current == NULL)
 		return (_errors[404]);
+	list.append("\t\t<ul>\n");
 	while ((files = readdir(current)) != NULL)
 	{
-		list.append("\t\t<a href =\"");
+		list.append("\t\t<li><a href =\"");
 		list.append(std::string(files->d_name));
 		list.append("\">");
-		list.append("-" + std::string(files->d_name));
-		list.append("</a>\n");
+		list.append("-: " + std::string(files->d_name));
+		list.append("</a></li>\n");
 	}
-	list.append("\t</p>\n\t\t</body>\n\t</html>\n");
+	list.append("\t\t</ul>");
+	list.append("\n\t\t</body>\n\t</html>\n");
 	closedir(current);
 
-	int fd = open((path + "list.html").c_str(), O_CREAT | O_WRONLY, S_IRWXO);
+	int fd;
+//	std::cout << path << std::endl;
+	//std::cout << (fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666)) << std::endl;
+	fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666);
 
-	write(fd, list.c_str(), list.size());// << std::endl;
+	//std::cout << write(fd, list.c_str(), list.size()) << std::endl;// << std::endl;
+	write(fd, list.c_str(), list.size());
 	close(fd);
-	return ((path + "list.hmtl"));
+//	std::cout << path + "list.hmtl" << std::endl;
+	return ((path + "list.html"));
 }
 
 /*
