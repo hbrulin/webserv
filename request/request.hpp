@@ -12,6 +12,7 @@
 #include "../headers/head_resp.hpp"
 #include <fcntl.h>
 #include "../utils/definitions.hpp"
+#include <iterator>
 
 class Request
 {

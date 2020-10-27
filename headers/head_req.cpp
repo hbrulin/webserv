@@ -242,7 +242,7 @@ void Head_req::getRemAddr()
 	while (count < 3)
 	{
 		end = cpy + 1;
-		while (s[end] != '.' && s[end])
+		while (s[end] && s[end] != '.')
 			end++;
 		if (end - cpy < 5)
 		{

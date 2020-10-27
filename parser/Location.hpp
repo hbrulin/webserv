@@ -2,6 +2,7 @@
 #define LOCATION_HPP
 
 #include <string>
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <map>

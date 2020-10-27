@@ -17,7 +17,6 @@ int Request::preChecks()
 	{	
 		m_errorCode = 405;
 		m_path = _loc._errors[m_errorCode];
-		//std::cout << m_path;
 		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
 		std::ifstream f(m_path);
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
@@ -25,6 +24,17 @@ int Request::preChecks()
 		f.close();
 		return 1;
 	}
+	// if (!isAuthorized(m_headers))
+	// {
+	// 	m_errorCode = 401;
+	// 	m_path = _loc._errors[m_errorCode];
+	// 	//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+	// 	std::ifstream f(m_path);
+	// 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+	// 	m_url = str;
+	// 	f.close();
+	// 	return 1;
+	// }
 	return 0;
 }
 
@@ -89,13 +99,13 @@ int Request::forbiddenChars(std::string s) {
 
 
 
-/*int Request::isAuthorized(std::string str)
+int Request::isAuthorized(std::string str)
 {
 	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
 	if (_head_resp.WWW_AUTHENTICATE != NULL && _head_resp.WWW_AUTHENTICATE[0] != NULL)
 	{
-		if (_head_req.getStringtoParse(m_buffer, "Authorization: ") != "")
-			_head_req.AUTHORIZATION = ft_split(_head_req.getStringtoParse(m_buffer, "Authorization: ").c_str(), ' ');
+		if (_head_req.getStringtoParse(m_headers, "Authorization: ") != "")
+			_head_req.AUTHORIZATION = ft_split(_head_req.getStringtoParse(m_headers, "Authorization: ").c_str(), ' ');
 		else
 		{
 			_head_req.AUTHORIZATION = NULL;
@@ -120,7 +130,7 @@ int Request::forbiddenChars(std::string s) {
 	}
 	_head_resp.WWW_AUTHENTICATE = NULL;
 	return 1;
-}*/
+}
 
 /*int Request::isAcceptable()
 {
