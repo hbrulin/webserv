@@ -211,17 +211,10 @@ void Request::get() {
 	if (buf.st_mode & S_IFDIR)
 	{
 		std::string b = m_path + "/" + m_index;
-		//m_path = m_path + "/" + m_index;
-		//std::cout << m_url << std::endl;
-		if (path_exists(b))
+		if (path_exists(b) && !_loc._index.empty())
 			m_path = b;
 		else if (_loc._autoindex == true)
-		{
-			//if (m_path.size() + 1 == _loc._root.size())
-				m_path = _loc.get_autoindex();
-//			else
-//				m_path = _loc.get_autoindex(m_url);
-		}
+			m_path = _loc.get_autoindex();
 		else
 			m_path = b;
 	}

@@ -48,6 +48,8 @@ class Data
 	std::vector<Config>& getConfigList(); // return _serverList
 	const Config& operator [] (unsigned int); // getter for list[]
 
+	void print();
+
 	static const char* _SUPPORTED_CGI[];
 	static const char* _SUPPORTED_METHOD[];
 

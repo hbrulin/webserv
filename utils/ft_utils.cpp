@@ -290,7 +290,6 @@ bool path_exists(std::string& s)
 	return (stat (s.c_str(), &buffer) == 0);
 }
 
-
 int		getline(std::string &buffer, std::string &line)
 {
 	size_t					pos;
