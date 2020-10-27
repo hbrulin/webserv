@@ -202,7 +202,6 @@ void Request::delete_m()
 }
 
 void Request::get() {
-	// Open the document in the local file system
 
 	int fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
@@ -210,13 +209,17 @@ void Request::get() {
 	close(fd);
 	if (buf.st_mode & S_IFDIR)
 	{
-		std::string b = m_path + "/" + m_index;
+	/*	std::string b = m_path + "/" + m_index;
 		if (path_exists(b) && !_loc._index.empty())
 			m_path = b;
 		else if (_loc._autoindex == true)
 			m_path = _loc.get_autoindex();
 		else
-			m_path = b;
+			m_path = b;*/
+		if (_loc._autoindex == true && _loc._index.empty())
+			m_path = _loc.get_autoindex();
+		else
+			m_path = m_path + "/" + m_index;
 	}
 
 	std::ifstream f(m_path);

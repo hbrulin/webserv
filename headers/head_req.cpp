@@ -236,7 +236,7 @@ void Head_req::getRemAddr()
 	int cpy = 0;
 	int end = 0;
 
-	while (!(isdigit(s[begin])) && s[begin])
+	while (s[begin] && !(isdigit(s[begin])))
 		begin++;
 	cpy = begin;
 	while (count < 3)
@@ -252,7 +252,7 @@ void Head_req::getRemAddr()
 		else
 		{
 			cpy++;
-			while (!(isdigit(s[cpy])))
+			while (s[cpy] && !(isdigit(s[cpy])))
 				cpy++;
 			begin = cpy;
 			count = 0;
@@ -260,7 +260,7 @@ void Head_req::getRemAddr()
 	}
 	if (count == 3)
 	{
-		while (s[end] != ' ' && s[end])
+		while (s[end] && s[end] != ' ')
 			end++;
 	}
 	REMOTE_ADDR = s.substr(begin, end - begin);

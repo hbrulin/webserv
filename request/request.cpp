@@ -19,43 +19,24 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 	};
 
 
+ void		Request::getBody() {
+ 	std::istringstream f(m_body);
+ 	std::string buf;
+ 	std::string total;
+ 	bool flag = 0;
+ 	while (std::getline(f, buf))
+ 	{
+ 		if (!flag)
+ 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
+ 			//_body_size += strtol(buf.c_str(), NULL, 16);
+ 		else
+ 			total += buf.substr(0, buf.size() - 1);
+ 		flag = !flag;
+ 	}
+ 	m_body = total;
+}
+
 /*void		Request::getBody() {
-	//std::istringstream f(m_body);
-	std::string buf;
-	std::string total;
-	bool flag = 0;
-	while (getline(m_body, buf))
-	{
-		if (!flag)
-			_body_size += ft_atoi_base(buf, "0123456789abcdef");
-			//_body_size += strtol(buf.c_str(), NULL, 16);
-		else
-			total += buf.substr(0, buf.size() - 1);
-		flag = !flag;
-	}
-	m_body = total;
-	//std::cout << m_body.size() << std::endl;
-	//std::cout << _body_size << std::endl;
-}*/
-
-// void		Request::getBody() {
-// 	std::istringstream f(m_body);
-// 	std::string buf;
-// 	std::string total;
-// 	bool flag = 0;
-// 	while (std::getline(f, buf))
-// 	{
-// 		if (!flag)
-// 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
-// 			//_body_size += strtol(buf.c_str(), NULL, 16);
-// 		else
-// 			total += buf.substr(0, buf.size() - 1);
-// 		flag = !flag;
-// 	}
-// 	m_body = total;
-// }
-
-void		Request::getBody() {
 	std::string		tmp;
 	//bool flag = 0;
 	size_t pos;
@@ -73,7 +54,7 @@ void		Request::getBody() {
 	m_body = total;
 	std::cout << m_body.size() << std::endl;
 	std::cout << _body_size << std::endl;
-}
+}*/
 
 int Request::isGoodRequest()
 {
