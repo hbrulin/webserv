@@ -5,84 +5,51 @@ int Request::preChecks()
 	if (_head_req.SERVER_PROTOCOL != DEF_PROTOCOL)
 	{
 		m_errorCode = 505;
-		//m_path = _loc._root + ERROR_FOLDER + NOT_SUPPORTED;
 		m_path = _loc._errors[m_errorCode];
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 		return 1;
 	}
 	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
 	{	
 		m_errorCode = 405;
 		m_path = _loc._errors[m_errorCode];
-		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 		return 1;
 	}
 	if (!isAuthorized(m_headers))
 	{
 		m_errorCode = 401;
 		m_path = _loc._errors[m_errorCode];
-		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-		std::ifstream f(m_path);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_url = str;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 		return 1;
 	}
 	return 0;
 }
 
 void Request::notFound() {
-	//m_path = _loc._root + ERROR_FOLDER + m_not_found;
 	m_path = _loc._errors[404];
-	std::ifstream f(m_path);
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	m_url = str;
 	m_errorCode = 404;
-	f.close();
+	if (read_file() == -1)
+		internalError();
 }
 
 void Request::badRequest() {
 	m_path = _loc._errors[400];
-	std::ifstream f(m_path);
-	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	m_url = str;
 	m_errorCode = 400;
-	f.close();
+	if (read_file() == -1)
+		internalError();
 }
 
 int Request::internalError() {
-	std::ostringstream oss;
-	int ret;
-	oss << "HTTP/1.1 " << 500;
-	oss << " Internal Server Error\r\n";
-	oss << "Content-Type: text/html" << "\r\n";
-	oss << "Content-Length: 97\r\n\r\n";
-	oss << "<!doctype html><html><head><title>CGI Error</title></head><body><h1>CGI Error.</h1></body></html>\r\n";
-	if ((ret = send(m_client, m_output.c_str(), m_output.size() + 1, 0)) < 0)
-		return -1;
-	else if (ret == 0)
-			return 0;
+	m_url = "HTTP/1.1 500 Internal Server Error\r\n";
+	m_url += "Content-Type: text/html\r\n";
+	m_url += "Content-Length: 97\r\n\r\n";
+	m_url += "<!doctype html><html><head><title>Internal Error</title></head><body><h1>Internal Error.</h1></body></html>\r\n";
 	return 0;
 }
-
-//int Request::isAllowed(std::string path)
-//{
- //   if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
- //   {
-   //     _head_resp.ALLOW = GET;
-     //   return 0;
-    // }
- //   if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
-  //      return 0;
-    //return 1;
-//}
 
 int Request::forbiddenChars(std::string s) {
 	int i = 0;
@@ -96,8 +63,6 @@ int Request::forbiddenChars(std::string s) {
 	}
 	return 0;
 }
-
-
 
 int Request::isAuthorized(std::string str)
 {
@@ -147,3 +112,15 @@ int Request::isAuthorized(std::string str)
 	}
 	return 0;
 }*/
+
+//int Request::isAllowed(std::string path)
+//{
+ //   if ((_head_req.REQUEST_METHOD == POST || _head_req.REQUEST_METHOD == DELETE) && path.find(_loc._root) != std::string::npos)
+ //   {
+   //     _head_resp.ALLOW = GET;
+     //   return 0;
+    // }
+ //   if (_head_req.REQUEST_METHOD == GET && path.find(PHP) != std::string::npos)
+  //      return 0;
+    //return 1;
+//}

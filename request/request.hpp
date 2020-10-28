@@ -83,6 +83,7 @@ class Request
 	void get();
 	void put();
 	void delete_m();
+	int	read_file();
 
 	/*response*/
 	void split_resp(char *buffer);

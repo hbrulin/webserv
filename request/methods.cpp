@@ -114,17 +114,11 @@ int Request::forking()
 
 void Request::exec_cgi(){
 
-	//std::cout << _body_size << std::endl;
-	//std::cout << _loc._body_size << std::endl;
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
 		return;
 	}
-	/*if (_head_req.REQUEST_METHOD == POST)
-	{
-		post(); // on recupere les infos dans le body
-	}*/
 	m_url = _loc._cgi_root + _loc._cgi_file;
 	_head_req.SERVER_NAME = _conf._server_name;
 	_head_req.SCRIPT_NAME = _loc._cgi_file;
@@ -133,37 +127,30 @@ void Request::exec_cgi(){
 }
 
 void Request::post() {
-	//std::cout << _body_size << std::endl;
-	//std::cout << _loc._body_size << std::endl;
-	//std::cout << "----" << std::endl;
 	if (_body_size > _loc._body_size)
 	{
 		m_errorCode = 413;
 		return;
 	}
-	/*if (is_cgi)
-		return;*/
+
 	if (m_body.size() == 0)
 	{
-		std::ifstream f("www/post_0.html");
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_path = "www/post_0.html";
-		m_url = str;
 		m_errorCode = 200;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 	}
 	else
 	{
-		std::ifstream f(POST_HTML);
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 		m_path = POST_HTML;
-		m_url = str;
 		m_errorCode = 201;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 	}
 }
 
 void Request::put() {
+	int fd;
 
 	if (_body_size > _loc._body_size)
 	{
@@ -178,17 +165,11 @@ void Request::put() {
 		m_errorCode = 201; //created
 		_head_resp.LOCATION = m_path;
 	}
-	//std::ifstream f(m_path);
-	//if (f.good())
 
-	//f.close();
-	//std::cout << _loc._uploaded_files_root << "\n";
-	std::ofstream ff(m_path);
-	if (ff.good())
-		ff << m_body.substr(0, _body_size - 1) << std::endl; //get msg from body, limit if above content-lenght
-	else
-		m_errorCode = 456;
-	ff.close();
+	fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+	if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
+		internalError();
+	close(fd);
 }
 
 void Request::delete_m()
@@ -221,20 +202,32 @@ void Request::get() {
 			m_path = m_path + "/" + m_index;
 	}
 
-	std::ifstream f(m_path);
-	if (f.good())
+	if (path_exists(m_path))
 	{
-		m_url = "";
-		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		//std::cout << str << std::endl;
-		split_resp((char *)str.c_str());
 		m_errorCode = 200;
-		f.close();
+		if (read_file() == -1)
+			internalError();
 		return;
 	}
 	else
-	{
-		f.close();
 		notFound();
+}
+
+
+int		Request::read_file() 
+{
+	int 				fd = open(m_path.c_str(), O_RDONLY);
+	int					ret = 0;
+	char				buf[4096];
+	m_url = "";
+	while ((ret = read(fd, buf, 4095)) > 0)
+	{
+		buf[ret] = '\0';
+		m_url += buf;
 	}
+	//std::cout << m_url << std::endl;
+	//split_resp((char *)result.c_str());
+	close(fd);
+	//std::cout << ret << std::endl;
+	return ret;
 }

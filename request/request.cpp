@@ -210,7 +210,7 @@ int Request::send_to_client() {
 			m_output = m_output + m_body;
 		}
 	}
-
+	//std::cout << "jjjj" << m_output << std::endl;
 	size_t bytes;
 	if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 		return - 1;
@@ -220,7 +220,7 @@ int Request::send_to_client() {
 		m_output = m_output.substr(bytes);
 	else if (bytes == m_output.size())
 		bytes_left = !bytes_left;
-	
+	//std::cout << bytes_left << std::endl;
 	/*if (is_cgi)
 	{
 		std::cout << std::endl << m_output.substr(0, 100) << std::endl;
