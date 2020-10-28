@@ -158,21 +158,6 @@ std::string Head_req::getUserAgent(std::string s)
     return referer;
 }
 
-std::string Head_req::getAcceptLangage(std::string s)
-{
-    int n;
-    std::string referer;
-	n = s.find(ACCEPT_LAN_STR);
-	if (n != (int)std::string::npos)
-	{
-        n = n + std::string(ACCEPT_LAN_STR).size();
-		int i = n;
-		while (s[i] && s[i] != '\r') { i++;}
-		referer = s.substr(n, i - n);
-	}
-    return referer;
-}
-
 std::string Head_req::getTransferEncoding(std:: string s)
 {
     int n;
@@ -269,50 +254,44 @@ void Head_req::getRemAddr()
 }
 
 
-void		Head_req::parse(std::string m_buffer, std::string url) {
-	if (ft_strstr(m_buffer.c_str(), "X-") != NULL)
+void		Head_req::parse(std::string s, std::string url) {
+	if (ft_strstr(s.c_str(), "X-") != NULL)
  	{
- 		X_headers = getXtoparse(m_buffer, "X-");
+ 		X_headers = getXtoparse(s, "X-");
  	}
-	char **tab = ft_split(getStringtoParse(m_buffer, AUTH_STR).c_str(), ' ');
+	char **tab = ft_split(getStringtoParse(s, AUTH_STR).c_str(), ' ');
 	if (tab != NULL && tab[0] != NULL)
 	AUTH_TYPE = tab[0];
-	ACCEPT_ENCODING = getStringtoParse(m_buffer, ACCEPT_EN_STR);
-	CONTENT_TYPE = getStringtoParse(m_buffer, CONTENT_T_STR);
-	if (ft_strstr(m_buffer.c_str(), CONTENT_L_STR) != NULL)
-		CONTENT_LENGTH = getStringtoParse(m_buffer, CONTENT_L_STR);
+	ACCEPT_ENCODING = getStringtoParse(s, ACCEPT_EN_STR);
+	CONTENT_TYPE = getStringtoParse(s, CONTENT_T_STR);
+	if (ft_strstr(s.c_str(), CONTENT_L_STR) != NULL)
+		CONTENT_LENGTH = getStringtoParse(s, CONTENT_L_STR);
 	QUERY_STRING = getMetatoParse((char *)url.c_str(), "?", (char *)" #");
-	//getScriptName(url);
 	SERVER_NAME = getMetatoParse((char *)url.c_str(), "://", ":/?#");
 	if (getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "")
 		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";
-	//_head_req.SERVER_PROTOCOL = _head_req.getMetatoParse(m_url, "", "://");
-	REFERER = getReferer(m_buffer);
-	USER_AGENT = getUserAgent(m_buffer);
+	REFERER = getReferer(s);
+	USER_AGENT = getUserAgent(s);
 	getRemAddr();
-	//rest of parsing
-	if (getStringtoParse(m_buffer, ACCEPT_CHAR_STR) != "")
-		ACCEPT_CHARSET = ft_split(getStringtoParse(m_buffer, ACCEPT_CHAR_STR).c_str(), ',');
-	if (ft_strstr(m_buffer.c_str(), TRANSFER_EN_STR) != NULL)
-		TRANSFER_ENCODING = getTransferEncoding(m_buffer);
-	DATE = getStringtoParse(m_buffer, DATE_STR);	
-	//parsing languages into vector
-	std::string lg = getStringtoParse(m_buffer, ACCEPT_LAN_STR);
-	if (lg != "")
-	{
-		std::stringstream s(lg);
-		std::string segment;
-		while(std::getline(s, segment, ','))
-			ACCEPT_LANGUAGE.push_back(segment);
-	}
-	int i = 0;
-	if (tab != NULL && tab[0] != NULL)
-	{
-		while (tab[i])
-		{
-			free(tab[i]);
-			i++;
-		}
-	}
-	free(tab);
+	if (getStringtoParse(s, ACCEPT_CHAR_STR) != "")
+		ACCEPT_CHARSET = ft_split(getStringtoParse(s, ACCEPT_CHAR_STR).c_str(), ',');
+	if (ft_strstr(s.c_str(), TRANSFER_EN_STR) != NULL)
+		TRANSFER_ENCODING = getTransferEncoding(s);
+	DATE = getStringtoParse(s, DATE_STR);	
+	getLanguageVector(s);
+	ft_tabdel((void **)tab);
+}
+
+void Head_req::getLanguageVector(std::string buffer)
+{
+	std::string lg = getStringtoParse(buffer, ACCEPT_LAN_STR);
+	if (lg == "")
+		return;
+	std::string copy = lg;
+	size_t pos = 0;
+	while ((pos = copy.find(" ")) != std::string::npos) {
+		ACCEPT_LANGUAGE.push_back(copy.substr(0, pos));
+		copy.erase(0, pos + 1);
+	}	
+	ACCEPT_LANGUAGE.push_back(copy);
 }

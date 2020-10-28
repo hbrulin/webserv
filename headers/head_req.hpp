@@ -56,7 +56,6 @@ class Head_req
     std::string getUserAgent(std::string s);
 	std::string getTransferEncoding(std::string s);
     void        getRemAddr();
-    std::string getAcceptLangage(std::string s);
     std::string getStringtoParse(std::string s, std::string toParse);
     std::string getMetatoParse(std::string s, std::string toParse, std::string Sep);
     std::string get_meta();
@@ -64,6 +63,7 @@ class Head_req
 	std::string contentNego(std::string root);
 	void		parse(std::string s, std::string url);
     std::string getXtoparse(std::string s, std::string toParse);
+	void 		getLanguageVector(std::string buffer);
     struct stat st;
 };
 
