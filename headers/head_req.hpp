@@ -32,6 +32,7 @@ class Head_req
 	std::string DATE; // HH:MM:SS GMT
 	std::string TRANSFER_ENCODING;
 	std::string ACCEPT_ENCODING;
+    std::string CONTENT_LANGUAGE;
      std::string X_headers;
 
     //META

@@ -122,11 +122,12 @@ void Request::parse()
 			m_path = m_url;
 			return;
 		}
-
+		_head_req.CONTENT_LANGUAGE = "fr";
 		if (ft_strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
 		{
 			_loc._root = _head_req.contentNego(_loc._root);
 		}
+		_head_resp.CONTENT_LANGUAGE = _head_req.CONTENT_LANGUAGE;
 		m_path = _loc._root + m_url;
 
 		/*parse body*/
@@ -139,6 +140,12 @@ void Request::parse()
 			else
 			{
 				m_errorCode = 411;
+				m_path = _loc._errors[m_errorCode];
+		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+				std::ifstream f(m_path);
+				std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+				m_url = str;
+				f.close();
 				return;
 			}
 		}

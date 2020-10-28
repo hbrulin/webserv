@@ -190,6 +190,7 @@ std::string Head_req::getTransferEncoding(std:: string s)
 
 std::string Head_req::contentNego(std::string root) {
 	size_t i = 0;
+	CONTENT_LANGUAGE = "fr";
 	if (ACCEPT_LANGUAGE.empty())
 		return root + "fr/";
 	std::string res = root + "fr/";
@@ -202,6 +203,7 @@ std::string Head_req::contentNego(std::string root) {
     	std::ifstream f(root + tmp + "/");
 
 		if (f.good()) {
+			CONTENT_LANGUAGE = tmp;
 			res = root + tmp + "/";
 			f.close();
 			break;

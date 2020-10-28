@@ -24,17 +24,17 @@ int Request::preChecks()
 		f.close();
 		return 1;
 	}
-	// if (!isAuthorized(m_headers))
-	// {
-	// 	m_errorCode = 401;
-	// 	m_path = _loc._errors[m_errorCode];
-	// 	//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-	// 	std::ifstream f(m_path);
-	// 	std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-	// 	m_url = str;
-	// 	f.close();
-	// 	return 1;
-	// }
+	if (!isAuthorized(m_headers))
+	{
+		m_errorCode = 401;
+		m_path = _loc._errors[m_errorCode];
+		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
+		std::ifstream f(m_path);
+		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+		m_url = str;
+		f.close();
+		return 1;
+	}
 	return 0;
 }
 
@@ -129,6 +129,7 @@ int Request::isAuthorized(std::string str)
 		}
 	}
 	_head_resp.WWW_AUTHENTICATE = NULL;
+	_head_req.AUTHORIZATION = NULL;
 	return 1;
 }
 

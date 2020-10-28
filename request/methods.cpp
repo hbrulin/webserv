@@ -145,9 +145,9 @@ void Request::post() {
 		return;*/
 	if (m_body.size() == 0)
 	{
-		std::ifstream f(POST_HTML);
+		std::ifstream f("www/post_0.html");
 		std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-		m_path = POST_HTML;
+		m_path = "www/post_0.html";
 		m_url = str;
 		m_errorCode = 200;
 		f.close();
@@ -159,7 +159,6 @@ void Request::post() {
 		m_path = POST_HTML;
 		m_url = str;
 		m_errorCode = 201;
-		_head_resp.LOCATION = m_path;
 		f.close();
 	}
 }
