@@ -12,7 +12,8 @@
 #include "../headers/head_resp.hpp"
 #include <fcntl.h>
 #include "../utils/definitions.hpp"
-#include <iterator>
+#include <iostream>
+#include <unistd.h>
 
 class Request
 {
@@ -70,6 +71,7 @@ class Request
 	
 	/*parsing*/
 	void parse();
+	std::vector<std::string> getParsed(std::string s);
 	int isGoodRequest();
 	int forbiddenChars(std::string s);
 	void getBody();

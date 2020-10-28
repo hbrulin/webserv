@@ -1,9 +1,7 @@
 #include "request.hpp"
-#include <iostream>
-#include <unistd.h>
 
 Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
-	{
+{
 		_conf = conf;
 		m_headers = headers;
 		m_body = body;
@@ -16,147 +14,23 @@ Request::Request(std::string headers, std::string body, int fd, Config conf, int
 		_body_size = 0;
 		bytes_left = 1;
 		first_send = 1;
-	};
-
-
- void		Request::getBody() {
- 	std::istringstream f(m_body);
- 	std::string buf;
- 	std::string total;
- 	bool flag = 0;
- 	while (std::getline(f, buf))
- 	{
- 		if (!flag)
- 			_body_size += ft_atoi_base(buf, "0123456789abcdef");
- 			//_body_size += strtol(buf.c_str(), NULL, 16);
- 		else
- 			total += buf.substr(0, buf.size() - 1);
- 		flag = !flag;
- 	}
- 	m_body = total;
 }
 
-/*void		Request::getBody() {
-	std::string		tmp;
-	//bool flag = 0;
-	size_t pos;
-	unsigned int nb = 0;
-	std::string total;
-	while (!m_body.empty())
-	{
-		pos = m_body.find("\r\n");
-		tmp = m_body.substr(0, pos);
-		nb = ft_atoi_base(tmp, "0123456789abcdef");
-		_body_size += nb;
-		total += m_body.substr(pos + 2, (size_t)nb);
-		m_body = m_body.substr(pos + 2 + nb + 2);
-	}
-	m_body = total;
-	std::cout << m_body.size() << std::endl;
-	std::cout << _body_size << std::endl;
-}*/
+Request &Request::operator=(const Request &copy) {
 
-int Request::isGoodRequest()
-{
-	//std::cout << m_headers << std::endl;
-	std::string buf;
-	int line = 0;
-	if (m_headers.empty())
-		return 1;
-
-	std::istringstream iss(m_headers.c_str());
-
-	while (std::getline(iss, buf))
-	{
-		std::istringstream s(buf.c_str());
-		std::vector<std::string> parsed((std::istream_iterator<std::string>(s)), std::istream_iterator<std::string>());
-		if (line == 0)
-		{
-			if (parsed.size() != 3)
-				return 1;
-			if (parsed[0] != GET && parsed[0] != POST && parsed[0] != HEAD && parsed[0] != PUT && parsed[0] != DELETE)
-				return 1;
-			if (ft_strstr(parsed[1].c_str(), "/") == NULL || forbiddenChars(parsed[1]))
-				return 1;
-			line++;
-			m_url = parsed[1];
-			_head_req.REQUEST_METHOD = parsed[0];
-			_head_req.REQUEST_URI = parsed[1];
-			_head_req.SERVER_PROTOCOL = parsed[2];
-		}
-		else
-		{
-			if (parsed.size() < 2)
-				return 1;
-		}
-	}
-	return 0;
-}
-
-void Request::parse()
-{
-	if (!isGoodRequest())
-	{
-		_head_req.parse(m_headers.c_str(), m_url);
-		_loc = _conf._locations.get_loc_by_url(m_url);
-		m_index = _loc._index;
-		/*if (!_loc._errors.empty())
-			m_not_found = _loc._errors[404];*/
-		//std::cout << "!!!" << _loc._errors << std::endl;
-
-		if (preChecks())
-			return;
-
-		if (m_url.find("?") != std::string::npos)
-			m_url.replace(m_url.find("?"),m_url.size(), "");
-
-		/*build the right path*/
-		_loc._name.pop_back();
-		if (m_url == "/" || _loc._name == m_url)
-			m_url = m_index;
-		else if (ft_strstr(m_url.c_str(), _loc._name.c_str()) != NULL)
-			m_url.erase(0, _loc._name.size());
-
-		if (!_loc._uploaded_files_root.empty() && ft_strstr(m_url.c_str(), _loc._uploaded_files_root.c_str()) != NULL)
-		{
-			m_path = m_url;
-			return;
-		}
-		_head_req.CONTENT_LANGUAGE = "fr";
-		if (ft_strstr(CONTENT_NEGO_AVAILABLE, _loc._root.c_str()) != NULL)
-		{
-			_loc._root = _head_req.contentNego(_loc._root);
-		}
-		_head_resp.CONTENT_LANGUAGE = _head_req.CONTENT_LANGUAGE;
-		m_path = _loc._root + m_url;
-
-		/*parse body*/
-		if (_head_req.REQUEST_METHOD == PUT || _head_req.REQUEST_METHOD == POST)
-		{
-			if (_head_req.TRANSFER_ENCODING == CHUNKED_STR)
-				getBody();
-			else if (_head_req.CONTENT_LENGTH.empty() == 0)
-				_body_size = (unsigned int)stoi(_head_req.CONTENT_LENGTH);
-			else
-			{
-				m_errorCode = 411;
-				m_path = _loc._errors[m_errorCode];
-		//m_path = _loc._root + ERROR_FOLDER + NOT_ALLOWED;
-				std::ifstream f(m_path);
-				std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-				m_url = str;
-				f.close();
-				return;
-			}
-		}
-	}
-	else
-	{
-		_loc = _conf._locations._blank;
-		//_loc.print();
-		badRequest();
-		return;
-	}
+	_conf = copy._conf;
+	m_headers = copy.m_headers;
+	m_body = copy.m_body;
+	m_client = copy.m_client;
+	m_errorCode = copy.m_errorCode;
+	_head_req.SERVER_PORT = copy._head_req.SERVER_PORT;
+	is_cgi = copy.is_cgi;
+	s_addr = copy.s_addr;
+	pid_ret = copy.pid_ret;
+	_body_size = copy._body_size;
+	bytes_left = copy.bytes_left;
+	first_send = copy.first_send;
+	return *this;
 }
 
 void Request::handle() {
@@ -210,7 +84,7 @@ int Request::send_to_client() {
 			m_output = m_output + m_body;
 		}
 	}
-	//std::cout << "jjjj" << m_output << std::endl;
+	//std::cout << m_output << std::endl;
 	size_t bytes;
 	if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 		return - 1;
@@ -227,22 +101,4 @@ int Request::send_to_client() {
 		std::cout << "- - - - - - - - - - " << std::endl;
 	}*/
 	return 0;
-}
-
-
-Request &Request::operator=(const Request &copy) {
-
-	_conf = copy._conf;
-	m_headers = copy.m_headers;
-	m_body = copy.m_body;
-	m_client = copy.m_client;
-	m_errorCode = copy.m_errorCode;
-	_head_req.SERVER_PORT = copy._head_req.SERVER_PORT;
-	is_cgi = copy.is_cgi;
-	s_addr = copy.s_addr;
-	pid_ret = copy.pid_ret;
-	_body_size = copy._body_size;
-	bytes_left = copy.bytes_left;
-	first_send = copy.first_send;
-	return *this;
 }
