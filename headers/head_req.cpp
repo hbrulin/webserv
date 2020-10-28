@@ -228,7 +228,7 @@ void Head_req::getRemAddr()
 	cpy = begin;
 	while (count < 3)
 	{
-		end = cpy + 1;
+		//end = cpy + 1;
 		while (s[end] && s[end] != '.')
 			end++;
 		if (end - cpy < 5)
@@ -251,6 +251,7 @@ void Head_req::getRemAddr()
 			end++;
 	}
 	REMOTE_ADDR = s.substr(begin, end - begin);
+	std::cout << REMOTE_ADDR << std::endl;
 }
 
 
