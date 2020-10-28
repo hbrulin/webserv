@@ -55,6 +55,7 @@ class Request
 	unsigned int _body_size;
 
 	/*Output*/
+	std::string cgi_output;
 	int m_errorCode;
 	std::string m_output;
 	bool bytes_left;
@@ -80,6 +81,7 @@ class Request
 	void get_post_content();
 	void get_query_string();
 	void exec_cgi();
+	int handle_cgi_output();
 	void get();
 	void put();
 	void delete_m();
