@@ -257,7 +257,7 @@ failure on accept will cause us to end the server */
 void Listener::accept_incoming_connections(int i) {
 	int	new_sock = 0;
 	struct sockaddr_in	info;
-	socklen_t			len;
+	socklen_t			len = sizeof(struct sockaddr);
 
 	memset(&info, 0, sizeof(struct sockaddr));
 
