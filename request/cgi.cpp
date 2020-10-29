@@ -12,7 +12,8 @@ int Request::handle_cgi_output() {
 		buf[ret] = '\0';
 		tmp += buf;
 	}
-	close(fd);
+	if (fd != -1)
+		close(fd);
 	unlink(cgi_output.c_str());
 	if (ret == -1)
 		return 1;
@@ -106,13 +107,15 @@ int Request::forking()
 		}
 		if (waitpid(pid, &status, 0) == -1)
 			perror(WAIT_ERR);
-		close(pp[1]);
-		close(fd);
+		//close(pp[1]);
+		if (fd != -1)
+			close(fd);
 	}
 	else
 	{
 		perror(FORK_ERR);
-		close(fd);
+		if (fd != -1)
+			close(fd);
 		ft_tabdel((void**)env);
 		return 127;
 	}

@@ -59,7 +59,8 @@ void Request::put() {
 	fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
 	if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
 		internalError();
-	close(fd);
+	if (fd != -1)
+		close(fd);
 }
 
 void Request::delete_m()
@@ -76,7 +77,8 @@ void Request::get() {
 	int fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
 	fstat(fd, &buf);
-	close(fd);
+	if (fd != -1)
+		close(fd);
 	if (buf.st_mode & S_IFDIR)
 	{
 	/*	std::string b = m_path + "/" + m_index;
@@ -117,7 +119,8 @@ int		Request::read_file()
 	}
 	//std::cout << m_url << std::endl;
 	//split_resp((char *)result.c_str());
-	close(fd);
+	if (fd != -1)
+		close(fd);
 	//std::cout << ret << std::endl;
 	return ret;
 }
