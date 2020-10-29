@@ -3,17 +3,19 @@
 int Request::handle_cgi_output() {
 
 	int 				fd = open(cgi_output.c_str(), O_RDONLY);
-	int					ret = 0;
+	int					ret = -1;
 	char				buf[4096];
 	std::string 		tmp;
 
-	while ((ret = read(fd, buf, 4095)) > 0)
-	{
-		buf[ret] = '\0';
-		tmp += buf;
-	}
 	if (fd != -1)
+	{
+		while ((ret = read(fd, buf, 4095)) > 0)
+		{
+			buf[ret] = '\0';
+			tmp += buf;
+		}
 		close(fd);
+	}
 	unlink(cgi_output.c_str());
 	if (ret == -1)
 		return 1;

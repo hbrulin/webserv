@@ -57,10 +57,12 @@ void Request::put() {
 	}
 
 	fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
-	if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
-		internalError();
 	if (fd != -1)
+	{
+		if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
+			internalError();
 		close(fd);
+	}
 }
 
 void Request::delete_m()
@@ -112,15 +114,14 @@ int		Request::read_file()
 	int					ret = 0;
 	char				buf[4096];
 	m_url = "";
-	while ((ret = read(fd, buf, 4095)) > 0)
-	{
-		buf[ret] = '\0';
-		m_url += buf;
-	}
-	//std::cout << m_url << std::endl;
-	//split_resp((char *)result.c_str());
 	if (fd != -1)
+	{
+		while ((ret = read(fd, buf, 4095)) > 0)
+		{
+			buf[ret] = '\0';
+			m_url += buf;
+		}
 		close(fd);
-	//std::cout << ret << std::endl;
+	}
 	return ret;
 }
