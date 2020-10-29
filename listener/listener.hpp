@@ -16,6 +16,7 @@
 #include "../utils/definitions.hpp"
 #include <signal.h>
 #include "Buffers.hpp"
+#include <map>
 
 class Listener {
 
@@ -64,6 +65,7 @@ class Listener {
 		std::vector<Buffers*> buf_list;
 		//std::vector<Request*> req_list;
 		std::vector<Request*> req_list;
+		std::map<int, std::string > map_ip;
 
 };
 

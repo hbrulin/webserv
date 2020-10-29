@@ -34,7 +34,7 @@ class Request
 
 	/*Client*/
 	int m_client;
-	unsigned long s_addr;
+	//unsigned long s_addr;
 
 	/*For cgi*/
 	char curr_dir[200];
@@ -67,7 +67,7 @@ class Request
 	Request() {}
 	~Request() {}
 	Request &operator=(const Request &copy);
-	Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr);
+	Request(std::string headers, std::string body, int fd, Config conf, int port, std::string ip);
 	
 	/*parsing*/
 	void parse();

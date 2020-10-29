@@ -215,47 +215,7 @@ std::string Head_req::getXtoparse(std::string s, std::string toParse)
     return referer;
 }
 
-void Head_req::getRemAddr()
-{	
-	int count = 0;
-	std::string s(USER_AGENT);
-	int begin = 0;
-	int cpy = 0;
-	int end = 0;
-
-	while (s[begin] && !(isdigit(s[begin])))
-		begin++;
-	cpy = begin;
-	while (count < 3)
-	{
-		//end = cpy + 1;
-		while (s[end] && s[end] != '.')
-			end++;
-		if (end - cpy < 5)
-		{
-			count++;
-			cpy = end + 1;
-		}
-		else
-		{
-			cpy++;
-			while (s[cpy] && !(isdigit(s[cpy])))
-				cpy++;
-			begin = cpy;
-			count = 0;
-		}
-	}
-	if (count == 3)
-	{
-		while (s[end] && s[end] != ' ')
-			end++;
-	}
-	REMOTE_ADDR = s.substr(begin, end - begin);
-	std::cout << REMOTE_ADDR << std::endl;
-}
-
-
-void		Head_req::parse(std::string s, std::string url) {
+void		Head_req::parse(std::string s, std::string url) {	
 	if (ft_strstr(s.c_str(), "X-") != NULL)
  	{
  		X_headers = getXtoparse(s, "X-");
@@ -273,7 +233,6 @@ void		Head_req::parse(std::string s, std::string url) {
 		SERVER_PORT = getMetatoParse((char*)url.c_str(), SERVER_NAME + ":", "?/#") != "";
 	REFERER = getReferer(s);
 	USER_AGENT = getUserAgent(s);
-	getRemAddr();
 	if (getStringtoParse(s, ACCEPT_CHAR_STR) != "")
 		ACCEPT_CHARSET = ft_split(getStringtoParse(s, ACCEPT_CHAR_STR).c_str(), ',');
 	if (ft_strstr(s.c_str(), TRANSFER_EN_STR) != NULL)

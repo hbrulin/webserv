@@ -1,15 +1,15 @@
 #include "request.hpp"
 
-Request::Request(std::string headers, std::string body, int fd, Config conf, int port, unsigned long addr)
+Request::Request(std::string headers, std::string body, int fd, Config conf, int port, std::string ip)
 {
 		_conf = conf;
 		m_headers = headers;
 		m_body = body;
 		m_client = fd;
 		m_errorCode = DEFAULT_CODE;
+		_head_req.REMOTE_ADDR = ip;
 		_head_req.SERVER_PORT = std::to_string(port);
 		is_cgi = false;
-		s_addr = addr;
 		pid_ret = 0;
 		_body_size = 0;
 		bytes_left = 1;
@@ -25,7 +25,7 @@ Request &Request::operator=(const Request &copy) {
 	m_errorCode = copy.m_errorCode;
 	_head_req.SERVER_PORT = copy._head_req.SERVER_PORT;
 	is_cgi = copy.is_cgi;
-	s_addr = copy.s_addr;
+	_head_req.REMOTE_ADDR = copy._head_req.REMOTE_ADDR;
 	pid_ret = copy.pid_ret;
 	_body_size = copy._body_size;
 	bytes_left = copy.bytes_left;

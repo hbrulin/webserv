@@ -256,8 +256,13 @@ have accepted all of them.  Any other
 failure on accept will cause us to end the server */
 void Listener::accept_incoming_connections(int i) {
 	int	new_sock = 0;
+	struct sockaddr_in	info;
+	socklen_t			len;
+
+	memset(&info, 0, sizeof(struct sockaddr));
+
 	while (new_sock != -1) {
-		new_sock = accept(i, NULL, NULL);
+		new_sock = accept(i, (struct sockaddr *)&info, &len);
 		if (new_sock < 0) {
 			/*on ne devait jamais avoir cette erreur si select() marche bien */
 			if (errno != EWOULDBLOCK) { //would block if it was non blocking and if we were not handling closing connections. A la place on aurra message erreur servi?
@@ -271,6 +276,8 @@ void Listener::accept_incoming_connections(int i) {
 		FD_SET(new_sock, &m_w_set);
 		if (new_sock > m_highsock)
 			m_highsock = new_sock;
+
+		map_ip.insert(std::pair<int, std::string>(new_sock, inet_ntoa(info.sin_addr)));
 	}
 }
 
@@ -406,7 +413,14 @@ void Listener::LaunchRequest(int n, int fd)
 		}
 	}
 
-	req_list.push_back(new Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, m_address->sin_addr.s_addr));
+	//get ip
+	std::string ip;
+	for(std::map<int, std::string>::iterator it = map_ip.begin(); it != map_ip.end(); ++it) {
+		if (fd == it->first)
+			ip = it->second;
+	}
+
+	req_list.push_back(new Request(buf_list[n]->headers, buf_list[n]->body, fd, _conf[m_nbConf], *m_port, ip));
 	std::vector<Request*>::iterator it = req_list.begin();
 	std::vector<Request*>::iterator ite = req_list.end();
 	while (it != ite && (*it)->m_client != fd)
@@ -464,8 +478,7 @@ void Listener::close_conn(int fd) {
 		if (fd == m_highsock) {
 			while (!(FD_ISSET(m_highsock, &m_r_set)) && !(FD_ISSET(m_highsock, &m_w_set))) 
 				m_highsock -= 1;
-		//delete *it;
-		//buf_list.erase(it);
+		map_ip.erase(fd);
 		}
 	}
 }
