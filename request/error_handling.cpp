@@ -64,6 +64,34 @@ int Request::forbiddenChars(std::string s) {
 	return 0;
 }
 
+void Request::free_authorization()
+{
+	if (_head_req.AUTHORIZATION != NULL)
+	{
+		int i = 0;
+		while (_head_req.AUTHORIZATION[i])
+		{
+			free(_head_req.AUTHORIZATION[i]);
+			_head_req.AUTHORIZATION[i] = NULL;
+			i++;
+		}
+		free(_head_req.AUTHORIZATION);
+	}
+	if (_head_resp.WWW_AUTHENTICATE != NULL)
+	{
+		int i = 0;
+		while (_head_resp.WWW_AUTHENTICATE[i])
+		{
+			free(_head_resp.WWW_AUTHENTICATE[i]);
+			_head_resp.WWW_AUTHENTICATE[i] =NULL;
+			i++;
+		}
+		free(_head_resp.WWW_AUTHENTICATE);
+	}
+	_head_resp.WWW_AUTHENTICATE = NULL;
+	_head_req.AUTHORIZATION = NULL;
+}
+
 int Request::isAuthorized(std::string str)
 {
 	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
@@ -78,23 +106,25 @@ int Request::isAuthorized(std::string str)
 		if (_head_req.AUTHORIZATION == NULL)
 		{
 			m_errorCode = 401;
+			free_authorization();
 			return 0;
 		}
 		if (strcmp((const char *)_head_req.AUTHORIZATION[0], (const char *)_head_resp.WWW_AUTHENTICATE[0]))
 		{
 				m_errorCode = 401;
+				free_authorization();
 				return 0;
 		}
 		else if (_head_req.AUTHORIZATION != NULL && _head_req.AUTHORIZATION[1] != NULL)
 		{
 			if (strncmp(_head_req.AUTHORIZATION[1],"dXNlcjpwYXNzd29yZA==", 11))
 			{
+				free_authorization();
 				return 0;
 			}
 		}
 	}
-	_head_resp.WWW_AUTHENTICATE = NULL;
-	_head_req.AUTHORIZATION = NULL;
+	free_authorization();
 	return 1;
 }
 

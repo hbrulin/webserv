@@ -77,7 +77,7 @@ void Request::delete_m()
 void Request::get() {
 
 	//int fd = open(m_path.c_str(), O_RDONLY);
-	struct stat buf{};
+	struct stat buf;
 	//memset((struct stat)buf, 0, sizeof(struct stat));
 	stat(m_path.c_str(), &buf);
 	//if (fd != -1)

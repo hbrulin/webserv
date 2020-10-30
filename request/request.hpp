@@ -101,6 +101,7 @@ class Request
 	void notFound();
 	void badRequest();
 	int internalError();
+	void free_authorization();
 	
 };
 
