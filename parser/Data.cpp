@@ -36,8 +36,11 @@ Data::Data(const char* file_name)
 	else
 		path = file_name;
 
-	if (std::string(file_name).find_last_of('.') == std::string(file_name).npos ||
-	std::string(file_name).substr(std::string(file_name).find_last_of('.')) != ".conf")
+	if (path.empty())
+		throw(std::logic_error("Error DEFAULT_CONFIG_PATH is empty"));
+
+	if (path.find_last_of('.') == path.npos ||
+	path.substr(path.find_last_of('.')) != ".conf")
 		throw(std::logic_error("File invalid, missing .conf extension"));
 /*	std::ifstream file(path);
 
