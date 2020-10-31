@@ -6,7 +6,7 @@
 /*   By: bothilie <bothilie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 14:26:25 by bothilie          #+#    #+#             */
-/*   Updated: 2020/10/27 15:30:17 by jdurand          ###   ########.fr       */
+/*   Updated: 2020/10/31 11:10:53 by jeromedurand     ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,5 +84,7 @@ long int		ft_atoi_base(std::string str, std::string base);
 bool 			path_exists(std::string& s);
 int				getline(std::string &buffer, std::string &line);
 char			*ft_strstr(const char *haystack, const char *needle);
+
+int				get_next_line(int fd, char **line);
 
 #endif

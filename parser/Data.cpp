@@ -36,7 +36,10 @@ Data::Data(const char* file_name)
 	else
 		path = file_name;
 
-	std::ifstream file(path);
+	if (std::string(file_name).find_last_of('.') == std::string(file_name).npos ||
+	std::string(file_name).substr(std::string(file_name).find_last_of('.')) != ".conf")
+		throw(std::logic_error("File invalid, missing .conf extension"));
+/*	std::ifstream file(path);
 
 	if (!file)
 		throw (std::logic_error("File path invalid: " + path));
@@ -45,8 +48,29 @@ Data::Data(const char* file_name)
 	{
 		s += b.substr(0, b.find('#'));
 	//	s += "\n"; // maybe needed to count lines
-	}
+}*/
 
+	int fd = open(path.c_str(), O_RDONLY);
+	if (fd <= 0)
+		throw (std::logic_error("File path invalid: " + path));
+
+	char *b2 = NULL;
+
+	while (get_next_line(fd, &b2))
+	{
+		b = std::string(b2);
+		free(b2);
+		b2 = NULL;
+		s += b.substr(0, b.find('#'));
+	}
+	b = std::string(b2);
+	free(b2);
+	b2 = NULL;
+	s += b.substr(0, b.find('#'));
+
+	close(fd);
+	if (s.empty())
+		throw(std::logic_error("Parsing error: Conf content empty"));
 	if (!block_is_closed(s)) // mettre un check si close
 		throw (std::logic_error("Parsing error: missing \'}\'"));
 
