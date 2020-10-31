@@ -79,10 +79,19 @@ int Request::forking()
 	cgi_output = cgi_output + OUTPUT_CGI + std::to_string(m_client);
 	int fd;
 	if ((fd = open(cgi_output.c_str(), O_RDWR | O_CREAT, 0666)) < 0)
+	{
 		std::cout << strerror(errno) << std::endl;
+		ft_tabdel((void**)env);
+		return 127;
+	}
 
 	if (pipe(pp))
+	{
+		ft_tabdel((void**)env);
 		perror(PIPE_ERR);
+		return 127;
+	}
+
 	pid = fork();
 
 	if (pid == 0)
