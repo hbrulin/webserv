@@ -56,7 +56,7 @@ void Request::put() {
 		_head_resp.LOCATION = m_path;
 	}
 
-	fd = open(m_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC);
+	fd = open(m_path.c_str(), O_WRONLY | O_CREAT, 0666 | O_TRUNC);
 	if (fd != -1)
 	{
 		if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
