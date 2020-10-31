@@ -82,7 +82,7 @@ void Request::get() {
 	stat(m_path.c_str(), &buf);
 	//if (fd != -1)
 	//	close(fd);
-	
+
 	if (buf.st_mode & S_IFDIR)
 	{
 	/*	std::string b = m_path + "/" + m_index;
@@ -92,10 +92,11 @@ void Request::get() {
 			m_path = _loc.get_autoindex();
 		else
 			m_path = b;*/
-		if (_loc._autoindex == true && _loc._index.empty())
+		std::string b = m_path + "/" + _loc._index;
+		if (_loc._autoindex == true && (_loc._index.empty() || !path_exists(b)))
 			m_path = _loc.get_autoindex();
 		else
-			m_path = m_path + "/" + m_index;
+			m_path = b;
 	}
 
 	if (path_exists(m_path))
@@ -110,7 +111,7 @@ void Request::get() {
 }
 
 
-int		Request::read_file() 
+int		Request::read_file()
 {
 	int 				fd = open(m_path.c_str(), O_RDONLY);
 	int					ret = 0;
