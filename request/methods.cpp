@@ -93,7 +93,7 @@ void Request::get() {
 		else
 			m_path = b;*/
 		std::string b = m_path + "/" + _loc._index;
-		if (_loc._autoindex == true && (b.empty() || !path_exists(b)))
+		if (_loc._autoindex == true && (_loc._index.empty() || !path_exists(b)))
 			m_path = _loc.get_autoindex();
 		else
 			m_path = b;

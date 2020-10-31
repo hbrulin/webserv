@@ -11,7 +11,7 @@ int Request::preChecks()
 		return 1;
 	}
 	if (!_loc.check_allowed_method(_head_req.REQUEST_METHOD, _head_req.REQUEST_URI))
-	{	
+	{
 		m_errorCode = 405;
 		m_path = _loc._errors[m_errorCode];
 		if (read_file() == -1)
@@ -94,6 +94,7 @@ void Request::free_authorization()
 
 int Request::isAuthorized(std::string str)
 {
+	_head_req.AUTHORIZATION = NULL;
 	_head_resp.WWW_AUTHENTICATE = ft_split(_head_req.getStringtoParse((char *)str.c_str(), "WWW-Authenticate: ").c_str(), ' ');
 	if (_head_resp.WWW_AUTHENTICATE != NULL && _head_resp.WWW_AUTHENTICATE[0] != NULL)
 	{

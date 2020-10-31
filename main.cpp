@@ -7,7 +7,7 @@ int main (int ac, char **av) {
 	{
 		Data data(av[1]);
 		int size = data.getSize();
-		data.print();
+		//data.print();
 		Listener server(data.getConfigList(), size);
 		//std::cout << "HERE\n" << data.getConfigList()[0]._locations[0].get_autoindex();
 		server.init();
