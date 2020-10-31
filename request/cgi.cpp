@@ -109,7 +109,7 @@ int Request::forking()
 		}
 		if (waitpid(pid, &status, 0) == -1)
 			perror(WAIT_ERR);
-		//close(pp[1]);
+		close(pp[1]);
 		if (fd != -1)
 			close(fd);
 	}
@@ -122,5 +122,5 @@ int Request::forking()
 		return 127;
 	}
 	ft_tabdel((void**)env);
-	return 0;	
+	return 0;
 }
