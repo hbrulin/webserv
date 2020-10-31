@@ -17,8 +17,6 @@
 
 class Request
 {
-	//private:
-	//Request(){};
 
 /*Attributes*/
 
@@ -34,13 +32,12 @@ class Request
 
 	/*Client*/
 	int m_client;
-	//unsigned long s_addr;
 
 	/*For cgi*/
 	char curr_dir[200];
 	std::string dir_cgi;
 	std::string path;
-	std::string content_env; //env que l'on recup dans requete POST pour les cgi
+	std::string content_env;
 	int pid_ret;
 	bool is_cgi;
 
@@ -95,9 +92,7 @@ class Request
 
 	/*errors*/
 	int preChecks();
-	//int isAcceptable();
 	int isAuthorized(std::string str);
-	//int isAllowed(std::string path);
 	void notFound();
 	void badRequest();
 	int internalError();

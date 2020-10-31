@@ -79,7 +79,6 @@ std::string Head_resp::getBuffer(int code, const char *fichier, std::vector<std:
 
 std::string Head_resp::getBuffer_cgi(int code, std::string m_body, std::string X_head)
 {
-    //std::ostringstream oss;
 	std::string ret;
 	ret = (std::string)DEF_PROTOCOL + " ";
 	ret += std::to_string(code) + codeTab.find(code)->second;

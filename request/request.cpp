@@ -36,7 +36,8 @@ Request &Request::operator=(const Request &copy) {
 void Request::handle() {
 	if (m_errorCode >= 400)
 		return;
-	content_env = _head_req.getStringtoParse(m_url, "?"); // on recup le query string s'il existe
+	/*query string*/
+	content_env = _head_req.getStringtoParse(m_url, "?");
 	_head_req.QUERY_STRING = content_env;
 	if (_head_req.REQUEST_METHOD == POST && _loc._cgi_type != "" && _head_req.REQUEST_URI.find(_loc._cgi_type) != std::string::npos) // .cgi != NULL A REMPLACER par celui de la config
 	{
@@ -60,8 +61,7 @@ void Request::handle() {
 		return ;
 	}
 	else
-		get(); //also works for HEAD, change is in sendToClient()
-
+		get();
 }
 
 
@@ -69,7 +69,6 @@ int Request::send_to_client() {
 	if (first_send)
 	{
 		first_send = !first_send;
-		//std::ostringstream oss;
 		if (pid_ret > 0)
 			return internalError();
 		if (!is_cgi)
@@ -84,7 +83,6 @@ int Request::send_to_client() {
 			m_output = m_output + m_body;
 		}
 	}
-	//std::cout << m_output << std::endl;
 	size_t bytes;
 	if ((bytes = send(m_client, m_output.c_str(), m_output.size(), 0)) < 0)
 		return - 1;
@@ -94,11 +92,5 @@ int Request::send_to_client() {
 		m_output = m_output.substr(bytes);
 	else if (bytes == m_output.size())
 		bytes_left = !bytes_left;
-	//std::cout << bytes_left << std::endl;
-	/*if (is_cgi)
-	{
-		std::cout << std::endl << m_output.substr(0, 100) << std::endl;
-		std::cout << "- - - - - - - - - - " << std::endl;
-	}*/
 	return 0;
 }

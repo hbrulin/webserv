@@ -52,14 +52,14 @@ void Request::put() {
 		m_errorCode = 200;
 	else
 	{
-		m_errorCode = 201; //created
+		m_errorCode = 201;
 		_head_resp.LOCATION = m_path;
 	}
 
 	fd = open(m_path.c_str(), O_WRONLY | O_CREAT, 0666 | O_TRUNC);
 	if (fd != -1)
 	{
-		if(write(fd, m_body.c_str(), _body_size) == -1)//get msg from body, limit if above content-lenght
+		if(write(fd, m_body.c_str(), _body_size) == -1)
 			internalError();
 		close(fd);
 	}
@@ -76,22 +76,10 @@ void Request::delete_m()
 
 void Request::get() {
 
-	//int fd = open(m_path.c_str(), O_RDONLY);
 	struct stat buf;
-	//memset((struct stat)buf, 0, sizeof(struct stat));
 	stat(m_path.c_str(), &buf);
-	//if (fd != -1)
-	//	close(fd);
-
 	if (buf.st_mode & S_IFDIR)
 	{
-	/*	std::string b = m_path + "/" + m_index;
-		if (path_exists(b) && !_loc._index.empty())
-			m_path = b;
-		else if (_loc._autoindex == true)
-			m_path = _loc.get_autoindex();
-		else
-			m_path = b;*/
 		std::string b = m_path + "/" + _loc._index;
 		if (_loc._autoindex == true && (_loc._index.empty() || !path_exists(b)))
 			m_path = _loc.get_autoindex();

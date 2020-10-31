@@ -10,33 +10,12 @@
  	{
  		if (!flag)
  			_body_size += ft_atoi_base(buf, "0123456789abcdef");
- 			//_body_size += strtol(buf.c_str(), NULL, 16);
  		else
  			total += buf.substr(0, buf.size() - 1);
  		flag = !flag;
  	}
  	m_body = total;
 }
-
-/*void		Request::getBody() {
-	std::string		tmp;
-	//bool flag = 0;
-	size_t pos;
-	unsigned int nb = 0;
-	std::string total;
-	while (!m_body.empty())
-	{
-		pos = m_body.find("\r\n");
-		tmp = m_body.substr(0, pos);
-		nb = ft_atoi_base(tmp, "0123456789abcdef");
-		_body_size += nb;
-		total += m_body.substr(pos + 2, (size_t)nb);
-		m_body = m_body.substr(pos + 2 + nb + 2);
-	}
-	m_body = total;
-	std::cout << m_body.size() << std::endl;
-	std::cout << _body_size << std::endl;
-}*/
 
 std::vector<std::string> Request::getParsed(std::string s) {
 	std::string copy = s;
@@ -50,7 +29,6 @@ std::vector<std::string> Request::getParsed(std::string s) {
 	parsed.push_back(copy);
 	return(parsed);
 }
-
 
 int Request::isGoodRequest()
 {
@@ -93,8 +71,6 @@ int Request::isGoodRequest()
 		return 1;
 	return 0;
 }
-
-
 
 void Request::parse()
 {
@@ -150,7 +126,6 @@ void Request::parse()
 	else
 	{
 		_loc = _conf._locations._blank;
-		//_loc.print();
 		badRequest();
 		return;
 	}

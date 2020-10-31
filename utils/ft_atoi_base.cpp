@@ -20,30 +20,6 @@ int		ft_neg(int i, std::string str)
 		return (1);
 }
 
-/*int		check_str(std::string str, std::string base)
-{
-	int		i;
-	int		j;
-	size_t	no;
-
-	i = 0;
-	while (str[i])
-	{
-		j = 0;
-		no = 0;
-		while (base[j])
-		{
-			if (base[j] != str[i])
-				no++;
-			j++;
-		}
-		if (no == base.size())
-			return (0);
-		i++;
-	}
-	return (1);
-}*/
-
 int		check_base(std::string base)
 {
 	int i;

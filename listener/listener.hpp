@@ -51,19 +51,17 @@ class Listener {
 		std::vector<Config> _conf;
 
 		int _size;
-		struct sockaddr_in *m_address; // /* bind info structure */ need to have IP defined? see with config
+		struct sockaddr_in *m_address; /* bind info structure */
 		int			*m_port;
-		int			*m_sock; /* The socket file descriptor for our "listening" socket */
+		int			*m_sock; /* The socket file descriptor for our listening socket */
 		fd_set		m_r_set; /* Socket file descriptors we want to wake up for, using select() */
 		fd_set		m_w_set; /* Socket file descriptors we want to wake up for, using select() */
 		fd_set		m_read_set;
 		fd_set		m_write_set;
 		int			m_highsock;
-		//struct timeval	m_timeout; Is there a need for timeout or should it never end? arg for select()
 		bool		m_close;
 		int			m_nbConf;
 		std::vector<Buffers*> buf_list;
-		//std::vector<Request*> req_list;
 		std::vector<Request*> req_list;
 		std::map<int, std::string > map_ip;
 
