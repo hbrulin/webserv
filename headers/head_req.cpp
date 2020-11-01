@@ -3,9 +3,6 @@
 std::string Head_req::get_meta()
 {
 	ft_memset((char *) &str, 0, sizeof(str));
-	// content_env = ft_strtrim(content_env, "'/t''/0'");
-	// str.append(content_env);
-	//ajouter http_request_method et http_content-type ???
 	str.append("&HTTP_HOST=");
 	str.append(HOST);
 	str.append("&HTTP_REFERER=");
@@ -50,8 +47,6 @@ std::string Head_req::get_meta()
 	str.append(SERVER_PROTOCOL);
 	str.append("&SERVER_SOFTWARE=");
 	str.append("webserv"); // A modif ?
-	//str.append("&HTTP_SECRET_HEADER_FOR_TEST=1");
-	//str.append("&HTTP_X_SECRET_HEADER_FOR_TEST=1");
 	std::string tmp = "";
 	for (size_t i = 0; i != X_headers.size(); i++)
 	{
