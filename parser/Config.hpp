@@ -24,12 +24,10 @@ struct Config
 	std::string					_root;
 	std::map<int,std::string>	_errors;
 
-
 	//routing
 	unsigned int 				_listen; // the listen port
 	std::vector<unsigned int>	_ports; // vec containing all the ports passed
 	std::string 				_host; // local host or something else
-
 
 	std::string 				_index;
 	bool						_autoindex;

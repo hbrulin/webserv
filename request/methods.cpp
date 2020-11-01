@@ -76,7 +76,7 @@ void Request::delete_m()
 
 void Request::get() {
 
-	struct stat buf;
+	struct stat buf{};
 	stat(m_path.c_str(), &buf);
 	if (buf.st_mode & S_IFDIR)
 	{
