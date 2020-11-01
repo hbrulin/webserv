@@ -3,7 +3,6 @@
 
 Config::Config()
 {
-	//_errors = DEFAULT_ERROR_PAGES; -> OBSOLETE
 	_listen = 80;
 	_root = "";
 	_host = "0.0.0.0";
@@ -12,7 +11,6 @@ Config::Config()
 	set_default_errors();
 	_index = "";
 	_autoindex = false;
-	//_ports.push_back(80);
 }
 
 
@@ -29,10 +27,8 @@ Config::Config(const Config& b)
 	_body_size = b._body_size;
 	_locations = Locations(b._locations);
 
-	// a retirer des qu'on peut:
 	_cgi_type = b._cgi_type;
 	_cgi_root = b._cgi_root;
-	//_errors= b._error;
 	_errors = b._errors;
 
 	_index = b._index;
@@ -53,10 +49,8 @@ void Config::operator = (const Config& b)
 	_body_size = b._body_size;
 	_locations = Locations(b._locations);
 
-	// a retirer des qu'on peut:
 	_cgi_type = b._cgi_type;
 	_cgi_root = b._cgi_root;
-	//_error = b._error;
 	_errors = b._errors;
 
 	_index = b._index;
@@ -67,7 +61,6 @@ void Config::set_blank()
 {
 	_locations._blank._body_size = _body_size;
 	_locations._blank._errors = _errors;
-	//_locations._blank._error = _error;
 	_locations._blank._root = _root;
 	_locations._blank._cgi_root = _cgi_root;
 	_locations._blank._cgi_type = _cgi_type;
@@ -80,16 +73,10 @@ void Config::set_default_locations()
 {
 	for (unsigned long i = 0; i < _locations.size(); i++)
 	{
-	//	if (_locations[i]._errors.empty())
-	//		_locations[i]._errors = _errors;
 		if (_locations[i]._body_size == 0)
 			_locations[i]._body_size = _body_size;
 		if (_locations[i]._root.empty())
 			_locations[i]._root = _root;
-		/*if (_locations[i]._cgi_type.empty())
-			_locations[i]._cgi_type = _cgi_type;
-		if (_locations[i]._cgi_root.empty())
-			_locations[i]._cgi_root = _cgi_root;*/
 		_locations[i].set_default_errors(_errors);
 	}
 }
@@ -117,9 +104,3 @@ void Config::set_default_errors()
 	if (_errors.find(411) == _errors.end())
 		_errors[411] = LENGTH_REQUIRED;
 }
-
-
-
-/* mettre dans les loc:
-body size, errors, (cgi type?)
-*/

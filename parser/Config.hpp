@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <iostream>
-#include <fstream> //WRONG
+#include <fstream>
 #include <sys/stat.h>
 
 #include "Locations.hpp"
@@ -11,11 +11,6 @@
 
 struct Config
 {
-	//paths
-	/*
-	** not sure if host and listen and stuff should be strings or int
-	** Should i check if ips are valid here, or elsewhere?
-	*/
 	Config();
 	Config(const Config&);
 	void operator = (const Config&);
@@ -26,7 +21,7 @@ struct Config
 	void set_default_errors();
 
 	std::string					_server_name;
-	std::string					_root; //-> root path of the server like www/
+	std::string					_root;
 	std::map<int,std::string>	_errors;
 
 
@@ -43,10 +38,7 @@ struct Config
 	std::string 				_cgi_type;
 	std::string 				_cgi_root;
 
-	unsigned int 				_body_size;// --> don't know what it is
-	///std::vector<std::string> 	_methods; // list of accepted method
-
-//	Location _cgi;
+	unsigned int 				_body_size;
 
 	Locations _locations;
 

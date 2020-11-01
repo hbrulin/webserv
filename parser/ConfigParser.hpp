@@ -8,23 +8,12 @@
 #include "Config.hpp"
 #include "../utils/definitions.hpp"
 
-
-/*
-** this class should serve to parse a config struct listed in Data
-** The architecture isn't definitive yet
-*/
 struct Config;
 
 class ConfigParser
 {
-	/*
-	** maybe do do a sum check to verificate if everythng is parse
-	** A voir pour le nombre de parametre a checker: ex: Allow_uploaded == 0 ...
-	*/
 	typedef void (ConfigParser::*Func)(std::string s);
-   	//typedef std::map<std::string, FUNCPTR> FuncMap;
 	typedef std::map<std::string, Func> fmap;
-	//typedef bool (ConfigParser::*)(std::string) fparse;
 
 	public:
 	ConfigParser() ; // initialise with default
@@ -35,7 +24,6 @@ class ConfigParser
 	void operator = (const ConfigParser& configParser);
 	~ConfigParser();
 
-	//Parse_method
 	void initiate_map();
 
 	void print_data(Config* config); // utilitary, for testing only
@@ -47,7 +35,6 @@ class ConfigParser
 	fmap _map;
 
 	void parse_root(std::string b);
-	//void parse_errors(std::string b);
 	void parse_listen(std::string);
 	void parse_host(std::string);
 	void parse_method(std::string);

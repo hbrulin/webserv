@@ -32,7 +32,6 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
    	int i;
 
 	_config = config;
-	//_config->set_default_errors();
 	while (s.size() > 0 && s.compare(0, 1, "}") != 0)
 	{
 		i = 0;
@@ -51,8 +50,6 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 		else
 			value = s.substr(0, s.find('}'));
 
-		//value.erase(std::remove_if(value.begin(), value.end(), ::isspace ), value.end());
-		//std::cout << "Key " << key << " Value: " << value << std::endl;
 		if (_map[key] == NULL)
 			throw (std::logic_error("Parsing error: Unknown option: " + key));
 
@@ -76,17 +73,11 @@ bool ConfigParser::setConfig(Config* config, std::string& s)
 	_config->set_blank();
 	_config->set_default_locations();
 
-//	_config->_locations.check_path_validity(); -> a travailler pour voir si on check les paths
 	return (true);
 }
 
 void ConfigParser::initiate_map()
 {
-	//map["root"] = &ConfigParser::parse_root;
-	/*
-	** Si on doit ajouter un parametre, il faut rajouter une clé ici avec sa methode
-	** correspondente que l'on crée en dessous et rajouter un attribut a config.hpp
-	*/
 	_map["root"] = &ConfigParser::parse_root;
 	_map["index"] = &ConfigParser::parse_index;
 	_map["errors"] = &ConfigParser::parse_errors;
@@ -267,30 +258,24 @@ void ConfigParser::parse_errors(std::string b)
 		code = b.substr(
 		b.find_first_of("0123456789"),
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")));
-		//std::cout << s << std::endl;
 		remove_whitespace(code);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-		//std::cout << "Code: " << code;
 		path = b.substr(
 		b.find_first_of(ALPHACHAR),
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-		//std::cout << " Path: " << path << std::endl;
 
 		_config->_errors[std::stoi(code)] = path;
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-
-		//std::cout << "b: " << b << std::endl;
 	}
 }
 
 void ConfigParser::remove_whitespace(std::string& s)
 {
-	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
 	std::string::iterator start = s.begin();
 	while (start != s.end() && ::isspace(*start))
 		start++;
@@ -305,8 +290,6 @@ void ConfigParser::remove_whitespace(std::string& s)
 
 void ConfigParser::print_data(Config* config)
 {
-//	if (!config)
-//		config = _config;
 	std::cout << "-----------ServerInfo-----------\n";
 	std::cout << "server_name " << config->_server_name << "\nlisten: " <<
 	config->_listen << "\nhost: " << config->_host << "\nroot: " << config->_root << std::endl;

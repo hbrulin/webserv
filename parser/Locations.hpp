@@ -34,13 +34,3 @@ class Locations
 };
 
 #endif
-
-/*
-site:80/1/8/a
-site:80/a
-
-location "/1/" {blal}
-location "/1/8"
-location "/a" {}
-url
-*/

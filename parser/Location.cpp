@@ -3,8 +3,6 @@
 const char* Location::_SUPPORTED_CGI[] = {"php", "bla", NULL};
 const char* Location::_SUPPORTED_METHOD[] = {"GET", "POST", "HEAD", "DELETE", "PUT", NULL};
 
-// Faire une loc par defaut
-
 static bool path_exists(std::string& s)
 {
 	struct stat buffer;
@@ -15,22 +13,11 @@ void Location::check_path_validity()
 {
 	std::string error = "Error on location: " + _name + ": path ";
 
-/*	if (!path_exists(_root))
-		throw (std::logic_error(error + _root + " is invalid"));*/
-	//if (!path_exists(_errors))
-	//	throw (std::logic_error(error + _errors + " is invalid"));
-
 	for (std::map<int,std::string>::iterator it = _errors.begin(); it != _errors.end(); it++)
 	{
 		if (!path_exists(it->second))
 			throw (std::logic_error(error + it->second + " is invalid"));
 	}
-	//if (!path_exists(config._cgi_root))
-	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	//if (config.__autoindex && !path_exists(config._default_directory_answer_file))
-	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
-	//if (config._send_files && !path_exists(config._files_root))
-	//	throw (std::logic_error(error + config._files_root + " is invalid"));
 }
 
 Location::Location()
@@ -48,12 +35,6 @@ Location::Location()
 	_cgi_root = "";
 	_cgi_file = "";
 	_autoindex = false;
-	//_errors = ""; OBSOLETE
-
-	//_methods.push_back("GET");
-	//set_default_errors();
-	//_methods.push_back("HEAD");
-//	set_default_errors();
 	initiate_map();
 }
 
@@ -72,7 +53,6 @@ void Location::initiate_map()
 	_map["send_files"] = &Location::parse_send_files;
 	_map["uploaded_files_root"] = &Location::parse_uploaded_files_root;
 	_map["errors"] = &Location::parse_errors;
-	//_map["error"] = &Location::parse_error;
 }
 
 Location::~Location()
@@ -95,7 +75,6 @@ Location::Location(const Location& l)
 	_uploaded_files_root = l._uploaded_files_root;
 	_autoindex = l._autoindex;
 	_errors = l._errors;
-	//_error = l._error;
 	initiate_map();
 }
 
@@ -122,9 +101,6 @@ void Location::operator = (const Location& l)
 
 void Location::parse(std::string b)
 {
-	// parse mode
-	// parse name
-	// parse root
 	unsigned long name_end;
 	unsigned long arg_end = b.find('{');
 
@@ -139,7 +115,6 @@ void Location::parse(std::string b)
 	else
 		name_end = b.find('.');
 	_mode = b.substr(0, name_end);
-	//std::cout << "MODE: " << _mode << std::endl;
 	remove_whitespace(_mode);
 
 	if (!check_mode())
@@ -150,7 +125,6 @@ void Location::parse(std::string b)
 		throw(std::logic_error("Bad location block: Missing token '{' after name"));
 
 	_name = b.substr(0, b.find('{'));
-	//_name = _name.substr(1); // { inclus si substr(1, find({)) ?????
 	remove_whitespace(_name);
 	if (_name[_name.size() - 1] != '/' && _name[0] != '.')
 		_name.push_back('/');
@@ -172,7 +146,6 @@ void Location::parse(std::string b)
 		b = b.substr(b.find_first_not_of(END_INSTRUCTION_CHAR));
 		key = b.substr(0, b.find_first_of(END_INSTRUCTION_CHAR));
 		remove_whitespace(key);
-//		std::cout << "key: " << key << std::endl;
 		b = b.substr(key.size());
 		value = b.substr(0, b.find(';'));
 		remove_whitespace(value);
@@ -185,10 +158,8 @@ void Location::parse(std::string b)
 		(this->*(_map[key]))(value);
 	}
 	check_methods_validity();
-	//print();
 }
 
-// Parsers lnked to the fmap like in Location
 void Location::parse_root(std::string b)
 {
 	remove_whitespace(b);
@@ -222,9 +193,8 @@ void Location::parse_method(std::string b)
 		s = b.substr(
 		b.find_first_of(ALPHACHAR),
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-		//std::cout << s << std::endl;
 		remove_whitespace(s);
-		std::transform(s.begin(), s.end(),s.begin(), ::toupper); // convert to lower case
+		std::transform(s.begin(), s.end(),s.begin(), ::toupper);
 		_methods.push_back(s);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)) == std::string::npos)
@@ -235,7 +205,6 @@ void Location::parse_method(std::string b)
 
 void Location::remove_whitespace(std::string& s)
 {
-	//s.erase(std::remove_if(s.begin(), s.end(), ::isspace ), s.end());
 	std::string::iterator start = s.begin();
 	while (start != s.end() && ::isspace(*start))
 		start++;
@@ -346,19 +315,8 @@ void Location::parse_body_size(std::string b)
 void Location::parse_cgi_file(std::string b)
 {
 	remove_whitespace(b);
-	//if (b.find_first_of('.') == b.npos || b.find_first_of('.') != b.find_last_of('.'))
-	//	throw(std::logic_error("Bad Location block: 'invalid cgi file:'must contains '.''"));
 	_cgi_file = b;
 }
-
-/*
-void Location::parse_errors(std::string b)
-{
-	remove_whitespace(b);
-	_errors = b;
-}
-*/
-// checks :
 
 void Location::check_methods_validity()
 {
@@ -376,23 +334,12 @@ void Location::check_methods_validity()
 			j++;
 		}
 	}
-	j = 0;
-/*	while (1 && !_cgi_type.empty())
-	{
-		if (Location::_SUPPORTED_CGI[j] == NULL)
-			throw(std::logic_error("Bad location Block: Unsupported cgi type: " + _cgi_type));
-		if (_cgi_type == Location::_SUPPORTED_CGI[j])
-			break ;
-		j++;
-	}*/
 }
 
 bool Location::check_allowed_method(std::string method, std::string request_uri)
 {
-	//std::cout << _methods.size() <<  std::endl;
 	for (unsigned long i = 0; i < _methods.size(); i++)
 	{
-		//std::cout << method << std::endl;
 		if (_methods[i] == method)
 			return (true);
 	}
@@ -426,7 +373,6 @@ std::string		Location::get_listing()
 {
 	if (!_autoindex)
 		return ("Directory listing not allowed");
-	// return a string with all files in location
 	return ("directory listing on");
 }
 
@@ -440,25 +386,19 @@ void Location::parse_errors(std::string b)
 		code = b.substr(
 		b.find_first_of("0123456789"),
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")));
-		//std::cout << s << std::endl;
 		remove_whitespace(code);
 
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-		//std::cout << "Code: " << code;
 		path = b.substr(
 		b.find_first_of(ALPHACHAR),
 		b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-		//std::cout << " Path: " << path << std::endl;
-
 
 		_errors[std::stoi(code)] = path;
 		if (b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of("0123456789")) == std::string::npos)
 			break;
 		b = b.substr(b.find_first_of(END_INSTRUCTION_CHAR, b.find_first_of(ALPHACHAR)));
-
-		//std::cout << "b: " << b << std::endl;
 	}
 }
 
@@ -482,24 +422,17 @@ std::string Location::get_error_path(int code)
 
 std::string Location::get_autoindex()
 {
-	std::string path = _root; // not sure
+	std::string path = _root;
 
 	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
 	+ "</title>\n\t</head>\n\t\t<body><p>";
 	list.append(_root + ":");
 	list.append("</p");
-	//std::cout << _name << std::endl;
-	if (_autoindex == false)
-	{
-	//	std::cout << "lol_ici\n";
-	//	Le check se fait dans methods, donc en principe on est jamais la
-		return (_errors[404]);
-	}
 
-	//if (path + partial_path doesn't exists return 404)
+	if (_autoindex == false)
+		return (_errors[404]);
 
 	struct dirent *files;
-	//std::cout << "lol\n";
 	DIR *current = opendir(path.c_str());
 	if (current == NULL)
 		return ("");
@@ -517,76 +450,11 @@ std::string Location::get_autoindex()
 	closedir(current);
 
 	int fd;
-//	std::cout << path << std::endl;
-	//std::cout << (fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666)) << std::endl;
 	fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666);
 	if (fd < 0)
 		return ("");
 
-	//std::cout << write(fd, list.c_str(), list.size()) << std::endl;// << std::endl;
 	write(fd, list.c_str(), list.size());
 	close(fd);
-//	std::cout << path + "list.hmtl" << std::endl;
 	return ((path + "list.html"));
 }
-/*
-std::string Location::get_autoindex(std::string url)
-{
-	std::string path = _root + '/' + url; // not sure
-
-	std::string list = "<!DOCTYPE html>\n\t<head>\n\t\t<title" + path
-	+ "</title>\n\t</head>\n\t\t<body>";
-	//std::cout << _name << std::endl;
-	if (_autoindex == false)
-	{
-	//	std::cout << "lol_ici\n";
-		return (_errors[404]);
-	}
-
-	//if (path + partial_path doesn't exists return 404)
-
-	struct dirent *files;
-	//std::cout << "lol\n";
-	DIR *current = opendir(path.c_str());
-	if (current == NULL)
-		return (_errors[404]);
-	list.append("\t\t<ul>\n");
-	while ((files = readdir(current)) != NULL)
-	{
-		list.append("\t\t<li><a href =\"");
-		list.append(std::string(files->d_name));
-		list.append("\">");
-		list.append("-: " + std::string(files->d_name));
-		list.append("</a></li>\n");
-	}
-	list.append("\t\t</ul>");
-	list.append("\n\t\t</body>\n\t</html>\n");
-	closedir(current);
-
-	int fd;
-//	std::cout << path << std::endl;
-	//std::cout << (fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666)) << std::endl;
-	fd = open((path + "list.html").c_str(), O_CREAT | O_RDWR, 0666);
-
-	//std::cout << write(fd, list.c_str(), list.size()) << std::endl;// << std::endl;
-	write(fd, list.c_str(), list.size());
-	close(fd);
-//	std::cout << path + "list.hmtl" << std::endl;
-	return ((path + "list.html"));
-}
-*/
-/*
-void check_path_validity()
-{
-	if (!path_exists(root))
-		throw (std::logic_error(error + config._root + " is invalid"));
-	if (!path_exists(config._errors))
-		throw (std::logic_error(error + config._errors + " is invalid"));
-	//if (!path_exists(config._cgi_root))
-	//	throw (std::logic_error(error + config._cgi_root + " is invalid"));
-	//if (config.autoindex && !path_exists(config._default_directory_answer_file))
-	//	throw (std::logic_error(error + config._default_directory_answer_file + " is invalid"));
-	//if (config._send_files && !path_exists(config._files_root))
-	//	throw (std::logic_error(error + config._files_root + " is invalid"));
-}
-*/

@@ -4,40 +4,14 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <fstream> //WRONG
 #include "Config.hpp"
 #include "ConfigParser.hpp"
 #include "../utils/definitions.hpp"
 #include "../utils/libft.h"
 
-
-/*
-** Initialiser as Data(av[1])
-** check validity
-** if null, go find default config
-** Will throw uncatched exception if does not work properly
-** will basically read until find server {
-** list.push(ServerConfig( [config file from server { to next } ]));
-**
-** Errors yet not handled or tested:
-** Supress a server if it have the same port as another
-**
-** Creer un parser de metadata
-*/
-
-/*
-** POUR LES METHODES ET LE TYPE DE CGI:
-** if faut renseigner les methodes ou le type de cgi dans Data.cpp dans les tableaux
-** de char* correspondant, et le terminer par NULL
-*/
-
 class Data
 {
 	public:
-	/*
-	** Unique constructor to be used
-	*/
-
 	Data(const char* file_name = NULL);
 	Data(const Data& data);
 	void operator = (const Data& data);

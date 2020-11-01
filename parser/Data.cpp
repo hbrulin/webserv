@@ -42,16 +42,6 @@ Data::Data(const char* file_name)
 	if (path.find_last_of('.') == path.npos ||
 	path.substr(path.find_last_of('.')) != ".conf")
 		throw(std::logic_error("File invalid, missing .conf extension"));
-/*	std::ifstream file(path);
-
-	if (!file)
-		throw (std::logic_error("File path invalid: " + path));
-
-	while (std::getline(file, b)) // first run that take off comments
-	{
-		s += b.substr(0, b.find('#'));
-	//	s += "\n"; // maybe needed to count lines
-}*/
 
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd <= 0)
@@ -105,14 +95,6 @@ Data::Data(const char* file_name)
 
 	check_multiple_ports();
 	check_validity();
-/*	for (unsigned long i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);*/
-//	std::cout << _configList.back()._listen << std::endl;
-//	std::cout << _configList.front()._listen << std::endl;
-//	std::cout << _configList.size() << std::endl;
-	/*for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-		_configParser.print_data(&_configList[i]);*/
-
 }
 
 
@@ -193,8 +175,6 @@ static void check_rooting_validity(Config& config)
 		try
 		{
 			byte = ft_atoi_base(&config._host[j], "0123456789");
-			//byte = std::atoi(&config._host[j]);
-			//std::cout << byte << std::endl;
 		}
 		catch (...)
 		{
@@ -208,14 +188,6 @@ static void check_rooting_validity(Config& config)
 
 void Data::check_validity()
 {
-	/*
-	** Fonction pour checker si pas de doublons sur les serveurs
-	** Si les paths sont valides
-	** si les methods et le type de cgi est supporté
-	** si les ports et l'host sont valides
-	** ??? plus ???
-	*/
-	// Check path
 	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
 	{
 		try
@@ -230,10 +202,6 @@ void Data::check_validity()
 			exit(1);
 		}
 	}
-	// check si il y a des doublons sur les servers
-//	check_server_doubles(_configList);
-//	for (std::vector<Config>::size_type i = 0; i < _configList.size(); i++)
-//		_configParser.print_data(&_configList[i]);
 }
 
 void Data::check_multiple_ports()
@@ -242,16 +210,12 @@ void Data::check_multiple_ports()
 
 	for (std::vector<Config>::size_type i = 0; i < size; i++)
 	{
-//		for (unsigned long k = 0; k < _configList[i]._ports.size(); k++)
-//			std::cout << "ports: " << _configList[i]._ports[k] << std::endl;
-//		std::cout << "1\n";
 		if (_configList[i]._ports.size() > 1)
 		{
 			std::vector<Config>::size_type j = 0;
 			while (j < _configList[i]._ports.size() - 1)
 			{
 				Config b(_configList[i]);
-				//std::cout << _configList[i]._ports.size() << "j " << j << std::endl;
 				b._listen = _configList[i]._ports[j];
 				_configList.push_back(b);
 				j++;
