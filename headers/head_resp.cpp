@@ -1,7 +1,5 @@
 #include "head_resp.hpp"
 
-//Header::~Header() {}
-
 std::string Head_resp::getLastModified(const char *path) {
     if (lstat((const char *)path, &st) == 0)
 	{
@@ -18,7 +16,6 @@ std::string Head_resp::getDate()
 		struct timeval tv;
 		if (gettimeofday(&tv, NULL) == 0)
 		{
-			//std::cout << tv.tz_minuteswest << std::endl;
 			time_t t = tv.tv_sec;
 			struct tm *tm =  localtime(&t);
 			char time[200];
