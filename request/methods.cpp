@@ -49,14 +49,17 @@ void Request::put() {
 	}
 	m_path = _loc._uploaded_files_root + m_url;
 	if (path_exists(m_path))
+	{
+		unlink(m_path.c_str());
 		m_errorCode = 200;
+	}
 	else
 	{
 		m_errorCode = 201;
 		_head_resp.LOCATION = m_path;
 	}
 
-	fd = open(m_path.c_str(), O_WRONLY | O_CREAT, 0666 | O_TRUNC);
+	fd = open(m_path.c_str(), O_WRONLY | O_CREAT, 0666);
 	if (fd != -1)
 	{
 		if(write(fd, m_body.c_str(), _body_size) == -1)
@@ -76,7 +79,7 @@ void Request::delete_m()
 
 void Request::get() {
 
-	struct stat buf{};
+	struct stat buf = {};
 	stat(m_path.c_str(), &buf);
 	if (buf.st_mode & S_IFDIR)
 	{
